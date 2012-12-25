@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "Eventy", "Eventy\Eventy.jsproj", "{0836114F-8C6A-40FE-A04F-50A1B007EC02}"
+Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "Eventy", "Eventy.jsproj", "{0836114F-8C6A-40FE-A04F-50A1B007EC02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
