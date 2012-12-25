@@ -55,12 +55,17 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <Content Include="css\default.css" />
+    <Content Include="index.html" />
+    <Content Include="views\welcome.html" />
     <None Include="Eventy_StoreKey.pfx" />
     <Content Include="images\logo.png" />
     <Content Include="images\smalllogo.png" />
     <Content Include="images\splashscreen.png" />
     <Content Include="images\storelogo.png" />
-    <Content Include="js\app.js" />
+    <Content Include="js\app\main.js" />
+    <Content Include="js\app\router.js" />
+    <Content Include="js\app\views\base.js" />
+    <Content Include="js\app\views\welcome.js" />
     <Content Include="js\app\config\config.js" />
     <Content Include="js\app\config\localization\local.js" />
     <Content Include="js\app\config\localization\nls\en-EN\labels.js" />
@@ -69,8 +74,7 @@
     <Content Include="js\app\models\event.js" />
     <Content Include="js\app\proxies\eventbrite.js" />
     <Content Include="js\app\utils\datetime.js" />
-    <Content Include="js\default.js" />
-    <Content Include="js\libs\base.js" />
+    <Content Include="js\app.js" />
     <Content Include="js\libs\lodash.min.js" />
     <Content Include="js\libs\requirejs\plugins\i18n.js" />
     <Content Include="js\libs\requirejs\plugins\text.js" />
@@ -80,7 +84,6 @@
     <Content Include="pages\home\home.css" />
     <Content Include="pages\home\home.html" />
     <Content Include="pages\home\home.js" />
-    <Content Include="default.html" />
     <None Include="Eventy_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

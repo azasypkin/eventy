@@ -1,7 +1,7 @@
-﻿define(["libs/base"], function (Base) {
+﻿define(function () {
 	"use strict";
 
-	return Base.define(function(options){
+	return WinJS.Class.define(function(options){
 		this.id = options.id;
 		this.eventsInCategory = options.eventsInCategory;
 		this.popularEvent = options.popularEvent;

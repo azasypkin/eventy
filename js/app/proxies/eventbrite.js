@@ -3,12 +3,11 @@ define([
 	"config",
 	"app/utils/datetime",
 	"app/models/event",
-	"app/models/category",
-	"libs/base"
-], function (_, globalConfig, dateUtils, Event, Category, Base) {
+	"app/models/category"
+], function (_, globalConfig, dateUtils, Event, Category) {
 	"use strict";
 
-	return Base.define(function(options){
+	return WinJS.Class.define(function(options){
 		options = options || {};
 		this._config = globalConfig.proxies.eventbrite;
 		this._url = options.url || this._config.url;
@@ -95,7 +94,7 @@ define([
 			if (this._useFakeData) {
 				return this._getFake("events");
 			} else {
-				return Base.xhr({
+				return WinJS.xhr({
 					url: this._buildUrl(""),
 					dataType: this._config.dataType,
 					contentType: 'application/json; charset=utf-8',
@@ -118,7 +117,7 @@ define([
 			if (this._useFakeData) {
 				return this._getFake("events");
 			} else {
-				return Base.xhr({
+				return WinJS.xhr({
 					url: this._buildUrl(null, params),
 					responseType: this._config.dataType,
 					headers: {"Content-Type": "application/json; charset=utf-8"},
@@ -140,7 +139,7 @@ define([
 		getFake: function (name) {
 			var self = this;
 
-			return new Base.Promise(function(complete){
+			return new WinJS.Promise(function(complete){
 				require([
 					"app/data"
 				], function (data) {
