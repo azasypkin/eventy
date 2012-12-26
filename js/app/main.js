@@ -1,4 +1,11 @@
-define(["underscore", "config", "app/router", "app/views/welcome"], function (_, config, WinRouter, WelcomePage) {
+define([
+	"underscore",
+	"config",
+	"app/utils/win",
+	"app/router",
+	"app/views/top-bar",
+	"app/views/welcome"
+], function (_, config, winUtils, WinRouter, TopBarView, WelcomePage) {
 	"use strict";
 
 	var router = new (WinJS.Class.mix(WinRouter, {
@@ -13,7 +20,7 @@ define(["underscore", "config", "app/router", "app/views/welcome"], function (_,
 				this._page.unload();
 			}
 
-			this._page = new PageClass(config);
+			this._page = new PageClass(config, winUtils);
 
 			return this._navigationPromise = this._page.render.apply(this._page, Array.prototype.slice.call(arguments, 1));
 		},
@@ -29,7 +36,9 @@ define(["underscore", "config", "app/router", "app/views/welcome"], function (_,
 
 	return {
 		start: function(){
-			return WinJS.Navigation.navigate("welcome");
+			return (new TopBarView(config, winUtils)).render().then(function(){
+				return WinJS.Navigation.navigate("welcome");
+			});
 		}
 	};
 });

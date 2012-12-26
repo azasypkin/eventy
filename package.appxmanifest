@@ -4,7 +4,7 @@
   <Properties>
     <DisplayName>Eventy</DisplayName>
     <PublisherDisplayName>AlZa</PublisherDisplayName>
-    <Logo>images\storelogo.png</Logo>
+    <Logo>img\storelogo.png</Logo>
   </Properties>
   <Prerequisites>
     <OSMinVersion>6.2.1</OSMinVersion>
@@ -14,10 +14,10 @@
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
-    <Application Id="App" StartPage="index.html">
-      <VisualElements DisplayName="Eventy" Logo="images\logo.png" SmallLogo="images\smalllogo.png" Description="Eventy" ForegroundText="light" BackgroundColor="#464646">
-        <DefaultTile ShowName="allLogos" />
-        <SplashScreen Image="images\splashscreen.png" />
+    <Application Id="App" StartPage="html\index.html">
+      <VisualElements DisplayName="Eventy" Logo="img\logo.png" SmallLogo="img\smalllogo.png" Description="Eventy" ForegroundText="light" BackgroundColor="#000000">
+        <DefaultTile ShowName="allLogos" WideLogo="img\wide_logo.png" />
+        <SplashScreen Image="img\splashscreen.png" />
       </VisualElements>
     </Application>
   </Applications>

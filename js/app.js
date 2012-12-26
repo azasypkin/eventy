@@ -3,7 +3,7 @@
 
 	// Require.js shortcut aliases
 	require.config({
-		baseUrl: "./js",
+		baseUrl: "../js",
 		paths: {
 			config: "app/config/config",
 			underscore: 'libs/lodash.min',
@@ -33,8 +33,12 @@
 				nav.history = app.sessionState.history;
 			}
 			args.setPromise(WinJS.UI.processAll().then(function () {
-				require(["app/main"], function(app){
-					app.start();
+				return new WinJS.Promise(function(complete){
+					require(["app/main"], function(app){
+						app.start().then(function(){
+							complete();
+						});
+					});
 				});
 				/*if (nav.location) {
 					nav.history.current.initialPlaceholder = true;

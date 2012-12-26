@@ -1,0 +1,83 @@
+﻿#top-bar {
+	height: 100px;
+}
+	#top-bar .win-backbutton:active:hover {
+		color: #0ff;
+	}
+
+.win-appbar header {
+	display: -ms-grid;
+
+	-ms-grid-columns: 100px 1fr;
+	-ms-grid-rows: 1fr;
+	height: 100%;
+	width: 100%;
+	
+}
+#top-bar.win-appbar header .win-backbutton {
+		margin-left: 39px;
+		margin-top: 29px;
+	}
+
+#top-bar.win-appbar header .win-backbutton:disabled {
+	background-size:57px 57px;
+	height:57px;
+	width:57px;
+	background: url('/img/logo57.png') no-repeat center;
+	visibility: visible;
+	content: "";
+	margin-top: 19px;
+}
+
+#top-bar.win-appbar header .win-backbutton:disabled:before {
+	content: "";
+}
+
+
+#top-bar.win-appbar header .title-area {
+		-ms-grid-column: 2;
+		margin-top: 14px;
+	}
+		#top-bar.win-appbar header .title-area h1.win-type-xx-large {
+			display: inline;
+			height: 40pt;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			width: calc(100% - 20px);
+		}
+
+
+
+@media screen and (-ms-view-state: snapped) {
+	#top-bar {
+		height: 60px;
+	}
+
+		#top-bar header[role=banner] {
+			-ms-grid-columns: auto 1fr;
+			margin-left: 15px;
+			margin-right: 15px;
+		}
+
+			#top-bar header[role=banner] .win-backbutton {
+				-ms-grid-column: 1;
+				margin-bottom: 0;
+				margin-left: 5px;
+				margin-right: 5px;
+				margin-top: 10px;
+			}
+
+			#top-bar header[role=banner] .win-backbutton:disabled {
+				display: none;
+			}
+
+			#top-bar header[role=banner] .title-area {
+				-ms-grid-column: 2;
+				margin-bottom: 0;
+				margin-left: 5px;
+				margin-right: 5px;
+				margin-top: 8px;
+			}
+}
+

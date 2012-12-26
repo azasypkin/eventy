@@ -1,8 +1,9 @@
 define(function(){
 	"use strict";
 
-	return WinJS.Class.define(function(config){
+	return WinJS.Class.define(function(config, win){
 		this._config = config;
+		this._win = win;
 	}, {
 
 		view: null,

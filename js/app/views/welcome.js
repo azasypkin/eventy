@@ -5,11 +5,15 @@ define(["app/views/base"],function(BaseView){
 		BaseView.prototype.constructor.apply(this, arguments);
 	}, {
 
-		view: "/views/welcome.html",
+		view: "/html/views/welcome/main.html",
 		container: document.getElementById("content"),
 
 		render: function(){
-			return BaseView.prototype.render.apply(this, arguments);
+			return BaseView.prototype.render.apply(this, arguments).then(function(){
+				document.getElementById("btn-try").addEventListener("click", function(){
+					this._win.showPrompt("Hello", "World");
+				}.bind(this));
+			}.bind(this));
 		}
 	});
 });

@@ -54,17 +54,32 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Include="css\default.css" />
-    <Content Include="index.html" />
-    <Content Include="views\welcome.html" />
+    <Content Include="css\common.css" />
+    <Content Include="css\views\shared\top-bar.css" />
+    <Content Include="css\views\welcome\main.css" />
+    <Content Include="html\index.html" />
+    <Content Include="html\views\shared\top-bar.html" />
+    <Content Include="html\views\welcome\main.html" />
+    <Content Include="img\badge.png" />
+    <Content Include="img\branding.png" />
+    <Content Include="img\favicon.ico" />
+    <Content Include="img\logo.png" />
+    <Content Include="img\logo114.png" />
+    <Content Include="img\logo32.png" />
+    <Content Include="img\logo57.png" />
+    <Content Include="img\logo72.png" />
+    <Content Include="img\smalllogo.png" />
+    <Content Include="img\small_logo.png" />
+    <Content Include="img\splashscreen.png" />
+    <Content Include="img\storelogo.png" />
+    <Content Include="img\wide_logo.png" />
+    <Content Include="img\wide_logo.scale-100.png" />
+    <Content Include="js\app\utils\win.js" />
     <None Include="Eventy_StoreKey.pfx" />
-    <Content Include="images\logo.png" />
-    <Content Include="images\smalllogo.png" />
-    <Content Include="images\splashscreen.png" />
-    <Content Include="images\storelogo.png" />
     <Content Include="js\app\main.js" />
     <Content Include="js\app\router.js" />
     <Content Include="js\app\views\base.js" />
+    <Content Include="js\app\views\top-bar.js" />
     <Content Include="js\app\views\welcome.js" />
     <Content Include="js\app\config\config.js" />
     <Content Include="js\app\config\localization\local.js" />
@@ -81,13 +96,13 @@
     <Content Include="js\libs\requirejs\require.js" />
     <Content Include="js\navigator.js" />
     <None Include="Package.StoreAssociation.xml" />
-    <Content Include="pages\home\home.css" />
-    <Content Include="pages\home\home.html" />
-    <Content Include="pages\home\home.js" />
     <None Include="Eventy_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="Microsoft.WinJS.1.0, Version=1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="html\views\categories\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
   <!-- To modify your build process, add your task inside one of the targets below then uncomment
