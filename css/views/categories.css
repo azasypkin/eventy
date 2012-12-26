@@ -1,0 +1,7 @@
+.categories-page .win-listview {
+}
+
+	.categories-page .win-listview .win-item {
+		width: 200px;
+		height: 100px;
+	}

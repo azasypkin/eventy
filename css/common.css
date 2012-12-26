@@ -1,4 +1,11 @@
-﻿#content {
+﻿body{
+	background-color: rgb(29, 29, 29);
+	background-image: -ms-linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);
+
+	background-repeat: repeat;
+	background-size:4px 4px;
+}
+#content {
 	height: 100%;
 	width: 100%;
 }

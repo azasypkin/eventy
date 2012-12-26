@@ -1,5 +1,10 @@
 ﻿#top-bar {
 	height: 100px;
+
+	background-color: rgb(29, 29, 29);
+
+	box-shadow:  0 1px 5px 0 rgba(0, 0, 0, .1);
+	transition: background-color 366ms linear;
 }
 	#top-bar .win-backbutton:active:hover {
 		color: #0ff;

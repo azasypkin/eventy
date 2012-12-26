@@ -1,16 +1,34 @@
 define(function(){
 	"use strict";
 
-	return WinJS.Class.define(function(config, win){
+	return WinJS.Class.define(function(_, config, helpers){
+		this._ = _;
 		this._config = config;
-		this._win = win;
+		this._helpers = helpers;
 	}, {
 
 		view: null,
 		container: null,
+		templates: {},
 
 		render: function(){
+
+			//this._preCompileTemplates();
+
 			return this._innerRender(this.view, this.container);
+		},
+
+		_preCompileTemplates: function(){
+			var templateKeys = Object.keys(this.templates),
+				templateKey,
+				i;
+
+			if(templateKeys.length > 0){
+				for(i = 0; i < templateKeys.length; i++){
+					templateKey = templateKeys[i];
+					this.templates[templateKey] = this._helpers.template.getTemplate(this.templates[templateKey]);
+				}
+			}
 		},
 
 		_innerRender: function (path, container) {

@@ -11,7 +11,7 @@ define(["app/views/base"],function(BaseView){
 		render: function(){
 			return BaseView.prototype.render.apply(this, arguments).then(function(){
 				document.getElementById("btn-try").addEventListener("click", function(){
-					this._win.showPrompt("Hello", "World");
+					WinJS.Navigation.navigate("categories");
 				}.bind(this));
 			}.bind(this));
 		}
