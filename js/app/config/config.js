@@ -202,7 +202,7 @@ define([
 		eventsPerPage: 20,
 
 		state: {
-			storageKey: "ehm_state.json"
+			storageKey: "eventy_state.json"
 		},
 		/*tiles: {
 			maxQueueLength: 5,

@@ -1,9 +1,10 @@
 define(function(){
 	"use strict";
 
-	return WinJS.Class.define(function(_, config, helpers){
+	return WinJS.Class.define(function(_, config, state, helpers){
 		this._ = _;
 		this._config = config;
+		this._state = state;
 		this._helpers = helpers;
 	}, {
 
