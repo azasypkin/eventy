@@ -157,8 +157,7 @@ define([
 		},
 
 		_convertToEvent: function (jsonEvent, request) {
-			var _this = this,
-				event = new Event({
+			var event = new Event({
 					id: jsonEvent.id,
 					title: jsonEvent.title,
 					url: jsonEvent.url,
@@ -177,13 +176,20 @@ define([
 			if (jsonEvent.category) {
 				var categories = jsonEvent.category.trim().split(',');
 				if (categories.length > 0) {
-					_.each(categories, function () {
-						var mappedCategory = _this._reverseCategoriesIndex[this];
-						event.categories.push({
-							id: mappedCategory,
-							requestedBy: request.category === mappedCategory
-						});
-					});
+					_.each(categories, function (categoryId) {
+						var mappedCategory = this._reverseCategoriesIndex[categoryId],
+							category = {
+								id: mappedCategory,
+								requestedBy: request.category.indexOf(mappedCategory) >= 0
+							};
+						// category by which item was requested should be in the beginning
+						if(category.requestedBy){
+							event.categories.unshift(category);
+						} else {
+							event.categories.push(category);
+						}
+						event.categories.push();
+					}.bind(this));
 				}
 			}
 

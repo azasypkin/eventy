@@ -1,7 +1,8 @@
 .home-page .win-listview {
+	height: 85%;
 }
 
 	.home-page .win-listview .win-item {
 		width: 250px;
-		height: 150px;
+		height: 200px;
 	}

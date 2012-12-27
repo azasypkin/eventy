@@ -6,6 +6,11 @@ define(function(){
 		this._config = config;
 		this._state = state;
 		this._helpers = helpers;
+
+		this._onRoute = this._onRoute.bind(this);
+
+		this._helpers.dispatcher.addEventListener("route", this._onRoute);
+
 	}, {
 
 		view: null,
@@ -48,7 +53,10 @@ define(function(){
 		},
 
 		unload: function(){
+			this._helpers.dispatcher.removeEventListener("route", this._onRoute);
+		},
 
+		_onRoute: function(){
 		}
 	});
 });

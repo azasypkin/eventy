@@ -4,7 +4,7 @@ define(["app/views/base"],function(BaseView){
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.prototype.constructor.apply(this, arguments);
 
-		this.onSaveButtonClicked = this.onSaveButtonClicked.bind(this);
+		this._onSaveButtonClicked = this._onSaveButtonClicked.bind(this);
 	}, {
 
 		view: "/html/views/categories/main.html",
@@ -14,6 +14,8 @@ define(["app/views/base"],function(BaseView){
 		},
 
 		_wc: null,
+
+		_isFirstTimeSelection: false,
 
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
@@ -51,18 +53,26 @@ define(["app/views/base"],function(BaseView){
 			this._wc.selection.set(selection);
 		},
 
-		render: function(){
-			this._helpers.dispatcher.dispatchEvent("titleUpdateRequested", {
-				title: "Choose your categories"
+		render: function(isFirstTimeSelection){
+
+			if(isFirstTimeSelection === true){
+				this._isFirstTimeSelection = isFirstTimeSelection;
+			}
+
+			this._helpers.dispatcher.dispatchEvent("updateBarState", {
+				type: "top",
+				title: "Choose your categories",
+				enabled: true,
+				show: true
 			});
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(this._createListView.bind(this)).then(function(){
 					document.getElementById("btn-save-categories")
-						.addEventListener("click", this.onSaveButtonClicked);
+						.addEventListener("click", this._onSaveButtonClicked);
 			}.bind(this));
 		},
 
-		onSaveButtonClicked: function(){
+		_onSaveButtonClicked: function(){
 			if(this._wc.selection.count() === 0){
 				this._helpers.win.showPrompt(
 					"Please, select event categories",
@@ -74,7 +84,9 @@ define(["app/views/base"],function(BaseView){
 						return item.data.id;
 					}));
 
-					WinJS.Navigation.navigate("home");
+					WinJS.Navigation.navigate("home", {
+						keepHistory: this._isFirstTimeSelection === false
+					});
 				}.bind(this));
 			}
 		}

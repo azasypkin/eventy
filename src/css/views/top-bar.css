@@ -1,5 +1,5 @@
 ﻿#top-bar {
-	height: 100px;
+	height: 80px;
 
 	background-color: rgb(29, 29, 29);
 
@@ -21,17 +21,17 @@
 }
 #top-bar.win-appbar header .win-backbutton {
 		margin-left: 39px;
-		margin-top: 29px;
+		margin-top: 19px;
 	}
 
 #top-bar.win-appbar header .win-backbutton:disabled {
-	background-size:57px 57px;
-	height:57px;
-	width:57px;
-	background: url('/img/logo57.png') no-repeat center;
+	background-size:43px 43px;
+	height:43px;
+	width:43px;
+	background: url('/img/badge-logo.scale-180.png') no-repeat center;
 	visibility: visible;
 	content: "";
-	margin-top: 19px;
+	opacity: 0.3;
 }
 
 #top-bar.win-appbar header .win-backbutton:disabled:before {
@@ -41,7 +41,7 @@
 
 #top-bar.win-appbar header .title-area {
 		-ms-grid-column: 2;
-		margin-top: 14px;
+		margin-top: 4px;
 	}
 		#top-bar.win-appbar header .title-area h1.win-type-xx-large {
 			display: inline;

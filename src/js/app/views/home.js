@@ -50,6 +50,7 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 
 				data.push({
 					id: event.id,
+					background_color: this._config.dictionaries.categories[event.categories[0].id].color,
 					data: event
 				});
 			}
@@ -61,9 +62,16 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 			});
 		},
 
-		render: function(){
-			this._helpers.dispatcher.dispatchEvent("titleUpdateRequested", {
-				title: "Home"
+		render: function () {
+			this._helpers.dispatcher.dispatchEvent("updateBarState", {
+				type: "top",
+				title: "Home",
+				enabled: true,
+				show: true
+			});
+			this._helpers.dispatcher.dispatchEvent("updateBarState", {
+				type: "bottom",
+				enabled: true
 			});
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(function(){

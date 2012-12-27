@@ -57,6 +57,8 @@
 				options = {
 					trigger: true
 				};
+			} else if(typeof options.trigger === "undefined"){
+				options.trigger = true;
 			}
 
 			// modifying history depending on input parameters
@@ -116,7 +118,8 @@
 					var args = extractParameters(route, fragment);
 
 					this.dispatchEvent("route", {
-						parameters: args
+						parameters: args,
+						route: fragment
 					});
 
 					return callback ? callback.apply(this, args) : WinJS.Promise.wrap();

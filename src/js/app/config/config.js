@@ -28,19 +28,19 @@ define([
 					conventions: "conventions",
 					movies: "movies",
 					conferences: "conferences",
-					festivals: "fairs",
+					fairs: "fairs",
 					entertainment: "entertainment",
 					performances: "performances",
 					social: "social",
 					endurance: "endurance",
 					recreation: "recreation",
 					travel:"travel",
-					education: "seminars",
+					seminars: "seminars",
 					reunions: "reunions",
-					commercial: "sales",
+					sales: "sales",
 					comedy: "comedy",
 					religion: "religion",
-					community: "meetings",
+					meetings: "meetings",
 					food: "food",
 					fundraisers: "fundraisers",
 					other: "other"
@@ -114,9 +114,9 @@ define([
 					color: "#9c891f",
 					name: labels["Proxy.Categories.Conference"]
 				},
-				festivals: {
+				fairs: {
 					color: "#ffa326",
-					name: labels["Proxy.Categories.Festivals_Parades"]
+					name: labels["Proxy.Categories.Fairs"]
 				},
 				entertainment: {
 					color: "#e88600",
@@ -128,7 +128,7 @@ define([
 				},
 				social: {
 					color: "#6d197a",
-					name: labels["Proxy.Categories.Singles_Social"]
+					name: labels["Proxy.Categories.Social"]
 				},
 				endurance: {
 					color: "#fe7f76",
@@ -142,29 +142,29 @@ define([
 					color: "#dd3327",
 					name: labels["Proxy.Categories.Travel"]
 				},
-				education: {
+				seminars: {
 					color: "#421f9c",
-					name: labels["Proxy.Categories.Learning_Education"]
+					name: labels["Proxy.Categories.Seminars"]
 				},
 				reunions:{
 					color: "#2f166f",
 					name: labels["Proxy.Categories.Schools_Alumni"]
 				},
-				commercial: {
+				sales: {
 					color: "#00599d",
 					name: labels["Proxy.Categories.Business"]
 				},
 				comedy: {
 					color: "#975500",
-					name: labels["Proxy.Categories.Attractions"]
+					name: labels["Proxy.Categories.Comedy"]
 				},
 				religion:{
 					color: "#1f689c",
 					name: labels["Proxy.Categories.Religion_Spirituality"]
 				},
-				community: {
+				meetings: {
 					color: "#3b5998",
-					name: labels["Proxy.Categories.Community"]
+					name: labels["Proxy.Categories.Meetings"]
 				},
 				food: {
 					color: "#6f7a56",

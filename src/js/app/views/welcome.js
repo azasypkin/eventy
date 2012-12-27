@@ -12,7 +12,9 @@ define(["app/views/base"],function(BaseView){
 			return BaseView.prototype.render.apply(this, arguments).then(function(){
 				document.getElementById("btn-try").addEventListener("click", function(){
 					var categories = this._state.user.get("categories");
-					WinJS.Navigation.navigate(categories && categories.length > 0 ? "home":"categories");
+					WinJS.Navigation.navigate(categories && categories.length > 0 ? "home":"firstTime_categories", {
+						keepHistory: false
+					});
 				}.bind(this));
 			}.bind(this));
 		}
