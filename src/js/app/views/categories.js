@@ -71,7 +71,7 @@ define(["app/views/base"],function(BaseView){
 			} else {
 				this._wc.selection.getItems().then(function (items) {
 					this._state.user.set("categories", this._.map(items, function(item){
-						return item.data.key;
+						return item.data.id;
 					}));
 
 					WinJS.Navigation.navigate("home");
