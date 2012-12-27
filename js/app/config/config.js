@@ -81,6 +81,14 @@ define([
 					"Pacific/Auckland": 720,
 					"Africa/Harare": 120
 				}
+			},
+
+			virtualearth: {
+				url: "http://dev.virtualearth.net/REST/v1/Locations/",
+				appKey: "Ar92F19O81BpjUSvAxUWAsjcCZV1TvsK4qRp2XCDO2BWpt9y8rCmCdp3tKqkWEQ5",
+				dataType: "json",
+				// in milliseconds
+				timeout: 10000
 			}
 		},
 

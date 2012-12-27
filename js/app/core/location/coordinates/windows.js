@@ -1,42 +1,33 @@
-﻿define(["configuration/config", "libs/base"], function(config) {
+﻿define(["config", "app/core/errors/base_error"], function(config, BaseError) {
+	"use strict";
 
-    var labels = config.local.labels;
+	return WinJS.Class.define(function(){
+		this._geolocator = Windows.Devices.Geolocation.Geolocator();
+	},{
 
-    return Base.extend({
+		getCoordinates: function () {
+			return this._geolocator.getGeopositionAsync().then(function (position) {
+				return {
+					lat: position.coordinate.latitude,
+					lon: position.coordinate.longitude
+				};
+			}, function (e) {
+				return WinJS.Promise.wrapError(
+					new BaseError(
+						this._getErrorStatusMessage(this._geolocator.locationStatus),
+						BaseError.Codes.LOCATION_ERROR,
+						e
+					)
+				);
+			}.bind(this));
+		},
 
-        constructor: function () {
-            this._geolocator = Windows.Devices.Geolocation.Geolocator();
-        },
-
-        getCoordinates: function () {
-
-            var dfd = $.Deferred(),
-                self = this;
-
-            this._geolocator.getGeopositionAsync().done(function (position) {
-                dfd.resolve({
-                    lat: position.coordinate.latitude,
-                    lon: position.coordinate.longitude
-                });
-            }, function (error) {
-                dfd.reject( {
-                    // 1 means that detection failed at browser\os level
-                    status: 1,
-                    message: self._getErrorStatusMessage(self._geolocator.locationStatus),
-                    origin: error
-                });
-            });
-
-            return dfd.promise();
-        },
-
-        _getErrorStatusMessage: function (status) {
-            switch (status) {
-                case Windows.Devices.Geolocation.PositionStatus.disabled:
-                    return labels["ErrorMessages.YourLocationCannotBeFoundChangePermissions"];
-                default:
-                    return labels["ErrorMessages.YourLocationCannotBeFound"];
-            }
-        }
-    });
+		_getErrorStatusMessage: function (status) {
+			if (status === Windows.Devices.Geolocation.PositionStatus.disabled) {
+				return config.local.labels["ErrorMessages.YourLocationCannotBeFoundChangePermissions"];
+			} else {
+				return config.local.labels["ErrorMessages.YourLocationCannotBeFound"];
+			}
+		}
+	});
 });

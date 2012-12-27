@@ -1,41 +1,28 @@
-define([ "configuration/config", "app/proxies/virtualearth", "libs/base" ], function(config, Proxy) {
+define([ "config", "app/proxies/virtualearth", "app/core/errors/base_error"], function(config, Proxy, BaseError) {
+	"use strict";
 
-    var labels = config.local.labels;
+	var labels = config.local.labels;
 
-    return Base.extend({
-        constructor: function() {
-            this._innerResolver = new Proxy();
-        },
-
-        resolve: function(latitude, longitude) {
-
-            var deferred = $.Deferred();
-
-            this._innerResolver.resolveLocation({ lat: latitude, lon: longitude }).then(function (geo) {
-                if (geo && geo.city){
-                    deferred.resolve({
-                        city: geo.city
-                    });
-                }
-                else {
-                    deferred.reject( {
-                        // 2 means that detection failed at name resolving level
-                        status: 2,
-                        message: labels["ErrorMessages.YourLocationCannotBeFound"]
-                    });
-                }
-            }, function (error) {
-                deferred.reject( {
-                    // 2 means that detection failed at name resolving level
-                    status: 2,
-                    // this message should be logged rather than being displayed to user
-                    //message: "Geocoder failed due to: " + error,
-                    message: labels["ErrorMessages.YourLocationCannotBeFound"],
-                    origin: error
-                });
-            });
-
-            return deferred.promise();
-        }
-    });
+	return WinJS.Class.define(function(){
+		this._innerResolver = new Proxy();
+	},{
+		resolve: function(latitude, longitude) {
+			return this._innerResolver.resolveLocation({ lat: latitude, lon: longitude }).then(function (geo) {
+				if (geo && geo.city){
+					return {
+						city: geo.city
+					};
+				}
+				else {
+					return WinJS.Promise.wrapError(
+						new BaseError(labels["ErrorMessages.YourLocationCannotBeFound"], BaseError.Codes.LOCATION_ERROR)
+					);
+				}
+			}, function (e) {
+				return WinJS.Promise.wrapError(
+					new BaseError(labels["ErrorMessages.YourLocationCannotBeFound"], BaseError.Codes.LOCATION_ERROR, e)
+				);
+			});
+		}
+	});
 });

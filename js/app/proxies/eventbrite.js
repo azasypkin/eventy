@@ -53,10 +53,10 @@ define([
 			if(!parameters.app_key){
 				parameters.app_key = this._appKey;
 			}
-			if(parameters.categories && parameters.categories.length > 0){
-				parameters.categories = _.map(parameters.categories, function(category){
+			if(parameters.category && parameters.category.length > 0){
+				parameters.category = _.map(parameters.category, function(category){
 					return this._config.categories[category];
-				});
+				}.bind(this));
 			}
 			return parameters;
 		},

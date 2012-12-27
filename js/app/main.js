@@ -7,11 +7,15 @@ define([
 	"app/event-dispatcher",
 	"app/core/storage/adapters/roaming",
 	"app/core/storage/manager",
+	"app/core/location/coordinates/windows",
+	"app/core/location/resolvers/virtualearth",
+	"app/core/location/manager",
 	"app/models/user",
 	"app/views/top-bar",
 	"app/views/welcome",
-	"app/views/categories"
-], function (_, config, winUtils, templateUtils, WinRouter, dispatcher, StorageAdapter, StorageManager, User, TopBarView, WelcomePage, CategoriesPage) {
+	"app/views/categories",
+	"app/views/home"
+], function (_, config, winUtils, templateUtils, WinRouter, dispatcher, StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, User, TopBarView, WelcomePage, CategoriesPage, HomePage) {
 	"use strict";
 
 	var state = {
@@ -22,7 +26,8 @@ define([
 		win: winUtils,
 		template: templateUtils,
 		dispatcher: dispatcher,
-		storage: new StorageManager(new StorageAdapter(), config.state.storageKey)
+		storage: new StorageManager(new StorageAdapter(), config.state.storageKey),
+		location: new LocationManager(new CoordinatesDetector(), new LocationResolver())
 	};
 
 	state.user.addEventListener("changed", function(){
@@ -48,7 +53,8 @@ define([
 
 		routes: {
 			"welcome": "welcome",
-			"categories": "categories"
+			"categories": "categories",
+			"home": "home"
 		},
 
 		welcome: function(){
@@ -57,6 +63,10 @@ define([
 
 		categories: function(){
 			return this._navigateTo(CategoriesPage);
+		},
+
+		home: function(){
+			return this._navigateTo(HomePage);
 		}
 	}))();
 
@@ -72,7 +82,7 @@ define([
 						state.user.initialize(userData);
 					}
 
-					return WinJS.Navigation.navigate("welcome");
+					return WinJS.Navigation.navigate(state.user.isAuthenticated() ? "home" : "welcome");
 				});
 		}
 	};

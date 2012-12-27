@@ -1,26 +1,20 @@
-﻿define([
-	"configuration/config",
-    "libs/base"
-],	function (config) {
-		return Base.extend({
+﻿define(function () {
+	"use strict";
 
-			constructor: function (coordinatesDetector, resolver) {
-				this._detector = coordinatesDetector;
-                this._resolver = resolver;
-			},
-
-			getLocation: function(){
-                var self = this;
-                return this._detector.getCoordinates().pipe(function(coordinates){
-                    return self._resolver.resolve(coordinates.lat, coordinates.lon).pipe(function(result){
-                        return {
-                            lat: coordinates.lat,
-                            lon: coordinates.lon,
-                            city: result.city
-                        }
-                    });
-                });
-            }
-		});
-	}
-);
+	return WinJS.Class.define(function(coordinatesDetector, resolver){
+		this._detector = coordinatesDetector;
+		this._resolver = resolver;
+	},{
+		getLocation: function(){
+			return this._detector.getCoordinates().then(function(coordinates){
+				return this._resolver.resolve(coordinates.lat, coordinates.lon).then(function(result){
+					return {
+						lat: coordinates.lat,
+						lon: coordinates.lon,
+						city: result.city
+					};
+				});
+			}.bind(this));
+		}
+	});
+});

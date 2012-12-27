@@ -23,7 +23,7 @@ define(["app/views/base"],function(BaseView){
 
 		_createListView: function(container){
 			var categoryKeys = Object.keys(this._config.dictionaries.categories),
-				currentUserCategories = this._state.user.get("categories"),
+				currentUserCategories = this._state.user.get("categories") || [],
 				data = [],
 				selection = [],
 				categoryKey,
@@ -33,7 +33,7 @@ define(["app/views/base"],function(BaseView){
 				categoryKey = categoryKeys[i];
 
 				data.push({
-					key: categoryKey,
+					id: categoryKey,
 					data: this._config.dictionaries.categories[categoryKey]
 				});
 
@@ -42,7 +42,7 @@ define(["app/views/base"],function(BaseView){
 				}
 			}
 
-			this._wc = new WinJS.UI.ListView(document.getElementById("categories-list-view"), {
+			this._wc = new WinJS.UI.ListView(document.getElementById("category-list-view"), {
 				layout: {type: WinJS.UI.GridLayout},
 				itemDataSource: (new WinJS.Binding.List(data)).dataSource,
 				itemTemplate: this._itemTemplate.bind(this)
@@ -73,6 +73,8 @@ define(["app/views/base"],function(BaseView){
 					this._state.user.set("categories", this._.map(items, function(item){
 						return item.data.key;
 					}));
+
+					WinJS.Navigation.navigate("home");
 				}.bind(this));
 			}
 		}
