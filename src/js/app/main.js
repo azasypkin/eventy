@@ -40,6 +40,10 @@ define([
 
 		_navigateTo: function(PageClass){
 
+			var progress = document.getElementById("progress-indicator-holder");
+
+			progress.style.visibility = "visible";
+
 			this._navigationPromise.cancel();
 
 			if (this._page) {
@@ -48,7 +52,10 @@ define([
 
 			this._page = new PageClass(_, config, state, toolBelt);
 
-			return this._navigationPromise = this._page.render.apply(this._page, Array.prototype.slice.call(arguments, 1));
+			return this._navigationPromise = this._page.render.apply(this._page, Array.prototype.slice.call(arguments, 1))
+				.then(function(){
+					progress.style.visibility = "hidden";
+				});
 		},
 
 		routes: {

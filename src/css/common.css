@@ -24,3 +24,22 @@
 		height: 100%;
 		width: 100%;
 	}
+
+	#progress-indicator-holder{
+		position: absolute;
+		left: 0;
+		top: 0;
+
+		width: 100%;
+		height: 100%;
+
+		z-index: 1000;
+
+		display: -ms-flexbox;
+		-ms-flex-align: center;
+		-ms-flex-pack: center;
+	}
+
+		#progress-indicator-holder #progress-indicator {
+
+		}
