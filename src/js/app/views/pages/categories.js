@@ -13,7 +13,7 @@ define(["app/views/base"],function(BaseView){
 			item: "/html/views/pages/categories/item.html"
 		},
 
-		_wc: null,
+		wc: null,
 
 		_isFirstTimeSelection: false,
 
@@ -56,13 +56,13 @@ define(["app/views/base"],function(BaseView){
 				}
 			}
 
-			this._wc = new WinJS.UI.ListView(document.getElementById("category-list-view"), {
+			this.wc = new WinJS.UI.ListView(document.getElementById("category-list-view"), {
 				layout: {type: WinJS.UI.GridLayout},
 				itemDataSource: (new WinJS.Binding.List(data)).dataSource,
 				itemTemplate: this._itemTemplate.bind(this)
 			});
 
-			this._wc.selection.set(selection);
+			this.wc.selection.set(selection);
 		},
 
 		render: function(isFirstTimeSelection){
@@ -85,13 +85,13 @@ define(["app/views/base"],function(BaseView){
 		},
 
 		_onSaveButtonClicked: function(){
-			if(this._wc.selection.count() === 0){
+			if(this.wc.selection.count() === 0){
 				this._helpers.win.showPrompt(
 					"Please, select event categories",
 					"Please, select at least one event category"
 				);
 			} else {
-				this._wc.selection.getItems().then(function (items) {
+				this.wc.selection.getItems().then(function (items) {
 					this._state.user.set("categories", this._.map(items, function(item){
 						return item.data.id;
 					}));

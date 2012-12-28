@@ -32,10 +32,24 @@ define(["app/views/base"],function(BaseView){
 				// if type isn't passed that means that even related to both top and bottom bars
 				if(!e.detail.type || (e.detail.type && e.detail.type === this.type)){
 
-					if(e.detail.enabled === true && this.wc.disabled){
+					if (e.detail.showCommands && e.detail.showCommands.length > 0) {
+						this.wc.showCommands(e.detail.showCommands);
+					}
+
+					if (e.detail.hideCommands && e.detail.hideCommands.length > 0) {
+						this.wc.hideCommands(e.detail.hideCommands);
+					}
+
+					if (e.detail.enabled === true && this.wc.disabled) {
 						this.wc.disabled = false;
-					} else if(e.detail.enabled === false && !this.wc.disabled){
+					} else if (e.detail.enabled === false && !this.wc.disabled) {
 						this.wc.disabled = true;
+					}
+
+					if(e.detail.sticky === true && !this.wc.sticky){
+						this.wc.sticky = true;
+					} else if(e.detail.sticky === false && this.wc.sticky){
+						this.wc.sticky = false;
 					}
 
 					if(e.detail.show === true && this.wc.hidden){
@@ -43,6 +57,7 @@ define(["app/views/base"],function(BaseView){
 					} else if(e.detail.show === false && !this.wc.hidden){
 						this.wc.hide();
 					}
+
 				}
 			}
 		}

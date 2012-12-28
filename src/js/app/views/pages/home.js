@@ -4,6 +4,8 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.prototype.constructor.apply(this, arguments);
 
+		this._onSelectionChanged = this._onSelectionChanged.bind(this);
+
 		this._proxy = new Proxy();
 	}, {
 
@@ -13,7 +15,7 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 			item: "/html/views/pages/home/item.html"
 		},
 
-		_wc: null,
+		wc: null,
 
 		_groups: {
 			"nearby": {
@@ -114,7 +116,7 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 					return this._groups[leftKey].order - this._groups[rightKey].order;
 				}.bind(this));
 
-			this._wc = new WinJS.UI.ListView(document.getElementById("event-list-view"), {
+			this.wc = new WinJS.UI.ListView(document.getElementById("event-list-view"), {
 				layout: {type: WinJS.UI.GridLayout},
 				itemDataSource: groupedItemsList.dataSource,
 				groupDataSource: groupedItemsList.groups.dataSource,
@@ -135,7 +137,10 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 			});
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(this._loadEvents.bind(this))
-				.then(this._createListView.bind(this));
+				.then(this._createListView.bind(this))
+				.then(function(){
+					this.wc.addEventListener("selectionchanged", this._onSelectionChanged);
+				}.bind(this));
 		},
 
 		_onItemsReady: function(){
@@ -161,6 +166,26 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 
 			this._itemsLoadCompleteCallback = null;
 			this._itemsLoadErrorCallback = null;
+		},
+
+		_onSelectionChanged: function (e) {
+			this.wc.selection.getItems().then(function(items){
+				if(items.length > 0){
+					this._state.dispatcher.dispatchEvent("updateBarState", {
+						type: "bottom",
+						showCommands: ["cmdExplore"],
+						show: true,
+						sticky: true
+					});
+				} else {
+					this._state.dispatcher.dispatchEvent("updateBarState", {
+						type: "bottom",
+						hideCommands: ["cmdExplore"],
+						show: false,
+						sticky: false
+					});
+				}
+			}.bind(this));
 		}
 	});
 });
