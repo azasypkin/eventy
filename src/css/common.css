@@ -7,6 +7,16 @@
 
 	font-family: 'Segoe UI';
 }
+
+button {
+	font-size: 120%;
+	background-color: #ec5000;
+	color: #fff;
+	margin: 10px;
+	border-radius: 10px;
+	border: none;
+}
+
 #content {
 	height: 100%;
 	width: 100%;

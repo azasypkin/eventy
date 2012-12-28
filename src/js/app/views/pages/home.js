@@ -15,50 +15,109 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 
 		_wc: null,
 
+		_groups: {
+			"nearby": {
+				parameters: {
+					within: 60,
+					date: "this_month",
+					sort_by: "city"
+				},
+				items: null,
+				name: "Around me",
+				order: 0
+			},
+			"this_week": {
+				parameters: {
+					within: 120,
+					date: "this_week",
+					sort_by: "date"
+				},
+				items: null,
+				name: "This week",
+				order: 1
+			}
+		},
+
+		_stillLoading: 0,
+		_itemsLoadCompleteCallback: null,
+		_itemsLoadErrorCallback: null,
+
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
 				return this._helpers.template.parseTemplateToDomNode(this.templates.item, item.data);
 			}.bind(this));
 		},
 
+		_loadItems: function(groupKey, parameters){
+			return this._proxy.searchEvents(parameters).then(function(events){
+				this._groups[groupKey].items = events;
+				if(--this._stillLoading === 0){
+					this._onItemsReady();
+				}
+			}.bind(this), function(e){
+				if(--this._stillLoading === 0){
+					this._onItemsReady();
+				}
+			}.bind(this));
+		},
+
+		_createGroupItem: function(groupKey, group, item){
+			return {
+				groupKey: groupKey,
+				key: groupKey + "_" + item.id,
+				background_color: this._config.dictionaries.categories[item.categories[0].id].color,
+				data: item
+			};
+		},
+
 		_loadEvents: function(){
-			// prepare parameters
-			var parameters = {
-					date: "this_week",
-					max: 50
-				},
-				userCategories = this._state.user.get("categories"),
-				location = this._state.user.get("location");
+			return new WinJS.Promise(function(complete, error){
+				// prepare parameters
+				var parameters = {
+						max: 10
+					},
+					userCategories = this._state.user.get("categories"),
+					location = this._state.user.get("location"),
+					groupKeys = Object.keys(this._groups),
+					groupKey,
+					i;
 
-			if(userCategories && userCategories.length > 0){
-				parameters.category = userCategories;
-			}
+				this._itemsLoadCompleteCallback = complete;
+				this._itemsLoadErrorCallback = error;
 
-			if(location && location.city){
-				parameters.city = location.city;
-			}
+				if(userCategories && userCategories.length > 0){
+					parameters.category = userCategories;
+				}
 
-			return this._proxy.searchEvents(parameters);
+				if(location && location.city){
+					parameters.city = location.city;
+				}
+
+				this._stillLoading = groupKeys.length;
+
+				for(i = 0; i < groupKeys.length; i++){
+					groupKey = groupKeys[i];
+
+					// load items nearby
+					this._loadItems(groupKey, this._.extend({}, parameters, this._groups[groupKey].parameters));
+				}
+			}.bind(this));
 		},
 
 		_createListView: function(events){
-			var data = [],
-				event,
-				i;
-
-			for(i = 0; i < events.length; i++){
-				event = events[i];
-
-				data.push({
-					id: event.id,
-					background_color: this._config.dictionaries.categories[event.categories[0].id].color,
-					data: event
-				});
-			}
+			var itemsList = new WinJS.Binding.List(events),
+				groupedItemsList = itemsList.createGrouped(function(item){
+					return item.groupKey;
+				}, function(item){
+					return this._groups[item.groupKey].name;
+				}.bind(this), function(leftKey, rightKey){
+					return this._groups[leftKey].order - this._groups[rightKey].order;
+				}.bind(this));
 
 			this._wc = new WinJS.UI.ListView(document.getElementById("event-list-view"), {
 				layout: {type: WinJS.UI.GridLayout},
-				itemDataSource: (new WinJS.Binding.List(data)).dataSource,
+				itemDataSource: groupedItemsList.dataSource,
+				groupDataSource: groupedItemsList.groups.dataSource,
 				itemTemplate: this._itemTemplate.bind(this)
 			});
 		},
@@ -77,6 +136,31 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(this._loadEvents.bind(this))
 				.then(this._createListView.bind(this));
+		},
+
+		_onItemsReady: function(){
+			// merge all groups into one array
+			var groupKeys = Object.keys(this._groups),
+				itemsMerged = [],
+				groupKey,
+				group,
+				i,
+				j;
+
+			for(i = 0; i < groupKeys.length; i++){
+				groupKey = groupKeys[i];
+				group = this._groups[groupKey];
+				if(group.items && group.items.length > 0){
+					for(j = 0; j < group.items.length; j++){
+						itemsMerged.push(this._createGroupItem(groupKey, group, group.items[j]));
+					}
+				}
+			}
+
+			this._itemsLoadCompleteCallback(itemsMerged);
+
+			this._itemsLoadCompleteCallback = null;
+			this._itemsLoadErrorCallback = null;
 		}
 	});
 });

@@ -162,6 +162,7 @@ define([
 					title: jsonEvent.title,
 					url: jsonEvent.url,
 					date: this._getDate(jsonEvent),
+					thumbnail: jsonEvent.logo,
 					categories: [],
 					description: jsonEvent.description,
 					city: jsonEvent.venue ? jsonEvent.venue.city : "",

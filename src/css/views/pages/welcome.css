@@ -45,18 +45,7 @@
 		.welcome-page .welcome-prompt .signin-controls button{
 			width: 200px;
 			height: 40px;
-			font-size: 120%;
-			background-color: #ec5000;
-			color: #fff;
-			margin: 10px;
-			border-radius: 10px;
-			border: none;
 		}
-
-			.welcome-page .welcome-prompt .signin-controls button:hover {
-				background-color: #ff6318;
-			}
-
 
 
 @media screen and (-ms-view-state: fullscreen-portrait) {
