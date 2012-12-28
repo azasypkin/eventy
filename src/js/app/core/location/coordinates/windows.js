@@ -15,7 +15,7 @@
 				return WinJS.Promise.wrapError(
 					new BaseError(
 						this._getErrorStatusMessage(this._geolocator.locationStatus),
-						BaseError.Codes.LOCATION_ERROR,
+						BaseError.Codes.LOCATION_REQUEST_FAILED,
 						e
 					)
 				);

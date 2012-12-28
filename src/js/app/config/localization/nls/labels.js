@@ -26,7 +26,7 @@ define({
 		"Proxy.Categories.Support": "Health & Wellness",
 		"Proxy.Categories.Books": "Literary & Books",
 		"Proxy.Categories.Comedy": "Comedy",
-		"Proxy.Categories.Community": "Networking/Clubs/Associations",
+		"Proxy.Categories.Meetings": "Networking/Clubs/Associations",
 		"Proxy.Categories.Business": "Business/Finance/Sales",
 		"Proxy.Categories.Social": "Social Events/Mixers",
 		"Proxy.Categories.Schools_Alumni": "Schools/Reunions/Alumni",

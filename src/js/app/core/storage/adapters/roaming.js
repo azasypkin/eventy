@@ -7,7 +7,7 @@
 
 		_storageError: function(e){
 			return WinJS.Promise.wrapError(
-				new BaseError("Unexpected storage error.", BaseError.Codes.STORAGE_ERROR, e)
+				new BaseError("Unexpected storage error.", BaseError.Codes.STORAGE_REQUEST_FAILED, e)
 			);
 		},
 

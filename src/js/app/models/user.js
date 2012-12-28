@@ -1,7 +1,8 @@
 ﻿define(function () {
 	"use strict";
 
-	var User = WinJS.Class.define(function(data){
+	var User = WinJS.Class.define(function(authenticator, data){
+		this._authenticator = authenticator;
 		this.initialize(data);
 	}, {
 
@@ -28,6 +29,17 @@
 
 		toJSON: function(){
 			return this._innerData;
+		},
+
+		authenticate: function(){
+			return this._authenticator.authenticate().then(function (token) {
+				if (token) {
+					this.set("token", token);
+					return true;
+				} else {
+					return false;
+				}
+			}.bind(this));
 		}
 	});
 

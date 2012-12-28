@@ -15,12 +15,12 @@ define([ "config", "app/proxies/virtualearth", "app/core/errors/base_error"], fu
 				}
 				else {
 					return WinJS.Promise.wrapError(
-						new BaseError(labels["ErrorMessages.YourLocationCannotBeFound"], BaseError.Codes.LOCATION_ERROR)
+						new BaseError(labels["ErrorMessages.YourLocationCannotBeFound"], BaseError.Codes.LOCATION_REQUEST_FAILED)
 					);
 				}
 			}, function (e) {
 				return WinJS.Promise.wrapError(
-					new BaseError(labels["ErrorMessages.YourLocationCannotBeFound"], BaseError.Codes.LOCATION_ERROR, e)
+					new BaseError(labels["ErrorMessages.YourLocationCannotBeFound"], BaseError.Codes.LOCATION_REQUEST_FAILED, e)
 				);
 			});
 		}

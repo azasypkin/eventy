@@ -6,7 +6,7 @@ define(["app/views/base"],function(BaseView){
 
 		this._onUpdateBarState = this._onUpdateBarState.bind(this);
 
-		this._helpers.dispatcher.addEventListener("updateBarState", this._onUpdateBarState);
+		this._state.dispatcher.addEventListener("updateBarState", this._onUpdateBarState);
 	}, {
 
 		wc: null,
@@ -24,7 +24,7 @@ define(["app/views/base"],function(BaseView){
 		unload: function(){
 			BaseView.prototype.unload.apply(this, arguments);
 
-			this._helpers.dispatcher.removeEventListener("updateBarState", this._onUpdateBarState);
+			this._state.dispatcher.removeEventListener("updateBarState", this._onUpdateBarState);
 		},
 
 		_onUpdateBarState: function(e){

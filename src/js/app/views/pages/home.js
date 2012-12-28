@@ -7,10 +7,10 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 		this._proxy = new Proxy();
 	}, {
 
-		view: "/html/views/home/main.html",
+		view: "/html/views/pages/home/main.html",
 		container: document.getElementById("content"),
 		templates: {
-			item: "/html/views/home/item.html"
+			item: "/html/views/pages/home/item.html"
 		},
 
 		_wc: null,
@@ -21,13 +21,14 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 			}.bind(this));
 		},
 
-		_loadEvents: function(location){
+		_loadEvents: function(){
 			// prepare parameters
 			var parameters = {
 					date: "this_week",
 					max: 50
 				},
-				userCategories = this._state.user.get("categories");
+				userCategories = this._state.user.get("categories"),
+				location = this._state.user.get("location");
 
 			if(userCategories && userCategories.length > 0){
 				parameters.category = userCategories;
@@ -63,24 +64,17 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 		},
 
 		render: function () {
-			this._helpers.dispatcher.dispatchEvent("updateBarState", {
+			this._state.dispatcher.dispatchEvent("updateBarState", {
 				type: "top",
 				title: "Home",
 				enabled: true,
 				show: true
 			});
-			this._helpers.dispatcher.dispatchEvent("updateBarState", {
+			this._state.dispatcher.dispatchEvent("updateBarState", {
 				type: "bottom",
 				enabled: true
 			});
 			return BaseView.prototype.render.apply(this, arguments)
-				.then(function(){
-					return new WinJS.Promise(function(complete){
-						return this._helpers.location.getLocation().then(complete, function(){
-							complete();
-						});
-					}.bind(this));
-				}.bind(this))
 				.then(this._loadEvents.bind(this))
 				.then(this._createListView.bind(this));
 		}

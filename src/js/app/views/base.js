@@ -9,7 +9,7 @@ define(function(){
 
 		this._onRoute = this._onRoute.bind(this);
 
-		this._helpers.dispatcher.addEventListener("route", this._onRoute);
+		this._state.dispatcher.addEventListener("route", this._onRoute);
 
 	}, {
 
@@ -53,7 +53,7 @@ define(function(){
 		},
 
 		unload: function(){
-			this._helpers.dispatcher.removeEventListener("route", this._onRoute);
+			this._state.dispatcher.removeEventListener("route", this._onRoute);
 		},
 
 		_onRoute: function(){

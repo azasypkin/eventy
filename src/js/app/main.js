@@ -10,33 +10,33 @@ define([
 	"app/core/location/coordinates/windows",
 	"app/core/location/resolvers/virtualearth",
 	"app/core/location/manager",
+	"app/core/authentication/eventbrite",
 	"app/models/user",
 	"app/views/bars/top-bar",
 	"app/views/bars/bottom-bar",
-	"app/views/welcome",
-	"app/views/categories",
-	"app/views/home"
-], function (_, config, winUtils, templateUtils, WinRouter, dispatcher, StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, User, TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage) {
+	"app/views/pages/welcome",
+	"app/views/pages/categories",
+	"app/views/pages/home"
+], function (_, config, winUtils, templateUtils, WinRouter, dispatcher, StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager, User, TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage) {
 	"use strict";
 
-	var state = {
-		user: new User()
-	};
-
-	var toolBelt = {
-		win: winUtils,
-		template: templateUtils,
-		dispatcher: dispatcher,
-		storage: new StorageManager(new StorageAdapter(), config.state.storageKey),
-		location: new LocationManager(new CoordinatesDetector(), new LocationResolver())
-	};
+	var storageManager = new StorageManager(new StorageAdapter(), config.state.storageKey),
+		locationManager = new LocationManager(new CoordinatesDetector(), new LocationResolver()),
+		state = {
+			user: new User(new AuthenticationManager(config.proxies.eventbrite, winUtils)),
+			dispatcher: dispatcher
+		},
+		toolBelt = {
+			win: winUtils,
+			template: templateUtils
+		};
 
 	var createView = function(ViewClass){
 		return new ViewClass(_, config, state, toolBelt);
 	};
 
 	state.user.addEventListener("changed", function(){
-		toolBelt.storage.setProperty("user", state.user.toJSON());
+		storageManager.setProperty("user", state.user.toJSON());
 	});
 
 	var router = new (WinJS.Class.mix(WinRouter, {
@@ -88,17 +88,25 @@ define([
 	}))();
 
 	router.addEventListener("route", function(data){
-		toolBelt.dispatcher.dispatchEvent("route", data.detail);
+		state.dispatcher.dispatchEvent("route", data.detail);
 	});
 
 	return {
-		start: function(){
+		start: function () {
+
+			var navigateToInitialPage = function () {
+				if (state.user.isAuthenticated()) {
+					return WinJS.Navigation.navigate("home");
+				} else {
+					return WinJS.Navigation.navigate("welcome");
+				}
+			};
 
 			createView(BottomBarView).render();
 
 			return createView(TopBarView).render()
 				.then(function(){
-					return toolBelt.storage.getProperty("user");
+					return storageManager.getProperty("user");
 				})
 				.then(function(userData){
 
@@ -106,11 +114,13 @@ define([
 						state.user.initialize(userData);
 					}
 
-					if(state.user.isAuthenticated()){
-						return WinJS.Navigation.navigate("home");
-					} else {
-						return WinJS.Navigation.navigate("welcome");
-					}
+					// detect location
+					locationManager.getLocation().then(function(location){
+						state.user.set("location", location);
+						navigateToInitialPage();
+					}, function (e) {
+						navigateToInitialPage();
+					});
 				});
 		}
 	};

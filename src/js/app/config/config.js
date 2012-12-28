@@ -19,6 +19,7 @@ define([
 		proxies: {
 			eventbrite: {
 				url: "http://www.eventbrite.com/json/event_search/",
+				oAuthUrl: "https://www.eventbrite.com/oauth/authorize?response_type=code&client_id={appKey}",
 				appKey: "HJRMDNYKBVBDIMJBYI",
 				dataType: "json",
 				timeout: 10000,

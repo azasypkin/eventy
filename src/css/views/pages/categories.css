@@ -1,0 +1,12 @@
+.categories-page .win-listview {
+	height: 100%;
+}
+
+	.categories-page .win-listview .win-item {
+		width: 250px;
+		height: 100px;
+
+		display: -ms-flexbox;
+		-ms-flex-align: center;
+		-ms-flex-pack: center;
+	}

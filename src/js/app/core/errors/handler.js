@@ -74,9 +74,9 @@
 						route.navigate("loggedout");
 					});
 
-				} else if(error.code === errorCodes.API_ERROR){
+				} else if(error.code === errorCodes.API_FAILED){
 					isHandled = handleAPIErrors(error);
-				} else if(error.code === errorCodes.XHR_ERROR){
+				} else if(error.code === errorCodes.XHR_FAILED){
 					// For now we agreed to handle all XHR errors
 					isHandled = true;
 					ms.showPrompt(genericErrorTitle, this.getDetailedUnhandledErrorMessage(error));

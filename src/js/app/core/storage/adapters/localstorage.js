@@ -15,7 +15,7 @@
 
 		_localStorageNotSupported: function(){
 			return WinJS.Promise.wrapError(
-				new BaseError("LocalStorage isn't supported.", BaseError.Codes.STORAGE_ERROR)
+				new BaseError("LocalStorage isn't supported.", BaseError.Codes.STORAGE_REQUEST_FAILED)
 			);
 		},
 

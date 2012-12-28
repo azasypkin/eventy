@@ -1,6 +1,6 @@
 ﻿@import url("common.css");
 
-@import url("views/welcome.css");
-@import url("views/categories.css");
-@import url("views/home.css");
-@import url("views/top-bar.css");
+@import url("views/pages/welcome.css");
+@import url("views/pages/categories.css");
+@import url("views/pages/home.css");
+@import url("views/bars/top-bar.css");

@@ -13,14 +13,14 @@
 .win-appbar header {
 	display: -ms-grid;
 
-	-ms-grid-columns: 100px 1fr;
+	-ms-grid-columns: 80px 1fr;
 	-ms-grid-rows: 1fr;
 	height: 100%;
 	width: 100%;
 	
 }
 #top-bar.win-appbar header .win-backbutton {
-		margin-left: 39px;
+		margin-left: 20px;
 		margin-top: 19px;
 	}
 

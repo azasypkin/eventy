@@ -7,10 +7,10 @@ define(["app/views/base"],function(BaseView){
 		this._onSaveButtonClicked = this._onSaveButtonClicked.bind(this);
 	}, {
 
-		view: "/html/views/categories/main.html",
+		view: "/html/views/pages/categories/main.html",
 		container: document.getElementById("content"),
 		templates: {
-			item: "/html/views/categories/item.html"
+			item: "/html/views/pages/categories/item.html"
 		},
 
 		_wc: null,
@@ -23,7 +23,7 @@ define(["app/views/base"],function(BaseView){
 			}.bind(this));
 		},
 
-		_createListView: function(container){
+		_createListView: function(){
 			var categoryKeys = Object.keys(this._config.dictionaries.categories),
 				currentUserCategories = this._state.user.get("categories") || [],
 				data = [],
@@ -38,8 +38,20 @@ define(["app/views/base"],function(BaseView){
 					id: categoryKey,
 					data: this._config.dictionaries.categories[categoryKey]
 				});
+			}
 
-				if(currentUserCategories.indexOf(categoryKey) >= 0){
+			data.sort(function(a, b) {
+				if (a.data.name < b.data.name) {
+					return -1;
+				} else if(a.data.name > b.data.name){
+					return 1;
+				} else {
+					return 0;
+				}
+			});
+
+			for(i = 0; i < data.length; i++){
+				if(currentUserCategories.indexOf(data[i].id) >= 0){
 					selection.push(i);
 				}
 			}
@@ -59,7 +71,7 @@ define(["app/views/base"],function(BaseView){
 				this._isFirstTimeSelection = isFirstTimeSelection;
 			}
 
-			this._helpers.dispatcher.dispatchEvent("updateBarState", {
+			this._state.dispatcher.dispatchEvent("updateBarState", {
 				type: "top",
 				title: "Choose your categories",
 				enabled: true,

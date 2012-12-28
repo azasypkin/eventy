@@ -1,0 +1,66 @@
+﻿.welcome-page {
+
+	display: -ms-flexbox;
+	-ms-flex-align: center;
+	-ms-flex-pack: center;
+}
+
+	.welcome-page .welcome-prompt {
+	
+
+		width: 450px;
+		height: 50%;
+
+		background-color: rgb(29, 29, 29);
+
+		box-shadow:  0 1px 5px 0 rgba(0, 0, 0, .1);
+
+		border-radius: 15px;
+
+		
+		background-repeat: repeat;
+		background-size:4px 4px;
+	}
+
+		.welcome-page .welcome-prompt .welcome-prompt-title{
+			font-size: 340%;
+			font-style: italic;
+		}
+
+		.welcome-page .welcome-prompt .welcome-prompt-content{
+			font-size: 150%;
+		}
+
+		.welcome-page .welcome-prompt .welcome-prompt-title,
+		.welcome-page .welcome-prompt .welcome-prompt-content {
+			text-align: center;
+		}
+
+		.welcome-page .welcome-prompt .signin-controls{
+			display: -ms-flexbox;
+			-ms-flex-align: center;
+			-ms-flex-pack: center;
+		}
+
+		.welcome-page .welcome-prompt .signin-controls button{
+			width: 200px;
+			height: 40px;
+			font-size: 120%;
+			background-color: #ec5000;
+			color: #fff;
+			margin: 10px;
+			border-radius: 10px;
+			border: none;
+		}
+
+			.welcome-page .welcome-prompt .signin-controls button:hover {
+				background-color: #ff6318;
+			}
+
+
+
+@media screen and (-ms-view-state: fullscreen-portrait) {
+	.welcome-page .welcome-prompt {
+		height: 40%;
+	}
+}
