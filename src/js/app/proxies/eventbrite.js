@@ -158,7 +158,7 @@ define([
 
 		_convertToEvent: function (jsonEvent, request) {
 			var event = new Event({
-					id: jsonEvent.id,
+					id: jsonEvent.id - 0,
 					title: jsonEvent.title,
 					url: jsonEvent.url,
 					date: this._getDate(jsonEvent),

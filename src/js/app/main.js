@@ -89,7 +89,11 @@ define([
 		},
 
 		explore: function(id, params){
-			return this._navigateTo(ExplorePage, id, params);
+			if(this._page instanceof ExplorePage){
+				return this._page.refresh(id, params);
+			} else {
+				return this._navigateTo(ExplorePage, id, params);
+			}
 		}
 	}))();
 

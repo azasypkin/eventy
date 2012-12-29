@@ -40,10 +40,10 @@
 		handlers: [],
 
 		beforenavigate: function (e) {
-			// we should prevent navigation to the same URL twice
+			/*// we should prevent navigation to the same URL twice
 			if(e.detail.location === WinJS.Navigation.location){
 				e.preventDefault();
-			}
+			}*/
 		},
 		navigating: function (e) {
 			var fragment = e.detail.location,

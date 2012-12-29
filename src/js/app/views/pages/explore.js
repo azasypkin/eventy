@@ -6,6 +6,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		this._onNextCommandInvoked = this._onNextCommandInvoked.bind(this);
 		this._onOpenInBrowserCommandInvoked = this._onOpenInBrowserCommandInvoked.bind(this);
+		this._onPageSelected = this._onPageSelected.bind(this);
 
 		this._state.dispatcher.addEventListener("nextCommandInvoked", this._onNextCommandInvoked);
 		this._state.dispatcher.addEventListener("openInBrowserCommandInvoked", this._onOpenInBrowserCommandInvoked);
@@ -29,6 +30,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 		}],
 
 		_emptyFrameSrc: "about:blank",
+		_currentItemId: null,
 
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
@@ -58,15 +60,33 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 		},
 
 		render: function (id, params) {
-			this.bars[0].title = params.items[0].data.title;
+			// id is integer
+			this._currentItemId = id - 0;
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(function(){
 					return this._createFlipView(params.items);
+				}.bind(this))
+				.then(function(){
+					this.wc.addEventListener("pageselected", this._onPageSelected);
 				}.bind(this));
+		},
+
+		refresh: function (id, params) {
+			this._currentItemId = id - 0;
+			if(this.wc.currentPage > 0){
+				return this.wc.itemDataSource.itemFromIndex(this.wc.currentPage - 1).then(function (item) {
+					if(item.data.data.id === this._currentItemId){
+						return this.wc.previous();
+					}
+				}.bind(this));
+			}
+			return WinJS.Promise.wrap();
 		},
 
 		unload: function(){
 			BaseView.prototype.unload.apply(this, arguments);
+
+			this.wc.removeEventListener("pageselected", this._onPageSelected);
 
 			this._state.dispatcher.removeEventListener("nextCommandInvoked", this._onNextCommandInvoked);
 		},
@@ -79,6 +99,25 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 			this.wc.itemDataSource.itemFromIndex(this.wc.currentPage).then(function (item) {
 				Windows.System.Launcher.launchUriAsync(new Windows.Foundation.Uri(item.data.data.url));
 			});
+		},
+
+		_onPageSelected: function(e){
+			this.wc.itemDataSource.itemFromIndex(this.wc.currentPage).then(function (item) {
+
+				if(this._currentItemId !== item.data.data.id){
+					this._currentItemId = item.data.data.id;
+
+					// update URL in history
+					WinJS.Navigation.navigate("explore/" + this._currentItemId, {
+						trigger: false
+					});
+				}
+
+				this._state.dispatcher.dispatchEvent("updateBarState", {
+					type: "top",
+					title: item.data.data.title
+				});
+			}.bind(this));
 		}
 	});
 });
