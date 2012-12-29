@@ -15,6 +15,8 @@ define(["app/views/base"],function(BaseView){
 		render: function(){
 			return BaseView.prototype.render.apply(this, arguments).then(function(container){
 				this.wc = new WinJS.UI.AppBar(container, this.getBarProperties());
+
+				this._addEventListeners();
 			}.bind(this));
 		},
 
@@ -24,13 +26,43 @@ define(["app/views/base"],function(BaseView){
 		unload: function(){
 			BaseView.prototype.unload.apply(this, arguments);
 
+			this._removeEventListeners();
+
 			this._state.dispatcher.removeEventListener("updateBarState", this._onUpdateBarState);
+		},
+
+		_addEventListeners: function(){
+			this._processEventHandlers();
+		},
+
+		_removeEventListeners: function(){
+			this._processEventHandlers(true);
+		},
+
+		_processEventHandlers: function (remove) {
+			var commands = this._.map(this.wc.element.querySelectorAll(".win-command"), function (commandDomNode) {
+					return commandDomNode.winControl;
+				}),
+				command,
+				i;
+
+			for (i = 0; i < commands.length; i++) {
+				command = commands[i];
+				command[!remove ? "addEventListener" : "removeEventListener"](
+					"click",
+					this["_on" + command.id.charAt(0).toUpperCase() + command.id.slice(1) + "Clicked"]
+				);
+			}
 		},
 
 		_onUpdateBarState: function(e){
 			if(e && e.detail){
 				// if type isn't passed that means that even related to both top and bottom bars
 				if(!e.detail.type || (e.detail.type && e.detail.type === this.type)){
+
+					if (e.detail.commands && e.detail.commands.length > 0) {
+						this.wc.showOnlyCommands(e.detail.commands);
+					}
 
 					if (e.detail.showCommands && e.detail.showCommands.length > 0) {
 						this.wc.showCommands(e.detail.showCommands);

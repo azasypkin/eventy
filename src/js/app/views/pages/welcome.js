@@ -1,4 +1,4 @@
-define(["app/views/base"],function(BaseView){
+define(["app/views/pages/base"],function(BaseView){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
@@ -7,6 +7,10 @@ define(["app/views/base"],function(BaseView){
 
 		view: "/html/views/pages/welcome/main.html",
 		container: document.getElementById("content"),
+
+		bars: [{
+			enabled: false
+		}],
 
 		_navigateToNextPage: function(){
 			var categories = this._state.user.get("categories");

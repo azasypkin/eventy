@@ -1,10 +1,15 @@
-define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
+define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.prototype.constructor.apply(this, arguments);
 
 		this._onSelectionChanged = this._onSelectionChanged.bind(this);
+		this._onItemInvoked = this._onItemInvoked.bind(this);
+
+		this._onExploreCommandInvoked = this._onExploreCommandInvoked.bind(this);
+
+		this._state.dispatcher.addEventListener("exploreCommandInvoked", this._onExploreCommandInvoked);
 
 		this._proxy = new Proxy();
 	}, {
@@ -16,6 +21,17 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 		},
 
 		wc: null,
+
+		bars: [{
+			type: "top",
+			title: "Home",
+			enabled: true,
+			show: true
+		}, {
+			type: "bottom",
+			enabled: true,
+			commands: ["editCategories"]
+		}],
 
 		_groups: {
 			"nearby": {
@@ -106,7 +122,17 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 			}.bind(this));
 		},
 
-		_createListView: function(events){
+		_exploreItems: function(items){
+			if(items.length > 0){
+				WinJS.Navigation.navigate("explore/"+items[0].data.id, {
+					params: {
+						items: items
+					}
+				});
+			}
+		},
+
+		_createFlipView: function(events){
 			var itemsList = new WinJS.Binding.List(events),
 				groupedItemsList = itemsList.createGrouped(function(item){
 					return item.groupKey;
@@ -125,22 +151,22 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 		},
 
 		render: function () {
-			this._state.dispatcher.dispatchEvent("updateBarState", {
-				type: "top",
-				title: "Home",
-				enabled: true,
-				show: true
-			});
-			this._state.dispatcher.dispatchEvent("updateBarState", {
-				type: "bottom",
-				enabled: true
-			});
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(this._loadEvents.bind(this))
-				.then(this._createListView.bind(this))
+				.then(this._createFlipView.bind(this))
 				.then(function(){
 					this.wc.addEventListener("selectionchanged", this._onSelectionChanged);
+					this.wc.addEventListener("iteminvoked", this._onItemInvoked);
 				}.bind(this));
+		},
+
+		unload: function(){
+			BaseView.prototype.unload.apply(this, arguments);
+
+			this.wc.removeEventListener("selectionchanged", this._onSelectionChanged);
+			this.wc.removeEventListener("iteminvoked", this._onItemInvoked);
+
+			this._state.dispatcher.removeEventListener("exploreCommandInvoked", this._onExploreCommandInvoked);
 		},
 
 		_onItemsReady: function(){
@@ -170,21 +196,30 @@ define(["app/views/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 
 		_onSelectionChanged: function (e) {
 			this.wc.selection.getItems().then(function(items){
-				if(items.length > 0){
-					this._state.dispatcher.dispatchEvent("updateBarState", {
+				var hasItemsSelected = items.length > 0,
+					properties = {
 						type: "bottom",
-						showCommands: ["cmdExplore"],
-						show: true,
-						sticky: true
-					});
-				} else {
-					this._state.dispatcher.dispatchEvent("updateBarState", {
-						type: "bottom",
-						hideCommands: ["cmdExplore"],
-						show: false,
-						sticky: false
-					});
-				}
+						show: hasItemsSelected,
+						sticky: hasItemsSelected
+					};
+
+				properties[hasItemsSelected ? "showCommands" : "hideCommands"] = ["explore"];
+
+				this._state.dispatcher.dispatchEvent("updateBarState", properties);
+			}.bind(this));
+		},
+
+		_onItemInvoked: function (e) {
+			e.detail.itemPromise.then(function (item) {
+				this._exploreItems([item.data]);
+			}.bind(this));
+		},
+
+		_onExploreCommandInvoked: function(){
+			this.wc.selection.getItems().then(function(items){
+				this._exploreItems(this._.map(items, function (item) {
+					return item.data;
+				}));
 			}.bind(this));
 		}
 	});

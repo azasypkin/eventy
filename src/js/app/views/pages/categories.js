@@ -1,4 +1,4 @@
-define(["app/views/base"],function(BaseView){
+define(["app/views/pages/base"],function(BaseView){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
@@ -13,6 +13,16 @@ define(["app/views/base"],function(BaseView){
 			item: "/html/views/pages/categories/item.html"
 		},
 
+		bars: [{
+			type: "top",
+			title: "Choose your categories",
+			enabled: true,
+			show: true
+		}, {
+			type: "bottom",
+			enabled: false
+		}],
+
 		wc: null,
 
 		_isFirstTimeSelection: false,
@@ -23,7 +33,7 @@ define(["app/views/base"],function(BaseView){
 			}.bind(this));
 		},
 
-		_createListView: function(){
+		_createFlipView: function(){
 			var categoryKeys = Object.keys(this._config.dictionaries.categories),
 				currentUserCategories = this._state.user.get("categories") || [],
 				data = [],
@@ -70,15 +80,8 @@ define(["app/views/base"],function(BaseView){
 			if(isFirstTimeSelection === true){
 				this._isFirstTimeSelection = isFirstTimeSelection;
 			}
-
-			this._state.dispatcher.dispatchEvent("updateBarState", {
-				type: "top",
-				title: "Choose your categories",
-				enabled: true,
-				show: true
-			});
 			return BaseView.prototype.render.apply(this, arguments)
-				.then(this._createListView.bind(this)).then(function(){
+				.then(this._createFlipView.bind(this)).then(function(){
 					document.getElementById("btn-save-categories")
 						.addEventListener("click", this._onSaveButtonClicked);
 			}.bind(this));

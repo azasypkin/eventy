@@ -8,8 +8,8 @@
 	.welcome-page .welcome-prompt {
 	
 
-		width: 450px;
-		height: 50%;
+		width: 550px;
+		height: 350px;
 
 		background-color: rgb(29, 29, 29);
 
@@ -43,13 +43,25 @@
 		}
 
 		.welcome-page .welcome-prompt .signin-controls button{
-			width: 200px;
+			width: 230px;
 			height: 40px;
 		}
+
+			.welcome-page .welcome-prompt .signin-controls button .eventbrite-capital{
+				font-style: italic;
+				font-size: 160%;
+				float:left;
+				line-height:100%;
+				padding-right: 7px;
+			}
+
+			.welcome-page .welcome-prompt .signin-controls button .eventbrite-name{
+				vertical-align:middle;
+			}
 
 
 @media screen and (-ms-view-state: fullscreen-portrait) {
 	.welcome-page .welcome-prompt {
-		height: 40%;
+	
 	}
 }

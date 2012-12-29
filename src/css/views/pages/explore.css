@@ -1,0 +1,9 @@
+.explore-page .win-flipview {
+	height: 100%;
+}
+
+	.explore-page .win-flipview .win-item iframe {
+		width: 100%;
+		height: 100%;
+	}
+

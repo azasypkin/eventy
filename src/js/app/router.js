@@ -74,7 +74,7 @@
 					handler = this.handlers[i];
 					if (handler.route.test(fragment)) {
 						// callback may take some time
-						e.detail.setPromise(WinJS.Promise.as(handler.callback(fragment)));
+						e.detail.setPromise(WinJS.Promise.as(handler.callback(fragment, options.params)));
 						break;
 					}
 				}
@@ -114,8 +114,12 @@
 			this.handlers.push({
 				key: route,
 				route: route,
-				callback: function (fragment) {
+				callback: function (fragment, params) {
 					var args = extractParameters(route, fragment);
+
+					if(params){
+						args.push(params);
+					}
 
 					this.dispatchEvent("route", {
 						parameters: args,
