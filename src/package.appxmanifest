@@ -25,6 +25,10 @@
           <Rotation Preference="landscapeFlipped" />
         </InitialRotationPreference>
       </VisualElements>
+      <ApplicationContentUriRules>
+        <Rule Match="http://*.eventbrite.com" Type="include" />
+        <Rule Match="https://*.eventbrite.com" Type="include" />
+      </ApplicationContentUriRules>
     </Application>
   </Applications>
   <Capabilities>

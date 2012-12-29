@@ -17,8 +17,12 @@ define([
 	"app/views/pages/welcome",
 	"app/views/pages/categories",
 	"app/views/pages/home",
-	"app/views/pages/explore"
-], function (_, config, winUtils, templateUtils, WinRouter, dispatcher, StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager, User, TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage, ExplorePage) {
+	"app/views/pages/explore",
+
+	"app/views/settings/about",
+	"app/views/settings/account",
+	"app/views/settings/privacy"
+], function (_, config, winUtils, templateUtils, WinRouter, dispatcher, StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager, User, TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage, ExplorePage, AboutSettingsView, AccountSettingsView, PrivacySettingsView) {
 	"use strict";
 
 	var storageManager = new StorageManager(new StorageAdapter(), config.state.storageKey),
@@ -35,6 +39,35 @@ define([
 	var createView = function(ViewClass){
 		return new ViewClass(_, config, state, toolBelt);
 	};
+
+	// define settings
+	AccountSettingsView.state = state;
+	AccountSettingsView.helpers = toolBelt;
+
+	WinJS.UI.Pages.define("/html/views/settings/about.html", AboutSettingsView);
+	WinJS.UI.Pages.define("/html/views/settings/account.html", AccountSettingsView);
+	WinJS.UI.Pages.define("/html/views/settings/privacy.html", PrivacySettingsView);
+
+	WinJS.Application.addEventListener("settings", function (setting) {
+		setting.detail.applicationcommands = {};
+
+		setting.detail.applicationcommands["about-setting-container"] = {
+			href: "/html/views/settings/about.html",
+			title: "About"
+		};
+
+		setting.detail.applicationcommands["account-setting-container"] = {
+			title: "Account",
+			href: "/html/views/settings/account.html"
+		};
+
+		setting.detail.applicationcommands["privacy-setting-container"] = {
+			href: "/html/views/settings/privacy.html",
+			title: "Privacy Policy"
+		};
+
+		WinJS.UI.SettingsFlyout.populateSettings(setting);
+	});
 
 	state.user.addEventListener("changed", function(){
 		storageManager.setProperty("user", state.user.toJSON());

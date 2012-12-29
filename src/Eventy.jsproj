@@ -61,6 +61,7 @@
     <Content Include="css\views\pages\explore.css" />
     <Content Include="css\views\pages\home.css" />
     <Content Include="css\views\pages\welcome.css" />
+    <Content Include="css\views\settings\common.css" />
     <Content Include="html\index.html" />
     <Content Include="html\views\bars\bottom-bar.html" />
     <Content Include="html\views\bars\top-bar.html" />
@@ -71,10 +72,14 @@
     <Content Include="html\views\pages\home\item.html" />
     <Content Include="html\views\pages\home\main.html" />
     <Content Include="html\views\pages\welcome\main.html" />
+    <Content Include="html\views\settings\about.html" />
+    <Content Include="html\views\settings\account.html" />
+    <Content Include="html\views\settings\privacy.html" />
     <Content Include="img\badge-logo.scale-100.png" />
     <Content Include="img\badge-logo.scale-140.png" />
     <Content Include="img\badge-logo.scale-180.png" />
     <Content Include="img\connect-to-eventbrite.png" />
+    <Content Include="img\eventbrite-logo-white.png" />
     <Content Include="img\logo.scale-100.png" />
     <Content Include="img\logo.scale-140.png" />
     <Content Include="img\logo.scale-180.png" />
@@ -111,6 +116,7 @@
     <Content Include="js\app\models\geo.js" />
     <Content Include="js\app\models\user.js" />
     <Content Include="js\app\proxies\virtualearth.js" />
+    <Content Include="js\app\utils\string.js" />
     <Content Include="js\app\utils\template.js" />
     <Content Include="js\app\utils\win.js" />
     <None Include="Eventy_StoreKey.pfx" />
@@ -134,6 +140,9 @@
     <Content Include="js\app\proxies\eventbrite.js" />
     <Content Include="js\app\utils\datetime.js" />
     <Content Include="js\app.js" />
+    <Content Include="js\app\views\settings\about.js" />
+    <Content Include="js\app\views\settings\account.js" />
+    <Content Include="js\app\views\settings\privacy.js" />
     <Content Include="js\libs\lodash.min.js" />
     <Content Include="js\libs\requirejs\plugins\i18n.js" />
     <Content Include="js\libs\requirejs\plugins\text.js" />

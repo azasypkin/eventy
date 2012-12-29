@@ -25,7 +25,15 @@
 		.welcome-page .welcome-prompt .welcome-prompt-title{
 			font-size: 340%;
 			font-style: italic;
+			margin-bottom: 20px;
 		}
+
+		.welcome-page .welcome-prompt .welcome-prompt-logo-container{
+			display: -ms-flexbox;
+			-ms-flex-align: center;
+			-ms-flex-pack: center;
+		}
+
 
 		.welcome-page .welcome-prompt .welcome-prompt-content{
 			font-size: 150%;
@@ -44,7 +52,6 @@
 
 		.welcome-page .welcome-prompt .signin-controls button{
 			width: 230px;
-			height: 40px;
 		}
 
 			.welcome-page .welcome-prompt .signin-controls button .eventbrite-capital{

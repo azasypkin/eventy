@@ -5,3 +5,5 @@
 @import url("views/pages/home.css");
 @import url("views/pages/explore.css");
 @import url("views/bars/top-bar.css");
+
+@import url("views/settings/common.css");

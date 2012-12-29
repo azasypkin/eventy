@@ -40,6 +40,10 @@
 					return false;
 				}
 			}.bind(this));
+		},
+
+		signOut: function(){
+			this.set("token", null);
 		}
 	});
 
