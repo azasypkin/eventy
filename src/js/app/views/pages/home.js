@@ -124,7 +124,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		_exploreItems: function(items){
 			if(items.length > 0){
-				WinJS.Navigation.navigate("explore/"+items[0].data.id, {
+				WinJS.Navigation.navigate("explore/"+items[0].id, {
 					params: {
 						items: items
 					}
@@ -211,15 +211,24 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		_onItemInvoked: function (e) {
 			e.detail.itemPromise.then(function (item) {
-				this._exploreItems([item.data]);
+				this._exploreItems([item.data.data]);
 			}.bind(this));
 		},
 
 		_onExploreCommandInvoked: function(){
 			this.wc.selection.getItems().then(function(items){
-				this._exploreItems(this._.map(items, function (item) {
-					return item.data;
-				}));
+				var ids = [],
+					result = [],
+					item,
+					i;
+				for(i = 0; i < items.length; i++){
+					item = items[i].data.data;
+					if(ids.indexOf(item.id) < 0){
+						result.push(item);
+						ids.push(item.id);
+					}
+				}
+				this._exploreItems(result);
 			}.bind(this));
 		}
 	});

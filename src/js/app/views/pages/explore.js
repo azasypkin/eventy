@@ -31,10 +31,11 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		_emptyFrameSrc: "about:blank",
 		_currentItemId: null,
+		_previousPage: null,
 
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
-				return this._setupFrame(item.data.data.id, item.data.data.url);
+				return this._setupFrame(item.data.id, item.data.url);
 			}.bind(this));
 		},
 
@@ -71,13 +72,14 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 				}.bind(this));
 		},
 
-		refresh: function (id, params) {
+		refresh: function (id) {
 			this._currentItemId = id - 0;
 			if(this.wc.currentPage > 0){
 				return this.wc.itemDataSource.itemFromIndex(this.wc.currentPage - 1).then(function (item) {
-					if(item.data.data.id === this._currentItemId){
+					if(item.data.id === this._currentItemId){
 						return this.wc.previous();
 					}
+					return WinJS.Promise.wrap();
 				}.bind(this));
 			}
 			return WinJS.Promise.wrap();
@@ -97,25 +99,38 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		_onOpenInBrowserCommandInvoked: function () {
 			this.wc.itemDataSource.itemFromIndex(this.wc.currentPage).then(function (item) {
-				Windows.System.Launcher.launchUriAsync(new Windows.Foundation.Uri(item.data.data.url));
+				Windows.System.Launcher.launchUriAsync(new Windows.Foundation.Uri(item.data.url));
 			});
 		},
 
-		_onPageSelected: function(e){
+		_onPageSelected: function(){
 			this.wc.itemDataSource.itemFromIndex(this.wc.currentPage).then(function (item) {
+				var backStackLength = WinJS.Navigation.history.backStack.length,
+					newUrl;
 
-				if(this._currentItemId !== item.data.data.id){
-					this._currentItemId = item.data.data.id;
+				if(this._currentItemId !== item.data.id){
+					this._currentItemId = item.data.id;
 
-					// update URL in history
-					WinJS.Navigation.navigate("explore/" + this._currentItemId, {
-						trigger: false
-					});
+					newUrl = "explore/" + this._currentItemId;
+
+					//check back case
+					if(this._previousPage
+						&& this._previousPage > this.wc.currentPage
+						&& backStackLength > 0 && WinJS.Navigation.history.backStack[backStackLength - 1].location === newUrl){
+						WinJS.Navigation.back(1);
+					} else {
+						// update URL in history
+						WinJS.Navigation.navigate(newUrl, {
+							trigger: false
+						});
+					}
 				}
+
+				this._previousPage = this.wc.currentPage;
 
 				this._state.dispatcher.dispatchEvent("updateBarState", {
 					type: "top",
-					title: item.data.data.title
+					title: item.data.title
 				});
 			}.bind(this));
 		}
