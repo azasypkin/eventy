@@ -18,11 +18,12 @@ define([
 	"app/views/pages/categories",
 	"app/views/pages/home",
 	"app/views/pages/explore",
+	"app/views/pages/search",
 
 	"app/views/settings/about",
 	"app/views/settings/account",
 	"app/views/settings/privacy"
-], function (_, config, winUtils, templateUtils, WinRouter, dispatcher, StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager, User, TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage, ExplorePage, AboutSettingsView, AccountSettingsView, PrivacySettingsView) {
+], function (_, config, winUtils, templateUtils, WinRouter, dispatcher, StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager, User, TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage, ExplorePage, SearchPage, AboutSettingsView, AccountSettingsView, PrivacySettingsView) {
 	"use strict";
 
 	var storageManager = new StorageManager(new StorageAdapter(), config.state.storageKey),
@@ -34,7 +35,8 @@ define([
 		toolBelt = {
 			win: winUtils,
 			template: templateUtils
-		};
+		},
+		activationKinds = Windows.ApplicationModel.Activation.ActivationKind;
 
 	var createView = function(ViewClass){
 		return new ViewClass(_, config, state, toolBelt);
@@ -114,7 +116,9 @@ define([
 			"categories": "categories",
 			"firstTime_categories": "firstTime_categories",
 			"home": "home",
-			"explore/:id" : "explore"
+			"explore/:id" : "explore",
+			"search/:query": "search",
+			"search": "search"
 		},
 
 		welcome: function(){
@@ -131,6 +135,10 @@ define([
 
 		home: function(){
 			return this._navigateTo(HomePage);
+		},
+
+		search: function(query){
+			return this._navigateTo(SearchPage, query);
 		},
 
 		explore: function(id, params){
@@ -151,13 +159,17 @@ define([
 	});
 
 	return {
-		start: function () {
+		start: function (e) {
 
-			var navigateToInitialPage = function () {
+			var navigateToInitialPage = function (e) {
 				if (state.user.isAuthenticated()) {
 					var userCategories = state.user.get("categories");
 					if(userCategories && userCategories.length > 0){
-						return WinJS.Navigation.navigate("home");
+						if(e.kind === activationKinds.launch){
+							return WinJS.Navigation.navigate("home");
+						} else if(e.kind === activationKinds.search){
+							return WinJS.Navigation.navigate("search/" + e.queryText);
+						}
 					} else {
 						return WinJS.Navigation.navigate("categories");
 					}
@@ -179,9 +191,9 @@ define([
 					// detect location
 					locationManager.getLocation().then(function(location){
 						state.user.set("location", location);
-						navigateToInitialPage();
+						navigateToInitialPage(e);
 					}, function (e) {
-						navigateToInitialPage();
+						navigateToInitialPage(e);
 					});
 				});
 		}

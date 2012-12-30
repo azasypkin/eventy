@@ -25,7 +25,7 @@ define(["app/views/pages/base"],function(BaseView){
 			}.bind(this));
 		},
 
-		_createFlipView: function(){
+		_createListView: function(){
 			var categoryKeys = Object.keys(this._config.dictionaries.categories),
 				currentUserCategories = this._state.user.get("categories") || [],
 				data = [],
@@ -85,7 +85,7 @@ define(["app/views/pages/base"],function(BaseView){
 				this._isFirstTimeSelection = isFirstTimeSelection;
 			}
 			return BaseView.prototype.render.apply(this, arguments)
-				.then(this._createFlipView.bind(this)).then(function(){
+				.then(this._createListView.bind(this)).then(function(){
 					document.getElementById("btn-save-categories").addEventListener(
 						"click",
 						this._onSaveButtonClicked,

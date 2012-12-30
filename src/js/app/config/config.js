@@ -18,6 +18,9 @@ define(["libs/requirejs/plugins/i18n!app/config/localization/nls/labels"], funct
 				appKey: "HJRMDNYKBVBDIMJBYI",
 				dataType: "json",
 				timeout: 10000,
+
+				pageSize: 20,
+
 				categories: {
 					music: "music",
 					sports: "sports",

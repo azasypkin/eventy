@@ -13,5 +13,6 @@
 		this.city = options.city;
 		this.venue = options.venue;
 		this.country = options.country;
+		this.color = options.color;
 	});
 });

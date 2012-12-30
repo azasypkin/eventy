@@ -1,0 +1,39 @@
+.search-page .win-listview {
+	height: 100%;
+}
+
+	.search-page .win-listview .win-item {
+		width: 350px;
+		height: 160px;
+
+		display: -ms-grid;
+
+		-ms-grid-columns: 150px 1fr;
+		-ms-grid-rows: 10px 1fr;
+	}
+		.search-page .win-listview .win-item .event-category{
+			-ms-grid-row: 1;
+			-ms-grid-column-span:2;
+		}
+
+		.search-page .win-listview .win-item .event-thumbnail {
+			-ms-grid-column: 1;
+			-ms-grid-row: 2;
+			background-size: contain;
+			background-repeat: no-repeat;
+			background-position: center;
+		}
+
+		.search-page .win-listview .win-item .event-details {
+			-ms-grid-column: 2;
+			-ms-grid-row: 2;
+			padding-left: 10px;
+			box-sizing: border-box;
+		}
+
+			.search-page .win-listview .win-item .event-details p{
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+

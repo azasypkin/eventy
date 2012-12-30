@@ -3,6 +3,7 @@ define({
 		"Header.HomeView": "Home",
 		"Header.CategoriesView": "Categories",
 		"Header.ExploreView": "Explore",
+		"Header.SearchView": "Search",
 		"Header.DetectUserLocation": "Find Me!",
 		"Header.Filter": "Change filter...",
 		"Footer.ContactUs": "Contact Us",

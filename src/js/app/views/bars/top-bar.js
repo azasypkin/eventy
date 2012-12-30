@@ -6,6 +6,8 @@ define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, N
 
 		this._onBackButtonClicked = this._onBackButtonClicked.bind(this);
 		this._onHeaderClicked = this._onHeaderClicked.bind(this);
+		this._onFilterSubmitted = this._onFilterSubmitted.bind(this);
+		this._onFilterSelectChange = this._onFilterSelectChange.bind(this);
 
 		this._navigationMenu = Object.create(NavigationMenu.prototype);
 
@@ -69,8 +71,44 @@ define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, N
 							secondaryTitle.style.color = parameters.secondaryTitle.color;
 						}
 					}
+
+					if (parameters.filter) {
+						var filter = document.getElementById("search-filter");
+
+						if (typeof parameters.filter.query === "string") {
+							filter["search-query"].value = parameters.filter.query;
+						}
+
+						if(typeof parameters.filter.location === "string"){
+							filter["search-location"].value = parameters.filter.location;
+						}
+
+						if(typeof parameters.filter.date === "string"){
+							filter["search-date"].value = parameters.filter.date;
+						}
+
+						if(parameters.filter.show === true){
+							filter.addEventListener("submit", this._onFilterSubmitted);
+							filter["search-date"].addEventListener("change", this._onFilterSelectChange);
+
+							WinJS.UI.Animation.enterContent(filter, null);
+						} else if (parameters.filter.show === false){
+							filter.removeEventListener("submit", this._onFilterSubmitted);
+							filter["search-date"].removeEventListener("change", this._onFilterSelectChange);
+
+							WinJS.UI.Animation.exitContent(filter, null);
+						}
+					}
 				}
 			}
+		},
+
+		submitFilterForm: function(form){
+			this._state.dispatcher.dispatchEvent("filter:submitted", {
+				location:	form["search-location"].value,
+				query:		form["search-query"].value,
+				date:		form["search-date"].value
+			});
 		},
 
 		_onRoute: function(){
@@ -85,7 +123,15 @@ define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, N
 
 		_onHeaderClicked: function(){
 			this._navigationMenu.show();
-		}
+		},
 
+		_onFilterSubmitted: function (e) {
+			e.preventDefault();
+			this.submitFilterForm(e.target);
+		},
+
+		_onFilterSelectChange: function (e) {
+			this.submitFilterForm(e.target.form);
+		}
 	});
 });

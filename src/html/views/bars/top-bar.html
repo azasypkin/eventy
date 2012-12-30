@@ -1,6 +1,5 @@
 ﻿<header aria-label="Navigation bar" role="banner">
-	<button id="cmdBack" class="win-backbutton" aria-label="Back" disabled>
-	</button>
+	<button id="cmdBack" class="win-backbutton" aria-label="Back" disabled></button>
 	<div class="title-area win-type-ellipsis">
 		<button class="title-container">
 			<h1>
@@ -8,6 +7,21 @@
 				<span class="chevron win-type-x-large">&#xe099</span>
 			</h1>
 		</button>
-		<h2 id="page-secondary-title" class="page-secondary-title"></h2>
 	</div>
+	<h2 id="page-secondary-title" class="page-secondary-title"></h2>
+	<form id="search-filter">
+		<input id="search-query" type="text" placeholder="Search query..." />
+		<input id="search-location" type="text" placeholder="Location..." />
+		<select id="search-date">
+			<option value="today">Today</option>
+			<option value="this_week" selected="selected">This Week</option>
+			<option value="next_week">Next Week</option>
+			<option value="this_month">This Month</option>
+			<option value="next_month">Next Month</option>
+			<option value="future">Future</option>
+			<option value="past">Past</option>
+			<option value="all">All</option>
+		</select>
+		<input type="submit" style="position: absolute; left: -9999px"/>
+	</form>
 </header>

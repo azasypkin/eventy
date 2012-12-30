@@ -1,7 +1,9 @@
 define({
 	"root": {
-		"Header.AppName": "Events Heat Map",
-		"Header.HomeView": "Events in",
+		"Header.HomeView": "Home",
+		"Header.CategoriesView": "Categories",
+		"Header.ExploreView": "Explore",
+		"Header.SearchView": "Search",
 		"Header.DetectUserLocation": "Find Me!",
 		"Header.Filter": "Change filter...",
 		"Header.ScaleTitle.Label": "Start date",

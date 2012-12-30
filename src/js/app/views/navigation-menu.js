@@ -49,6 +49,10 @@ define(["app/views/base"],function(BaseView){
 					label: this._config.labels["Header.HomeView"],
 					type: "button"
 				},{
+					id: "search",
+					label: this._config.labels["Header.SearchView"],
+					type: "button"
+				},{
 					id: "categories",
 					label: this._config.labels["Header.CategoriesView"],
 					type: "button"

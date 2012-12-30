@@ -35,7 +35,7 @@
 			args.setPromise(WinJS.UI.processAll().then(function () {
 				return new WinJS.Promise(function(complete){
 					require(["app/main"], function(app){
-						app.start().then(function(){
+						app.start(args.detail).then(function(){
 							complete();
 						});
 					});

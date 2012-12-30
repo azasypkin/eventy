@@ -29,6 +29,9 @@
         <Rule Match="http://*.eventbrite.com" Type="include" />
         <Rule Match="https://*.eventbrite.com" Type="include" />
       </ApplicationContentUriRules>
+      <Extensions>
+        <Extension Category="windows.search" />
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>

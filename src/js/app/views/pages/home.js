@@ -51,13 +51,13 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
-				return this._helpers.template.parseTemplateToDomNode(this.templates.item, item.data);
+				return this._helpers.template.parseTemplateToDomNode(this.templates.item, item.data.data);
 			}.bind(this));
 		},
 
 		_loadItems: function(groupKey, parameters){
-			return this._proxy.searchEvents(parameters).then(function(events){
-				this._groups[groupKey].items = events;
+			return this._proxy.searchEvents(parameters).then(function(data){
+				this._groups[groupKey].items = data.items;
 				if(--this._stillLoading === 0){
 					this._onItemsReady();
 				}
@@ -72,7 +72,6 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 			return {
 				groupKey: groupKey,
 				key: groupKey + "_" + item.id,
-				background_color: this._config.dictionaries.categories[item.categories[0].id].color,
 				data: item
 			};
 		},
@@ -121,7 +120,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 			}
 		},
 
-		_createFlipView: function(events){
+		_createListView: function(events){
 			var itemsList = new WinJS.Binding.List(events),
 				groupedItemsList = itemsList.createGrouped(function(item){
 					return item.groupKey;
@@ -155,7 +154,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 		render: function () {
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(this._loadEvents.bind(this))
-				.then(this._createFlipView.bind(this))
+				.then(this._createListView.bind(this))
 				.then(function(){
 					this.wc.addEventListener("selectionchanged", this._onSelectionChanged);
 					this.wc.addEventListener("iteminvoked", this._onItemInvoked);

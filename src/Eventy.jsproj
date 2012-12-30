@@ -60,6 +60,7 @@
     <Content Include="css\views\pages\categories.css" />
     <Content Include="css\views\pages\explore.css" />
     <Content Include="css\views\pages\home.css" />
+    <Content Include="css\views\pages\search.css" />
     <Content Include="css\views\pages\welcome.css" />
     <Content Include="css\views\settings\common.css" />
     <Content Include="html\index.html" />
@@ -71,6 +72,8 @@
     <Content Include="html\views\pages\explore\main.html" />
     <Content Include="html\views\pages\home\item.html" />
     <Content Include="html\views\pages\home\main.html" />
+    <Content Include="html\views\pages\search\item.html" />
+    <Content Include="html\views\pages\search\main.html" />
     <Content Include="html\views\pages\welcome\main.html" />
     <Content Include="html\views\settings\about.html" />
     <Content Include="html\views\settings\account.html" />
@@ -103,6 +106,7 @@
     <Content Include="img\wide-logo.scale-140.png" />
     <Content Include="img\wide-logo.scale-180.png" />
     <Content Include="img\wide-logo.scale-80.png" />
+    <Content Include="js\app\collections\events.js" />
     <Content Include="js\app\core\authentication\eventbrite.js" />
     <Content Include="js\app\core\errors\base_error.js" />
     <Content Include="js\app\core\errors\handler.js" />
@@ -131,6 +135,7 @@
     <Content Include="js\app\views\pages\categories.js" />
     <Content Include="js\app\views\pages\explore.js" />
     <Content Include="js\app\views\pages\home.js" />
+    <Content Include="js\app\views\pages\search.js" />
     <Content Include="js\app\views\pages\welcome.js" />
     <Content Include="js\app\config\config.js" />
     <Content Include="js\app\config\localization\nls\en-EN\labels.js" />

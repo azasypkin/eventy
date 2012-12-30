@@ -131,7 +131,10 @@ define([
 							result.push(self._convertToEvent(data.events[i].event, params));
 						}
 					}
-					return result;
+					return {
+						total: result.length > 0 ? data.events[0].summary.total_items : 0,
+						items: result
+					};
 				});
 			}
 		},
@@ -193,6 +196,8 @@ define([
 					}.bind(this));
 				}
 			}
+
+			event.color = globalConfig.dictionaries.categories[event.categories[0].id].color;
 
 			return event;
 		},
