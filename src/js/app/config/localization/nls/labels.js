@@ -1,12 +1,10 @@
 define({
 	"root": {
-		"Header.AppName": "Events Heat Map",
-		"Header.HomeView": "Events in",
+		"Header.HomeView": "Home",
+		"Header.CategoriesView": "Categories",
+		"Header.ExploreView": "Explore",
 		"Header.DetectUserLocation": "Find Me!",
 		"Header.Filter": "Change filter...",
-		"Header.ScaleTitle.Label": "Start date",
-		"Header.ScaleTitle.Minimum": "Earlier",
-		"Header.ScaleTitle.Maximum": "Later",
 		"Footer.ContactUs": "Contact Us",
 		"AppBar.Commands.Filter": "Filter",
 		"AppBar.Commands.Refresh": "Refresh",
@@ -103,6 +101,5 @@ define({
 		"DateAndTime.Days.Short.Saturday": "Sat",
 		"DateAndTime.Days.Short.Sunday": "Sun",
         "Location.Worldwide": "Worldwide"
-
 	}
 });

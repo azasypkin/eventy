@@ -4,7 +4,7 @@ define([
 	"app/utils/win",
 	"app/utils/template",
 	"app/router",
-	"app/event-dispatcher",
+	"app/dispatcher",
 	"app/core/storage/adapters/roaming",
 	"app/core/storage/manager",
 	"app/core/location/coordinates/windows",
@@ -77,6 +77,15 @@ define([
 		_page: null,
 		_navigationPromise: WinJS.Promise.as(),
 
+		_dispatchPageEvent: function(e){
+			if(e.detail.name){
+				state.dispatcher.dispatchEvent(
+					e.target.eventPrefix ? e.target.eventPrefix + ":" + e.detail.name : e.detail.name,
+					e.detail.data
+				);
+			}
+		},
+
 		_navigateTo: function(PageClass){
 
 			var progress = document.getElementById("progress-indicator-holder");
@@ -87,9 +96,12 @@ define([
 
 			if (this._page) {
 				this._page.unload();
+				this._page.removeEventListener("event", this._dispatchPageEvent, false);
 			}
 
 			this._page = createView(PageClass);
+
+			this._page.addEventListener("event", this._dispatchPageEvent, false);
 
 			return this._navigationPromise = this._page.render.apply(this._page, Array.prototype.slice.call(arguments, 1))
 				.then(function(){
@@ -132,6 +144,10 @@ define([
 
 	router.addEventListener("route", function(data){
 		state.dispatcher.dispatchEvent("route", data.detail);
+	});
+
+	state.user.addEventListener("initialized", function(data){
+		state.dispatcher.dispatchEvent("user:initialized", data);
 	});
 
 	return {

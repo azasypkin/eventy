@@ -2,14 +2,14 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
-		BaseView.prototype.constructor.apply(this, arguments);
+		BaseView.apply(this, arguments);
 
 		this._onNextCommandInvoked = this._onNextCommandInvoked.bind(this);
 		this._onOpenInBrowserCommandInvoked = this._onOpenInBrowserCommandInvoked.bind(this);
 		this._onPageSelected = this._onPageSelected.bind(this);
 
-		this._state.dispatcher.addEventListener("nextCommandInvoked", this._onNextCommandInvoked);
-		this._state.dispatcher.addEventListener("openInBrowserCommandInvoked", this._onOpenInBrowserCommandInvoked);
+		this._state.dispatcher.addEventListener("nextCommandInvoked", this._onNextCommandInvoked, false);
+		this._state.dispatcher.addEventListener("openInBrowserCommandInvoked", this._onOpenInBrowserCommandInvoked, false);
 
 		this._proxy = new Proxy();
 	}, {
@@ -21,13 +21,6 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 		},
 
 		wc: null,
-
-		bars: [{
-			enabled: true,
-			show: true,
-			sticky: true,
-			commands: ["openInBrowser", "next"]
-		}],
 
 		_emptyFrameSrc: "about:blank",
 		_currentItemId: null,
@@ -60,6 +53,16 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 			});
 		},
 
+		getBarsSettings: function(){
+			return [{
+				enabled: true,
+				show: true,
+				sticky: true,
+				title: this._config.labels["Header.ExploreView"],
+				commands: ["openInBrowser", "next"]
+			}];
+		},
+
 		render: function (id, params) {
 			// id is integer
 			this._currentItemId = id - 0;
@@ -68,7 +71,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 					return this._createFlipView(params.items);
 				}.bind(this))
 				.then(function(){
-					this.wc.addEventListener("pageselected", this._onPageSelected);
+					this.wc.addEventListener("pageselected", this._onPageSelected, false);
 				}.bind(this));
 		},
 
@@ -88,9 +91,19 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 		unload: function(){
 			BaseView.prototype.unload.apply(this, arguments);
 
-			this.wc.removeEventListener("pageselected", this._onPageSelected);
+			if (this.wc) {
+				this.wc.removeEventListener("pageselected", this._onPageSelected, false);
+			}
 
-			this._state.dispatcher.removeEventListener("nextCommandInvoked", this._onNextCommandInvoked);
+			this._state.dispatcher.dispatchEvent("updateBarState", {
+				type: "top",
+				secondaryTitle: {
+					title: ""
+				}
+			});
+
+			this._state.dispatcher.removeEventListener("nextCommandInvoked", this._onNextCommandInvoked, false);
+			this._state.dispatcher.removeEventListener("openInBrowserCommandInvoked", this._onOpenInBrowserCommandInvoked, false);
 		},
 
 		_onNextCommandInvoked: function(){
@@ -130,7 +143,10 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 				this._state.dispatcher.dispatchEvent("updateBarState", {
 					type: "top",
-					title: item.data.title
+					secondaryTitle: {
+						title: item.data.title,
+						color: this._config.dictionaries.categories[item.data.categories[0].id].color
+					}
 				});
 			}.bind(this));
 		}

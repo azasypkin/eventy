@@ -1,7 +1,7 @@
 define([ "config", "app/proxies/virtualearth", "app/core/errors/base_error"], function(config, Proxy, BaseError) {
 	"use strict";
 
-	var labels = config.local.labels;
+	var labels = config.labels;
 
 	return WinJS.Class.define(function(){
 		this._innerResolver = new Proxy();

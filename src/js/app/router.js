@@ -25,11 +25,11 @@
 
 	var WinRouter = WinJS.Class.define(function () {
 
-		//this.beforenavigate = this.beforenavigate.bind(this);
+		this.beforenavigate = this.beforenavigate.bind(this);
 		this.navigating = this.navigating.bind(this);
 		this.navigated = this.navigated.bind(this);
 
-		//winNavigation.addEventListener("beforenavigate", this.beforenavigate);
+		winNavigation.addEventListener("beforenavigate", this.beforenavigate);
 		winNavigation.addEventListener("navigating", this.navigating);
 		winNavigation.addEventListener("navigated", this.navigated);
 
@@ -40,10 +40,10 @@
 		handlers: [],
 
 		beforenavigate: function (e) {
-			/*// we should prevent navigation to the same URL twice
+			// we should prevent navigation to the same URL twice
 			if(e.detail.location === WinJS.Navigation.location){
 				e.preventDefault();
-			}*/
+			}
 		},
 		navigating: function (e) {
 			var fragment = e.detail.location,

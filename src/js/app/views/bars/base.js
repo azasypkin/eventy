@@ -2,7 +2,7 @@ define(["app/views/base"],function(BaseView){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
-		BaseView.prototype.constructor.apply(this, arguments);
+		BaseView.apply(this, arguments);
 
 		this._onUpdateBarState = this._onUpdateBarState.bind(this);
 

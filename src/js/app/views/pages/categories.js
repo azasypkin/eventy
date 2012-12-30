@@ -2,7 +2,7 @@ define(["app/views/pages/base"],function(BaseView){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
-		BaseView.prototype.constructor.apply(this, arguments);
+		BaseView.apply(this, arguments);
 
 		this._onSaveButtonClicked = this._onSaveButtonClicked.bind(this);
 	}, {
@@ -13,15 +13,7 @@ define(["app/views/pages/base"],function(BaseView){
 			item: "/html/views/pages/categories/item.html"
 		},
 
-		bars: [{
-			type: "top",
-			title: "Choose your categories",
-			enabled: true,
-			show: true
-		}, {
-			type: "bottom",
-			enabled: false
-		}],
+		eventPrefix: "categories",
 
 		wc: null,
 
@@ -75,6 +67,18 @@ define(["app/views/pages/base"],function(BaseView){
 			this.wc.selection.set(selection);
 		},
 
+		getBarsSettings: function(){
+			return [{
+				type: "top",
+				title: this._config.labels["Header.CategoriesView"],
+				enabled: true,
+				show: true
+			}, {
+				type: "bottom",
+				enabled: false
+			}];
+		},
+
 		render: function(isFirstTimeSelection){
 
 			if(isFirstTimeSelection === true){
@@ -82,9 +86,25 @@ define(["app/views/pages/base"],function(BaseView){
 			}
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(this._createFlipView.bind(this)).then(function(){
-					document.getElementById("btn-save-categories")
-						.addEventListener("click", this._onSaveButtonClicked);
+					document.getElementById("btn-save-categories").addEventListener(
+						"click",
+						this._onSaveButtonClicked,
+						false
+					);
 			}.bind(this));
+		},
+
+		unload: function(){
+			BaseView.prototype.unload.apply(this, arguments);
+
+			var btnSaveCategories = document.getElementById("btn-save-categories");
+			if(btnSaveCategories){
+				btnSaveCategories.removeEventListener(
+					"click",
+					this._onSaveButtonClicked,
+					false
+				);
+			}
 		},
 
 		_onSaveButtonClicked: function(){
@@ -95,9 +115,12 @@ define(["app/views/pages/base"],function(BaseView){
 				);
 			} else {
 				this.wc.selection.getItems().then(function (items) {
+
 					this._state.user.set("categories", this._.map(items, function(item){
 						return item.data.id;
 					}));
+
+					this.raiseEvent("saved");
 
 					WinJS.Navigation.navigate("home", {
 						keepHistory: this._isFirstTimeSelection === false

@@ -1,20 +1,15 @@
-define([
-	"underscore",
-	"app/config/localization/local"
-], function (_, local) {
+define(["libs/requirejs/plugins/i18n!app/config/localization/nls/labels"], function (labels) {
 	"use strict";
 
-	var labels = local.local.labels;
-	var config = {
-		version: "0.0.1",
+	return {
+		version: "1.0.0.0",
 
 		author: {
-			company: "AlZa",
-			copyRights: "Copyright &copy; AlZa 2013"
+			company: "ALZA",
+			copyRights: "Copyright &copy; ALZA 2013"
 		},
 
-		minRectangleSize: 20000,
-		maxRectangleSize: 40000,
+		labels: labels,
 
 		proxies: {
 			eventbrite: {
@@ -304,5 +299,4 @@ define([
 			]
 		}
 	};
-	return _.extend(config, local);
 });

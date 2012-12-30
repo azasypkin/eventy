@@ -2,9 +2,8 @@ define(["app/views/bars/base"],function(BaseView){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
-		BaseView.prototype.constructor.apply(this, arguments);
+		BaseView.apply(this, arguments);
 
-		this._onEditCategoriesClicked = this._onEditCategoriesClicked.bind(this);
 		this._onExploreClicked = this._onExploreClicked.bind(this);
 		this._onOpenInBrowserClicked = this._onOpenInBrowserClicked.bind(this);
 		this._onNextClicked = this._onNextClicked.bind(this);
@@ -21,10 +20,6 @@ define(["app/views/bars/base"],function(BaseView){
 				placement: this.type,
 				disabled: true
 			};
-		},
-
-		_onEditCategoriesClicked: function(){
-			WinJS.Navigation.navigate("categories");
 		},
 
 		_onExploreClicked: function(){

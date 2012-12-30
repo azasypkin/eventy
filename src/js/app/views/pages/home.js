@@ -2,7 +2,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
-		BaseView.prototype.constructor.apply(this, arguments);
+		BaseView.apply(this, arguments);
 
 		this._onSelectionChanged = this._onSelectionChanged.bind(this);
 		this._onItemInvoked = this._onItemInvoked.bind(this);
@@ -21,17 +21,6 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 		},
 
 		wc: null,
-
-		bars: [{
-			type: "top",
-			title: "Home",
-			enabled: true,
-			show: true
-		}, {
-			type: "bottom",
-			enabled: true,
-			commands: ["editCategories"]
-		}],
 
 		_groups: {
 			"nearby": {
@@ -150,6 +139,19 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 			});
 		},
 
+		getBarsSettings: function(){
+			return [{
+				type: "top",
+				title: this._config.labels["Header.HomeView"],
+				enabled: true,
+				show: true
+			}, {
+				type: "bottom",
+				enabled: false,
+				commands: ["explore"]
+			}];
+		},
+
 		render: function () {
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(this._loadEvents.bind(this))
@@ -163,8 +165,10 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 		unload: function(){
 			BaseView.prototype.unload.apply(this, arguments);
 
-			this.wc.removeEventListener("selectionchanged", this._onSelectionChanged);
-			this.wc.removeEventListener("iteminvoked", this._onItemInvoked);
+			if (this.wc) {
+				this.wc.removeEventListener("selectionchanged", this._onSelectionChanged);
+				this.wc.removeEventListener("iteminvoked", this._onItemInvoked);
+			}
 
 			this._state.dispatcher.removeEventListener("exploreCommandInvoked", this._onExploreCommandInvoked);
 		},
@@ -200,7 +204,8 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 					properties = {
 						type: "bottom",
 						show: hasItemsSelected,
-						sticky: hasItemsSelected
+						sticky: hasItemsSelected,
+						enabled: hasItemsSelected
 					};
 
 				properties[hasItemsSelected ? "showCommands" : "hideCommands"] = ["explore"];

@@ -1,10 +1,15 @@
-define(["app/views/bars/base"],function(BaseView){
+define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, NavigationMenu){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
-		BaseView.prototype.constructor.apply(this, arguments);
+		BaseView.apply(this, arguments);
 
 		this._onBackButtonClicked = this._onBackButtonClicked.bind(this);
+		this._onHeaderClicked = this._onHeaderClicked.bind(this);
+
+		this._navigationMenu = Object.create(NavigationMenu.prototype);
+
+		NavigationMenu.apply(this._navigationMenu, arguments);
 	}, {
 
 		view: "/html/views/bars/top-bar.html",
@@ -14,7 +19,10 @@ define(["app/views/bars/base"],function(BaseView){
 
 		render: function(){
 			return BaseView.prototype.render.apply(this, arguments).then(function(){
-				document.getElementById("cmdBack").addEventListener("click", this._onBackButtonClicked);
+				var titleArea = document.querySelector(".title-area");
+				document.getElementById("cmdBack").addEventListener("click", this._onBackButtonClicked, false);
+				titleArea.addEventListener("click", this._onHeaderClicked, false);
+				return this._navigationMenu.render(titleArea);
 			}.bind(this));
 		},
 
@@ -30,7 +38,10 @@ define(["app/views/bars/base"],function(BaseView){
 		unload: function(){
 			BaseView.prototype.unload.apply(this, arguments);
 
-			document.getElementById("cmdBack").removeEventListener("click", this._onBackButtonClicked);
+			this._navigationMenu.unload.apply(this._navigationMenu, arguments);
+			this._navigationMenu = null;
+
+			document.getElementById("cmdBack").removeEventListener("click", this._onBackButtonClicked, false);
 		},
 
 		_updateBackButtonState: function(){
@@ -38,12 +49,25 @@ define(["app/views/bars/base"],function(BaseView){
 		},
 
 		_onUpdateBarState: function(e){
+			var secondaryTitle,
+				parameters = e && e.detail;
 			BaseView.prototype._onUpdateBarState.apply(this, arguments);
-			if(e && e.detail){
+			if(parameters){
 				// if type isn't passed that means that even related to both top and bottom bars
-				if(!e.detail.type || (e.detail.type && e.detail.type === this.type)){
-					if(e.detail.title){
-						document.getElementById("page-title-container").innerText = e.detail.title;
+				if(!parameters.type || (parameters.type && parameters.type === this.type)){
+					if(typeof parameters.title === "string"){
+						document.getElementById("page-title").innerText = parameters.title;
+					}
+
+					if(parameters.secondaryTitle){
+						secondaryTitle = document.getElementById("page-secondary-title");
+						if(typeof parameters.secondaryTitle.title === "string"){
+							secondaryTitle.innerText = parameters.secondaryTitle.title;
+						}
+
+						if(parameters.secondaryTitle.color){
+							secondaryTitle.style.color = parameters.secondaryTitle.color;
+						}
 					}
 				}
 			}
@@ -57,6 +81,11 @@ define(["app/views/bars/base"],function(BaseView){
 
 		_onBackButtonClicked: function(){
 			WinJS.Navigation.back(1);
+		},
+
+		_onHeaderClicked: function(){
+			this._navigationMenu.show();
 		}
+
 	});
 });

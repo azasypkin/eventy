@@ -112,7 +112,7 @@
     <Content Include="js\app\core\storage\adapters\localstorage.js" />
     <Content Include="js\app\core\storage\adapters\roaming.js" />
     <Content Include="js\app\core\storage\manager.js" />
-    <Content Include="js\app\event_dispatcher.js" />
+    <Content Include="js\app\dispatcher.js" />
     <Content Include="js\app\models\geo.js" />
     <Content Include="js\app\models\user.js" />
     <Content Include="js\app\proxies\virtualearth.js" />
@@ -126,13 +126,13 @@
     <Content Include="js\app\views\bars\bottom-bar.js" />
     <Content Include="js\app\views\bars\top-bar.js" />
     <Content Include="js\app\views\base.js" />
+    <Content Include="js\app\views\navigation-menu.js" />
     <Content Include="js\app\views\pages\base.js" />
     <Content Include="js\app\views\pages\categories.js" />
     <Content Include="js\app\views\pages\explore.js" />
     <Content Include="js\app\views\pages\home.js" />
     <Content Include="js\app\views\pages\welcome.js" />
     <Content Include="js\app\config\config.js" />
-    <Content Include="js\app\config\localization\local.js" />
     <Content Include="js\app\config\localization\nls\en-EN\labels.js" />
     <Content Include="js\app\config\localization\nls\labels.js" />
     <Content Include="js\app\models\category.js" />

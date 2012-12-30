@@ -1,7 +1,7 @@
 define(function(){
 	"use strict";
 
-	return WinJS.Class.define(function(_, config, state, helpers){
+	var View = WinJS.Class.define(function(_, config, state, helpers){
 		this._ = _;
 		this._config = config;
 		this._state = state;
@@ -37,6 +37,12 @@ define(function(){
 			}
 		},
 
+		dispatchEvent: function(name, data){
+			this._state.dispatcher.dispatchEvent(
+				this.eventPrefix ? this.eventPrefix + ":" + name : name, data
+			);
+		},
+
 		_innerRender: function (path, container) {
 			container.innerHTML = "";
 
@@ -57,6 +63,17 @@ define(function(){
 		},
 
 		_onRoute: function(){
+		},
+
+		raiseEvent: function(name, data){
+			this.dispatchEvent("event", {
+				name: name,
+				data: data
+			});
 		}
 	});
+
+	WinJS.Class.mix(View, WinJS.Utilities.eventMixin);
+
+	return View;
 });

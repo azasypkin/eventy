@@ -13,18 +13,18 @@
 .win-appbar header {
 	display: -ms-grid;
 
-	-ms-grid-columns: 80px 1fr;
+	-ms-grid-columns: 70px 1fr;
 	-ms-grid-rows: 1fr;
 	height: 100%;
 	width: 100%;
 	
 }
-#top-bar.win-appbar header .win-backbutton {
+#top-bar.win-appbar .win-backbutton {
 		margin-left: 20px;
-		margin-top: 19px;
+		margin-top: 21px;
 	}
 
-#top-bar.win-appbar header .win-backbutton:disabled {
+#top-bar.win-appbar .win-backbutton:disabled {
 	background-size:43px 43px;
 	height:43px;
 	width:43px;
@@ -34,22 +34,40 @@
 	opacity: 0.3;
 }
 
-#top-bar.win-appbar header .win-backbutton:disabled:before {
+#top-bar.win-appbar .win-backbutton:disabled:before {
 	content: "";
 }
 
+#top-bar.win-appbar .title-container {
+	display:inline;
+	background-color:transparent;
+	border:none;
+}
 
-#top-bar.win-appbar header .title-area {
+#top-bar.win-appbar .title-area .chevron {
+	vertical-align:4px;
+}
+
+
+
+#top-bar.win-appbar .title-area {
 		-ms-grid-column: 2;
-		margin-top: 4px;
 	}
-		#top-bar.win-appbar header .title-area h1.win-type-xx-large {
+		#top-bar.win-appbar .title-area .page-title {
 			display: inline;
-			height: 40pt;
+			font-size: 80%;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
 			width: calc(100% - 20px);
+		}
+
+		#top-bar.win-appbar .title-area .page-secondary-title {
+			display: inline;
+			vertical-align: 4px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 
 

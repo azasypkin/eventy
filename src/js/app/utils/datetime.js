@@ -58,7 +58,7 @@
 define(["config"], function (config) {
 	"use strict";
 
-	var labels = config.local.labels;
+	var labels = config.labels;
 
 	var MONTH_NAMES = new Array(
 		labels["DateAndTime.Months.January"],

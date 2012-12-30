@@ -8,6 +8,8 @@
 
 		initialize: function(data){
 			this._innerData = data || {};
+
+			this.dispatchEvent("initialized");
 		},
 
 		set: function(key, value){
