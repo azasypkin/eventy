@@ -71,19 +71,19 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 			}];
 		},
 
-		render: function (query) {
+		render: function (query, category) {
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(function () {
-					return this._buildFilter(query);
+					return this._buildFilter(query, category);
 				}.bind(this))
 				.then(this._createListView.bind(this));
 		},
 
-		refresh: function(query){
-			return this._updateDataSource(this._buildFilter(query));
+		refresh: function(query, category){
+			return this._updateDataSource(this._buildFilter(query, category));
 		},
 
-		_buildFilter: function(query){
+		_buildFilter: function(query, category){
 			var filter = this._state.user.get("filter") || {},
 				location = this._state.user.get("location");
 
@@ -93,6 +93,12 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 
 			if(query){
 				filter.query = query;
+			}
+
+			if(category){
+				filter.category = category;
+			} else {
+				delete filter.category;
 			}
 
 			if(!filter.date){
@@ -157,7 +163,9 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 				parameters.keywords = filter.query;
 			}
 
-			if(userCategories && userCategories.length > 0){
+			if(filter.category){
+				parameters.category = filter.category;
+			} else if(userCategories && userCategories.length > 0){
 				parameters.category = userCategories;
 			}
 

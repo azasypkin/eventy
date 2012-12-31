@@ -28,6 +28,10 @@
 			margin-bottom: 20px;
 		}
 
+			.welcome-page .welcome-prompt .welcome-prompt-title *{
+				vertical-align: middle;
+			}
+
 		.welcome-page .welcome-prompt .welcome-prompt-logo-container{
 			display: -ms-flexbox;
 			-ms-flex-align: center;

@@ -53,7 +53,7 @@ define([
 			if(!parameters.app_key){
 				parameters.app_key = this._appKey;
 			}
-			if(parameters.category && parameters.category.length > 0){
+			if(parameters.category && parameters.category instanceof Array && parameters.category.length > 0){
 				parameters.category = _.map(parameters.category, function(category){
 					return this._config.categories[category];
 				}.bind(this));

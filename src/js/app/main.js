@@ -143,7 +143,8 @@ define([
 			"home": "home",
 			"explore/:id" : "explore",
 			"search/:query": "search",
-			"search": "search"
+			"search": "search",
+			"category/:category":"category"
 		},
 
 		welcome: function(){
@@ -168,6 +169,10 @@ define([
 
 		explore: function(id, params){
 			return this._navigateTo(ExplorePage, id, params);
+		},
+
+		category: function(category){
+			return this._navigateTo(SearchPage, null, category);
 		},
 
 		refresh: function(){

@@ -104,6 +104,7 @@
     <Content Include="img\store-logo.scale-100.png" />
     <Content Include="img\store-logo.scale-140.png" />
     <Content Include="img\store-logo.scale-180.png" />
+    <Content Include="img\welcome-logo.png" />
     <Content Include="img\wide-logo.scale-100.png" />
     <Content Include="img\wide-logo.scale-140.png" />
     <Content Include="img\wide-logo.scale-180.png" />
