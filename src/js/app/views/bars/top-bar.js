@@ -1,4 +1,4 @@
-define(["app/views/bars/base", "app/views/navigation-menu", "app/views/search-filter"],function(BaseView, NavigationMenu, SearchFilter){
+define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, NavigationMenu){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
@@ -10,9 +10,6 @@ define(["app/views/bars/base", "app/views/navigation-menu", "app/views/search-fi
 
 		this._navigationMenu = Object.create(NavigationMenu.prototype);
 		NavigationMenu.apply(this._navigationMenu, arguments);
-/*
-		this._searchFilter = Object.create(SearchFilter.prototype);
-		SearchFilter.apply(this._searchFilter, arguments);*/
 
 		this._navigationMenu.addEventListener("state:changed", this._onMenuStateChanged, false);
 
@@ -27,10 +24,7 @@ define(["app/views/bars/base", "app/views/navigation-menu", "app/views/search-fi
 			return BaseView.prototype.render.apply(this, arguments).then(function(){
 				document.getElementById("cmdBack").addEventListener("click", this._onBackButtonClicked, false);
 
-				return WinJS.Promise.join([
-					this._navigationMenu.render(document.querySelector(".title-area"))
-					//this._searchFilter.render(document.getElementById("search-filter-container"))
-				]);
+				return this._navigationMenu.render(document.querySelector(".title-area"));
 			}.bind(this));
 		},
 
@@ -49,9 +43,6 @@ define(["app/views/bars/base", "app/views/navigation-menu", "app/views/search-fi
 			this._navigationMenu.removeEventListener("state:changed", this._onMenuStateChanged, false);
 			this._navigationMenu.unload.apply(this._navigationMenu, arguments);
 			this._navigationMenu = null;
-
-			this._searchFilter.unload.apply(this._searchFilter, arguments);
-			this._searchFilter = null;
 
 			document.getElementById("cmdBack").removeEventListener("click", this._onBackButtonClicked, false);
 			document.querySelector(".title-area").removeEventListener("click", this._onHeaderClicked, false);
@@ -81,10 +72,6 @@ define(["app/views/bars/base", "app/views/navigation-menu", "app/views/search-fi
 						if(parameters.secondaryTitle.color){
 							secondaryTitle.style.color = parameters.secondaryTitle.color;
 						}
-					}
-
-					if (parameters.filter) {
-						//this._searchFilter.update(parameters.filter);
 					}
 				}
 			}

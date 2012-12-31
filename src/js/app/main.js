@@ -47,7 +47,16 @@ define([
 		},
 		toolBelt = {
 			win: winUtils,
-			template: templateUtils
+			template: templateUtils,
+			progress: {
+				_progress: document.getElementById("progress-indicator-holder"),
+				show: function(){
+					this._progress.style.visibility = "visible";
+				},
+				hide: function(){
+					this._progress.style.visibility = "hidden";
+				}
+			}
 		},
 		activationKinds = Windows.ApplicationModel.Activation.ActivationKind;
 
@@ -103,9 +112,7 @@ define([
 
 		_navigateTo: function(PageClass){
 
-			var progress = document.getElementById("progress-indicator-holder");
-
-			progress.style.visibility = "visible";
+			toolBelt.progress.show();
 
 			this._navigationPromise.cancel();
 
@@ -125,7 +132,7 @@ define([
 			}
 
 			return this._navigationPromise.then(function(){
-				progress.style.visibility = "hidden";
+				toolBelt.progress.hide();
 			});
 		},
 
@@ -170,11 +177,11 @@ define([
 
 	router.addEventListener("route", function(data){
 		state.dispatcher.dispatchEvent("route", data.detail);
-	});
+	}, false);
 
 	state.user.addEventListener("initialized", function(data){
 		state.dispatcher.dispatchEvent("user:initialized", data);
-	});
+	}, false);
 
 	state.contracts.search.addEventListener("query:submitted", function(e){
 		if(e.detail.queryText){
@@ -182,21 +189,28 @@ define([
 		} else {
 			WinJS.Navigation.navigate("search");
 		}
-	});
+	}, false);
 
 	state.dispatcher.addEventListener("command:categories", function(){
 		WinJS.Navigation.navigate("categories");
-	});
+	}, false);
 
 	state.dispatcher.addEventListener("command:search", function(){
 		WinJS.Navigation.navigate("search");
-	});
+	}, false);
 
 	state.dispatcher.addEventListener("command:location", function(){
 		locationManager.getLocation().then(function (location) {
-			var previousLocation = state.user.get("location");
+			var previousLocation = state.user.get("location"),
+				filter = state.user.get("filter") || {};
+
 			if (location && (!previousLocation || previousLocation.lat !== location.lat || previousLocation.lon !== location.lon)) {
 				state.user.set("location", location);
+				// we also have to update location in last user filter as user forced change of location
+				if(location.city){
+					filter.location = location.city;
+					state.user.set("filter", filter);
+				}
 				router.refresh();
 			}
 		}, function () {
@@ -205,31 +219,39 @@ define([
 				"Please, change your Permissions in Settings to allow Eventy to access your location"
 			);
 		});
-	});
+	}, false);
 
 	return {
-		start: function (activationDetail) {
-			state.contracts.search.setup();
+		_isInitialized: false,
 
-			var navigateToInitialPage = function (e) {
-				if (state.user.isAuthenticated()) {
-					var userCategories = state.user.get("categories");
-					if(userCategories && userCategories.length > 0){
-						if(e.kind === activationKinds.launch){
-							return WinJS.Navigation.navigate("home");
-						} else if(e.kind === activationKinds.search){
-							return WinJS.Navigation.navigate("search/" + e.queryText);
+		start: function (activationDetail) {
+			var initPromise,
+				navigateToInitialPage = function (e) {
+					if (state.user.isAuthenticated()) {
+						var userCategories = state.user.get("categories");
+						if(userCategories && userCategories.length > 0){
+							if(e.kind === activationKinds.launch){
+								return WinJS.Navigation.navigate("home");
+							} else if(e.kind === activationKinds.search){
+								return WinJS.Navigation.navigate("search/" + e.queryText);
+							}
+						} else {
+							return WinJS.Navigation.navigate("categories");
 						}
 					} else {
-						return WinJS.Navigation.navigate("categories");
+						return WinJS.Navigation.navigate("welcome");
 					}
-				} else {
-					return WinJS.Navigation.navigate("welcome");
-				}
-			};
+				};
 
-			return WinJS.Promise.join([createView(BottomBarView).render(), createView(TopBarView).render()])
-				.then(function(){
+			if(this._isInitialized){
+				initPromise = WinJS.Promise.wrap();
+			} else {
+				state.contracts.search.setup();
+
+				initPromise = WinJS.Promise.join([createView(BottomBarView).render(), createView(TopBarView).render()]);
+			}
+
+			return initPromise.then(function(){
 					return storageManager.getProperty("user");
 				})
 				.then(function(userData){
@@ -252,7 +274,9 @@ define([
 							navigateToInitialPage(activationDetail);
 						});
 					}
-				});
+
+					this._isInitialized = true;
+				}.bind(this));
 		}
 	};
 });

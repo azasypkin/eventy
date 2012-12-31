@@ -62,7 +62,6 @@
     <Content Include="css\views\pages\home.css" />
     <Content Include="css\views\pages\search.css" />
     <Content Include="css\views\pages\welcome.css" />
-    <Content Include="css\views\search-filter.css" />
     <Content Include="css\views\search-refine.css" />
     <Content Include="css\views\settings\common.css" />
     <Content Include="html\index.html" />
@@ -77,7 +76,6 @@
     <Content Include="html\views\pages\search\item.html" />
     <Content Include="html\views\pages\search\main.html" />
     <Content Include="html\views\pages\welcome\main.html" />
-    <Content Include="html\views\search-filter.html" />
     <Content Include="html\views\search-refine.html" />
     <Content Include="html\views\settings\about.html" />
     <Content Include="html\views\settings\account.html" />
@@ -150,7 +148,6 @@
     <Content Include="js\app\proxies\eventbrite.js" />
     <Content Include="js\app\utils\datetime.js" />
     <Content Include="js\app.js" />
-    <Content Include="js\app\views\search-filter.js" />
     <Content Include="js\app\views\search-refine.js" />
     <Content Include="js\app\views\settings\about.js" />
     <Content Include="js\app\views\settings\account.js" />

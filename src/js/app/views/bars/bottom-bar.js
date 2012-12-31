@@ -31,6 +31,20 @@ define(["app/views/bars/base", "app/views/search-refine"],function(BaseView, Sea
 			};
 		},
 
+		_onUpdateBarState: function(e){
+			var secondaryTitle,
+				parameters = e && e.detail;
+			BaseView.prototype._onUpdateBarState.apply(this, arguments);
+			if(parameters){
+				// if type isn't passed that means that even related to both top and bottom bars
+				if(!parameters.type || (parameters.type && parameters.type === this.type)){
+					if (parameters.filter) {
+						this._searchRefine.update(parameters.filter);
+					}
+				}
+			}
+		},
+
 		_onCommandClicked: function(e){
 			if(e.target && e.target.winControl && e.target.winControl instanceof WinJS.UI.AppBarCommand){
 				if(e.target.winControl.id === "refine"){

@@ -6,6 +6,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 
 		this._onSelectionChanged = this._onSelectionChanged.bind(this);
 		this._onItemInvoked = this._onItemInvoked.bind(this);
+		this._onLoadingStateChanged = this._onLoadingStateChanged.bind(this);
 		this._onFilterSubmitted = this._onFilterSubmitted.bind(this);
 
 		this._onExploreCommandInvoked = this._onExploreCommandInvoked.bind(this);
@@ -25,6 +26,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 		wc: null,
 
 		_dataSource: null,
+		_itemsLoadCompleteCallback: null,
 
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
@@ -48,7 +50,11 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 				itemTemplate: this._itemTemplate.bind(this)
 			});
 
-			this._updateDataSource(filter);
+			this.wc.addEventListener("selectionchanged", this._onSelectionChanged);
+			this.wc.addEventListener("iteminvoked", this._onItemInvoked);
+			this.wc.addEventListener("loadingstatechanged", this._onLoadingStateChanged);
+
+			return this._updateDataSource(filter);
 		},
 
 		getBarsSettings: function(){
@@ -68,50 +74,57 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 		render: function (query) {
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(function () {
-					var location = this._state.user.get("location"),
-						filter = {
-							show: true,
-							location: location && location.city,
-							query: query,
-							date: "this_week"
-						};
-
-					this._state.dispatcher.dispatchEvent("updateBarState", {
-						type: "top",
-						filter: filter
-					});
-
-					return filter;
+					return this._buildFilter(query);
 				}.bind(this))
-				.then(this._createListView.bind(this))
-				.then(function(){
-					this.wc.addEventListener("selectionchanged", this._onSelectionChanged);
-					this.wc.addEventListener("iteminvoked", this._onItemInvoked);
-				}.bind(this));
+				.then(this._createListView.bind(this));
 		},
 
 		refresh: function(query){
-			var filter = {
-				show: true,
-				query: query
-			};
+			return this._updateDataSource(this._buildFilter(query));
+		},
 
-			this._state.dispatcher.dispatchEvent("updateBarState", {
-				type: "top",
-				filter: filter
-			});
+		_buildFilter: function(query){
+			var filter = this._state.user.get("filter") || {},
+				location = this._state.user.get("location");
 
-			this._updateDataSource(filter);
+			if(!filter.location && location && location.city){
+				filter.location = location.city;
+			}
 
-			return WinJS.Promise.wrap();
+			if(query){
+				filter.query = query;
+			}
+
+			if(!filter.date){
+				filter.date = "this_week";
+			}
+
+			return filter;
 		},
 
 		_updateDataSource: function(filter){
+			// update filter with the latest values
+			this._state.dispatcher.dispatchEvent("updateBarState", {
+				type: "bottom",
+				filter: filter
+			});
+
+			// update user state filter
+			this._state.user.set("filter", this._.extend(this._state.user.get("filter") || {}, filter));
+
+			// create new data source to refresh list view
 			this._dataSource = new EventsCollection(this._, this._config.proxies.eventbrite, this._proxy, this._prepareParameters(filter));
 
-			WinJS.UI.setOptions(this.wc, {
-				itemDataSource: this._dataSource
-			});
+			// we removed all items, so selection has changed for sure :)
+			this._onSelectionChanged();
+
+			return new WinJS.Promise(function(complete){
+				this._itemsLoadCompleteCallback = complete;
+
+				WinJS.UI.setOptions(this.wc, {
+					itemDataSource: this._dataSource
+				});
+			}.bind(this));
 		},
 
 		unload: function(){
@@ -121,13 +134,6 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 				this.wc.removeEventListener("selectionchanged", this._onSelectionChanged);
 				this.wc.removeEventListener("iteminvoked", this._onItemInvoked);
 			}
-
-			this._state.dispatcher.dispatchEvent("updateBarState", {
-				type: "top",
-				filter: {
-					show: false
-				}
-			});
 
 			this._state.dispatcher.removeEventListener("command:explore", this._onExploreCommandInvoked, false);
 			this._state.dispatcher.removeEventListener("filter:submitted", this._onFilterSubmitted, false);
@@ -181,6 +187,13 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 			}.bind(this));
 		},
 
+		_onLoadingStateChanged: function(e){
+			if (this._itemsLoadCompleteCallback && e.target.winControl.loadingState === "itemsLoaded") {
+				this._itemsLoadCompleteCallback();
+				this._itemsLoadCompleteCallback = null;
+			}
+		},
+
 		_onExploreCommandInvoked: function(){
 			this.wc.selection.getItems().then(function(items){
 				var ids = [],
@@ -198,8 +211,11 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 			}.bind(this));
 		},
 
-		_onFilterSubmitted: function(e){
-			this._updateDataSource(e.detail);
+		_onFilterSubmitted: function (e) {
+			this._helpers.progress.show();
+			this._updateDataSource(e.detail).then(function () {
+				this._helpers.progress.hide();
+			}.bind(this));
 		}
 	});
 });
