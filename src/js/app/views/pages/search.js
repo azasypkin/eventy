@@ -23,6 +23,8 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 			item: "/html/views/pages/search/item.html"
 		},
 
+		searchOnKeyboardInput: true,
+
 		wc: null,
 
 		_dataSource: null,
@@ -62,12 +64,14 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 				type: "top",
 				title: this._config.labels["Header.SearchView"],
 				enabled: true,
-				show: true
+				show: true,
+				sticky: true
 			}, {
 				type: "bottom",
-				enabled: true,
 				commands: ["location", "categories", "refine"],
-				sticky:true
+				enabled: true,
+				show: true,
+				sticky: true
 			}];
 		},
 

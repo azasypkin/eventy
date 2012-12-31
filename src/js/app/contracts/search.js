@@ -13,8 +13,6 @@ define([],function(){
 		setup: function(){
 			this._searchPane = Windows.ApplicationModel.Search.SearchPane.getForCurrentView();
 
-			this._searchPane.showOnKeyboardInput = true;
-
 			this._searchPane.addEventListener("visibilitychanged", this._onSearchPaneVisibilityChanged, false);
 			this._searchPane.addEventListener("querychanged", this._onSearchPaneQueryChanged, false);
 			this._searchPane.addEventListener("querysubmitted", this._onSearchPaneQuerySubmitted, false);
@@ -30,6 +28,10 @@ define([],function(){
 
 		setQueryText: function(queryText){
 			this._searchPane.trySetQueryText(queryText);
+		},
+
+		setShowOnKeyboardInput: function(show){
+			this._searchPane.showOnKeyboardInput = !!show;
 		},
 
 		_onSearchPaneVisibilityChanged: function (e) {

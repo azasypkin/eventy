@@ -20,6 +20,8 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 			item: "/html/views/pages/home/item.html"
 		},
 
+		searchOnKeyboardInput: true,
+
 		wc: null,
 
 		_groups: {
@@ -153,12 +155,14 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 				type: "top",
 				title: this._config.labels["Header.HomeView"],
 				enabled: true,
-				show: true
+				show: true,
+				sticky: true
 			}, {
 				type: "bottom",
+				commands: ["location", "search", "categories"],
 				enabled: true,
 				show: true,
-				commands: ["location", "search", "categories"]
+				sticky: true
 			}];
 		},
 
@@ -218,12 +222,14 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 			this.wc.selection.getItems().then(function(items){
 				var hasItemsSelected = items.length > 0,
 					properties = {
-						type: "bottom",
-						show: hasItemsSelected,
-						sticky: hasItemsSelected
+						type: "bottom"
 					};
 
 				properties[hasItemsSelected ? "showCommands" : "hideCommands"] = ["globalSeparator", "explore"];
+
+				if(hasItemsSelected){
+					properties.show = hasItemsSelected;
+				}
 
 				this._state.dispatcher.dispatchEvent("updateBarState", properties);
 			}.bind(this));

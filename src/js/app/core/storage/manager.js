@@ -9,7 +9,7 @@
 		},
 
 		getProperty: function (key) {
-			return this._adapter.get(this._storageKey).then(function (content) {
+			return this.getString(this._storageKey).then(function (content) {
 				if (content) {
 					try{
 						return JSON.parse(content)[key];
@@ -21,7 +21,16 @@
 		},
 
 		setProperty: function (key, value) {
-			return this.getProperty(key).then(function(container){
+			return this.getString(this._storageKey).then(function (content) {
+				var container;
+
+				if (content) {
+					try {
+						container = JSON.parse(content);
+					} catch (e) {
+					}
+				}
+				
 				container = container || {};
 
 				container[key] = value;

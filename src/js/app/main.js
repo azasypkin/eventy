@@ -1,8 +1,11 @@
 define([
 	"underscore",
 	"config",
+
 	"app/utils/win",
 	"app/utils/template",
+	"app/utils/string",
+
 	"app/router",
 	"app/dispatcher",
 	"app/core/storage/adapters/roaming",
@@ -11,7 +14,9 @@ define([
 	"app/core/location/resolvers/virtualearth",
 	"app/core/location/manager",
 	"app/core/authentication/eventbrite",
+
 	"app/models/user",
+	"app/models/counters",
 
 	"app/contracts/search",
 
@@ -26,9 +31,9 @@ define([
 	"app/views/settings/about",
 	"app/views/settings/account",
 	"app/views/settings/privacy"
-], function (_, config, winUtils, templateUtils, WinRouter, dispatcher,
+], function (_, config, winUtils, templateUtils, stringUtils, WinRouter, dispatcher,
 			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager,
-			User,
+			User, Counters,
 			SearchContract,
 			TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage, ExplorePage, SearchPage,
 			AboutSettingsView, AccountSettingsView, PrivacySettingsView
@@ -38,16 +43,10 @@ define([
 
 	var storageManager = new StorageManager(new StorageAdapter(), config.state.storageKey),
 		locationManager = new LocationManager(new CoordinatesDetector(), new LocationResolver()),
-		state = {
-			user: new User(new AuthenticationManager(config.proxies.eventbrite, winUtils)),
-			dispatcher: dispatcher,
-			contracts: {
-				search: new SearchContract()
-			}
-		},
 		toolBelt = {
 			win: winUtils,
 			template: templateUtils,
+			string: stringUtils,
 			progress: {
 				_progress: document.getElementById("progress-indicator-holder"),
 				show: function(){
@@ -56,6 +55,14 @@ define([
 				hide: function(){
 					this._progress.style.visibility = "hidden";
 				}
+			}
+		},
+		state = {
+			user: new User(new AuthenticationManager(config.proxies.eventbrite, winUtils)),
+			dispatcher: dispatcher,
+			counters: new Counters(toolBelt),
+			contracts: {
+				search: new SearchContract()
 			}
 		},
 		activationKinds = Windows.ApplicationModel.Activation.ActivationKind;
@@ -91,10 +98,6 @@ define([
 		};
 
 		WinJS.UI.SettingsFlyout.populateSettings(setting);
-	});
-
-	state.user.addEventListener("changed", function(){
-		storageManager.setProperty("user", state.user.toJSON());
 	});
 
 	var router = new (WinJS.Class.mix(WinRouter, {
@@ -188,6 +191,14 @@ define([
 		state.dispatcher.dispatchEvent("user:initialized", data);
 	}, false);
 
+	state.user.addEventListener("changed", function(){
+		storageManager.setProperty("user", state.user.toJSON());
+	});
+
+	state.counters.addEventListener("changed", function(){
+		storageManager.setProperty("counters", state.counters.toJSON());
+	});
+
 	state.contracts.search.addEventListener("query:submitted", function(e){
 		if(e.detail.queryText){
 			WinJS.Navigation.navigate("search/" + e.detail.queryText);
@@ -232,7 +243,7 @@ define([
 		start: function (activationDetail) {
 			var initPromise,
 				navigateToInitialPage = function (e) {
-					if (state.user.isAuthenticated()) {
+					if (state.user.isAuthenticated() || !state.counters.get("firstTimeVisit")) {
 						var userCategories = state.user.get("categories");
 						if(userCategories && userCategories.length > 0){
 							if(e.kind === activationKinds.launch){
@@ -241,7 +252,7 @@ define([
 								return WinJS.Navigation.navigate("search/" + e.queryText);
 							}
 						} else {
-							return WinJS.Navigation.navigate("categories");
+							return WinJS.Navigation.navigate("firstTime_categories");
 						}
 					} else {
 						return WinJS.Navigation.navigate("welcome");
@@ -256,17 +267,23 @@ define([
 				initPromise = WinJS.Promise.join([createView(BottomBarView).render(), createView(TopBarView).render()]);
 			}
 
-			return initPromise.then(function(){
-					return storageManager.getProperty("user");
+			return initPromise
+				.then(function(){
+					return storageManager.getProperty("counters").then(function(counters){
+						if(counters){
+							state.counters.initialize(counters);
+						}
+					});
 				})
-				.then(function(userData){
-					var location;
-
-					if(userData){
-						state.user.initialize(userData);
-					}
-
-					location = state.user.get("location");
+				.then(function(){
+					return storageManager.getProperty("user").then(function(user){
+						if(user){
+							state.user.initialize(user);
+						}
+					});
+				})
+				.then(function(){
+					var location = state.user.get("location");
 
 					if (location && location.city) {
 						navigateToInitialPage(activationDetail);

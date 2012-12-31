@@ -15,7 +15,9 @@ define(["app/views/pages/base"],function(BaseView){
 			var categories = this._state.user.get("categories");
 			WinJS.Navigation.navigate(categories && categories.length > 0 ? "home":"firstTime_categories", {
 				keepHistory: false
-			});
+			}).then(function(){
+				this._state.counters.set("firstTimeVisit", false);
+			}.bind(this));
 		},
 
 		getBarsSettings: function(){

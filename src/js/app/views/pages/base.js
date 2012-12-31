@@ -5,8 +5,13 @@ define(["app/views/base"], function(BaseView){
 		BaseView.apply(this, arguments);
 	}, {
 
+		searchOnKeyboardInput: false,
+
 		render: function(){
 			this._initBars();
+
+			this._state.contracts.search.setShowOnKeyboardInput(this.searchOnKeyboardInput);
+
 			return BaseView.prototype.render.apply(this, arguments);
 		},
 

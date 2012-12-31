@@ -121,6 +121,7 @@
     <Content Include="js\app\core\storage\adapters\roaming.js" />
     <Content Include="js\app\core\storage\manager.js" />
     <Content Include="js\app\dispatcher.js" />
+    <Content Include="js\app\models\counters.js" />
     <Content Include="js\app\models\geo.js" />
     <Content Include="js\app\models\user.js" />
     <Content Include="js\app\proxies\virtualearth.js" />
