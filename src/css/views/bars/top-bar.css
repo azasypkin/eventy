@@ -52,6 +52,10 @@
 				border:none;
 			}
 
+				#top-bar.win-appbar .title-area .title-container:disabled .chevron {
+					display:none;
+				}
+
 			#top-bar.win-appbar .title-area .page-title {
 				display: inline;
 				font-size: 80%;
@@ -66,10 +70,9 @@
 			}
 
 
-		#top-bar.win-appbar #search-filter {
-			line-height: 90px;
+		#top-bar.win-appbar #search-filter-container {
 			-ms-grid-column: 3;
-			padding-left: 20px;
+			display: none;
 			opacity: 0;
 		}
 

@@ -1,6 +1,36 @@
 ﻿<footer aria-label="Commands bar" role="toolbar">
 	<div class="right">
 		<button data-win-control="WinJS.UI.AppBarCommand" data-win-options="{
+			id:'location',
+			section:'global',
+			label:'My location',
+			icon:'mappin',
+			tooltip: 'Detect my location'
+		}" type="button"></button>
+		<button data-win-control="WinJS.UI.AppBarCommand" data-win-options="{
+			id:'categories',
+			section:'global',
+			label:'Categories',
+			icon:'edit',
+			tooltip: 'Edit categories'
+		}" type="button"></button>
+		<button data-win-control="WinJS.UI.AppBarCommand" data-win-options="{
+			id:'search',
+			section:'global',
+			label:'Search',
+			icon:'find',
+			tooltip: 'Advanced search'
+		}" type="button"></button>
+		<button data-win-control="WinJS.UI.AppBarCommand" data-win-options="{
+			id:'refine',
+			section:'global',
+			label:'Refine',
+			icon:'filter',
+			hidden: true,
+			tooltip: 'Refine search'
+		}" type="button"></button>
+		<hr data-win-control="WinJS.UI.AppBarCommand" data-win-options="{id:'globalSeparator',type:'separator',section:'global', hidden: true}" />
+		<button data-win-control="WinJS.UI.AppBarCommand" data-win-options="{
 			id:'openInBrowser',
 			section:'global',
 			label:'Browser',

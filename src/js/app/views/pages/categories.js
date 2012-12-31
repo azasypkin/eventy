@@ -61,7 +61,8 @@ define(["app/views/pages/base"],function(BaseView){
 			this.wc = new WinJS.UI.ListView(document.getElementById("category-list-view"), {
 				layout: {type: WinJS.UI.GridLayout},
 				itemDataSource: (new WinJS.Binding.List(data)).dataSource,
-				itemTemplate: this._itemTemplate.bind(this)
+				itemTemplate: this._itemTemplate.bind(this),
+				tapBehavior: "toggleSelect"
 			});
 
 			this.wc.selection.set(selection);
@@ -122,9 +123,14 @@ define(["app/views/pages/base"],function(BaseView){
 
 					this.raiseEvent("saved");
 
-					WinJS.Navigation.navigate("home", {
-						keepHistory: this._isFirstTimeSelection === false
-					});
+					if(this._isFirstTimeSelection){
+						WinJS.Navigation.navigate("home", {
+							keepHistory: false
+						});
+					} else {
+						WinJS.Navigation.back(1);
+					}
+
 				}.bind(this));
 			}
 		}

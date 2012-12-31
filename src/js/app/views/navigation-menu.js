@@ -48,7 +48,7 @@ define(["app/views/base"],function(BaseView){
 					id: "home",
 					label: this._config.labels["Header.HomeView"],
 					type: "button"
-				},{
+				}/*,{
 					id: "search",
 					label: this._config.labels["Header.SearchView"],
 					type: "button"
@@ -56,7 +56,7 @@ define(["app/views/base"],function(BaseView){
 					id: "categories",
 					label: this._config.labels["Header.CategoriesView"],
 					type: "button"
-				}],
+				}*/],
 				categories = this._state.user.get("categories");
 
 			if(categories && categories.length > 0){
@@ -72,6 +72,10 @@ define(["app/views/base"],function(BaseView){
 						type:	"button"
 					});
 				}.bind(this));
+
+				this.dispatchEvent("state:changed", {
+					enabled: true
+				});
 			}
 
 			this.wc.commands = commands;

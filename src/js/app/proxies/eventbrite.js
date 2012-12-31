@@ -58,6 +58,11 @@ define([
 					return this._config.categories[category];
 				}.bind(this));
 			}
+
+			if(!parameters.city && parameters.within){
+				delete parameters.within;
+			}
+
 			return parameters;
 		},
 

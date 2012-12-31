@@ -6,5 +6,7 @@
 @import url("views/pages/search.css");
 @import url("views/pages/explore.css");
 @import url("views/bars/top-bar.css");
+@import url("views/search-filter.css");
+@import url("views/search-refine.css");
 
 @import url("views/settings/common.css");

@@ -1,18 +1,27 @@
-define(["app/views/bars/base"],function(BaseView){
+define(["app/views/bars/base", "app/views/search-refine"],function(BaseView, SearchRefineView){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.apply(this, arguments);
 
-		this._onExploreClicked = this._onExploreClicked.bind(this);
-		this._onOpenInBrowserClicked = this._onOpenInBrowserClicked.bind(this);
-		this._onNextClicked = this._onNextClicked.bind(this);
+		this._onCommandClicked = this._onCommandClicked.bind(this);
+
+		this._searchRefine = Object.create(SearchRefineView.prototype);
+		SearchRefineView.apply(this._searchRefine, arguments);
+
+		this.container.addEventListener("click", this._onCommandClicked);
 	}, {
 
 		view: "/html/views/bars/bottom-bar.html",
 		container: document.getElementById("bottom-bar"),
 
 		type: "bottom",
+
+		render: function(){
+			return BaseView.prototype.render.apply(this, arguments).then(function(){
+				return this._searchRefine.render(document.getElementById("refine"));
+			}.bind(this));
+		},
 
 		getBarProperties: function(){
 			return {
@@ -22,16 +31,14 @@ define(["app/views/bars/base"],function(BaseView){
 			};
 		},
 
-		_onExploreClicked: function(){
-			this._state.dispatcher.dispatchEvent("exploreCommandInvoked");
-		},
-
-		_onOpenInBrowserClicked: function(){
-			this._state.dispatcher.dispatchEvent("openInBrowserCommandInvoked");
-		},
-
-		_onNextClicked: function(){
-			this._state.dispatcher.dispatchEvent("nextCommandInvoked");
+		_onCommandClicked: function(e){
+			if(e.target && e.target.winControl && e.target.winControl instanceof WinJS.UI.AppBarCommand){
+				if(e.target.winControl.id === "refine"){
+					this._searchRefine.show();
+				} else {
+					this._state.dispatcher.dispatchEvent("command:" + e.target.winControl.id);
+				}
+			}
 		}
 	});
 });

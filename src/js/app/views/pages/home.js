@@ -9,7 +9,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		this._onExploreCommandInvoked = this._onExploreCommandInvoked.bind(this);
 
-		this._state.dispatcher.addEventListener("exploreCommandInvoked", this._onExploreCommandInvoked);
+		this._state.dispatcher.addEventListener("command:explore", this._onExploreCommandInvoked);
 
 		this._proxy = new Proxy();
 	}, {
@@ -61,7 +61,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 				if(--this._stillLoading === 0){
 					this._onItemsReady();
 				}
-			}.bind(this), function(e){
+			}.bind(this), function(){
 				if(--this._stillLoading === 0){
 					this._onItemsReady();
 				}
@@ -120,22 +120,32 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 			}
 		},
 
-		_createListView: function(events){
-			var itemsList = new WinJS.Binding.List(events),
-				groupedItemsList = itemsList.createGrouped(function(item){
+		_getBindingList: function(events){
+			return (new WinJS.Binding.List(events)).createGrouped(function(item){
 					return item.groupKey;
 				}, function(item){
 					return this._groups[item.groupKey].name;
 				}.bind(this), function(leftKey, rightKey){
 					return this._groups[leftKey].order - this._groups[rightKey].order;
 				}.bind(this));
+		},
 
+		_updateDataSource: function(events){
+			var bindingList = this._getBindingList(events);
+
+			WinJS.UI.setOptions(this.wc, {
+				itemDataSource: bindingList.dataSource,
+				groupDataSource: bindingList.groups.dataSource
+			});
+		},
+
+		_createListView: function(events){
 			this.wc = new WinJS.UI.ListView(document.getElementById("event-list-view"), {
 				layout: {type: WinJS.UI.GridLayout},
-				itemDataSource: groupedItemsList.dataSource,
-				groupDataSource: groupedItemsList.groups.dataSource,
 				itemTemplate: this._itemTemplate.bind(this)
 			});
+
+			this._updateDataSource(events);
 		},
 
 		getBarsSettings: function(){
@@ -146,8 +156,9 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 				show: true
 			}, {
 				type: "bottom",
-				enabled: false,
-				commands: ["explore"]
+				enabled: true,
+				show: true,
+				commands: ["location", "search", "categories"]
 			}];
 		},
 
@@ -161,6 +172,12 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 				}.bind(this));
 		},
 
+		refresh: function(){
+			return this._loadEvents().then(function(events){
+				this._updateDataSource(events);
+			}.bind(this));
+		},
+
 		unload: function(){
 			BaseView.prototype.unload.apply(this, arguments);
 
@@ -169,7 +186,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 				this.wc.removeEventListener("iteminvoked", this._onItemInvoked);
 			}
 
-			this._state.dispatcher.removeEventListener("exploreCommandInvoked", this._onExploreCommandInvoked);
+			this._state.dispatcher.removeEventListener("command:explore", this._onExploreCommandInvoked);
 		},
 
 		_onItemsReady: function(){
@@ -197,17 +214,16 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 			this._itemsLoadErrorCallback = null;
 		},
 
-		_onSelectionChanged: function (e) {
+		_onSelectionChanged: function () {
 			this.wc.selection.getItems().then(function(items){
 				var hasItemsSelected = items.length > 0,
 					properties = {
 						type: "bottom",
 						show: hasItemsSelected,
-						sticky: hasItemsSelected,
-						enabled: hasItemsSelected
+						sticky: hasItemsSelected
 					};
 
-				properties[hasItemsSelected ? "showCommands" : "hideCommands"] = ["explore"];
+				properties[hasItemsSelected ? "showCommands" : "hideCommands"] = ["globalSeparator", "explore"];
 
 				this._state.dispatcher.dispatchEvent("updateBarState", properties);
 			}.bind(this));

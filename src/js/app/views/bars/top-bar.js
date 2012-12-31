@@ -1,4 +1,4 @@
-define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, NavigationMenu){
+define(["app/views/bars/base", "app/views/navigation-menu", "app/views/search-filter"],function(BaseView, NavigationMenu, SearchFilter){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
@@ -6,12 +6,16 @@ define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, N
 
 		this._onBackButtonClicked = this._onBackButtonClicked.bind(this);
 		this._onHeaderClicked = this._onHeaderClicked.bind(this);
-		this._onFilterSubmitted = this._onFilterSubmitted.bind(this);
-		this._onFilterSelectChange = this._onFilterSelectChange.bind(this);
+		this._onMenuStateChanged = this._onMenuStateChanged.bind(this);
 
 		this._navigationMenu = Object.create(NavigationMenu.prototype);
-
 		NavigationMenu.apply(this._navigationMenu, arguments);
+/*
+		this._searchFilter = Object.create(SearchFilter.prototype);
+		SearchFilter.apply(this._searchFilter, arguments);*/
+
+		this._navigationMenu.addEventListener("state:changed", this._onMenuStateChanged, false);
+
 	}, {
 
 		view: "/html/views/bars/top-bar.html",
@@ -21,10 +25,12 @@ define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, N
 
 		render: function(){
 			return BaseView.prototype.render.apply(this, arguments).then(function(){
-				var titleArea = document.querySelector(".title-area");
 				document.getElementById("cmdBack").addEventListener("click", this._onBackButtonClicked, false);
-				titleArea.addEventListener("click", this._onHeaderClicked, false);
-				return this._navigationMenu.render(titleArea);
+
+				return WinJS.Promise.join([
+					this._navigationMenu.render(document.querySelector(".title-area"))
+					//this._searchFilter.render(document.getElementById("search-filter-container"))
+				]);
 			}.bind(this));
 		},
 
@@ -40,10 +46,15 @@ define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, N
 		unload: function(){
 			BaseView.prototype.unload.apply(this, arguments);
 
+			this._navigationMenu.removeEventListener("state:changed", this._onMenuStateChanged, false);
 			this._navigationMenu.unload.apply(this._navigationMenu, arguments);
 			this._navigationMenu = null;
 
+			this._searchFilter.unload.apply(this._searchFilter, arguments);
+			this._searchFilter = null;
+
 			document.getElementById("cmdBack").removeEventListener("click", this._onBackButtonClicked, false);
+			document.querySelector(".title-area").removeEventListener("click", this._onHeaderClicked, false);
 		},
 
 		_updateBackButtonState: function(){
@@ -73,42 +84,10 @@ define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, N
 					}
 
 					if (parameters.filter) {
-						var filter = document.getElementById("search-filter");
-
-						if (typeof parameters.filter.query === "string") {
-							filter["search-query"].value = parameters.filter.query;
-						}
-
-						if(typeof parameters.filter.location === "string"){
-							filter["search-location"].value = parameters.filter.location;
-						}
-
-						if(typeof parameters.filter.date === "string"){
-							filter["search-date"].value = parameters.filter.date;
-						}
-
-						if(parameters.filter.show === true){
-							filter.addEventListener("submit", this._onFilterSubmitted);
-							filter["search-date"].addEventListener("change", this._onFilterSelectChange);
-
-							WinJS.UI.Animation.enterContent(filter, null);
-						} else if (parameters.filter.show === false){
-							filter.removeEventListener("submit", this._onFilterSubmitted);
-							filter["search-date"].removeEventListener("change", this._onFilterSelectChange);
-
-							WinJS.UI.Animation.exitContent(filter, null);
-						}
+						//this._searchFilter.update(parameters.filter);
 					}
 				}
 			}
-		},
-
-		submitFilterForm: function(form){
-			this._state.dispatcher.dispatchEvent("filter:submitted", {
-				location:	form["search-location"].value,
-				query:		form["search-query"].value,
-				date:		form["search-date"].value
-			});
 		},
 
 		_onRoute: function(){
@@ -125,13 +104,11 @@ define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, N
 			this._navigationMenu.show();
 		},
 
-		_onFilterSubmitted: function (e) {
-			e.preventDefault();
-			this.submitFilterForm(e.target);
-		},
+		_onMenuStateChanged: function(e){
+			var titleArea = document.querySelector(".title-area");
 
-		_onFilterSelectChange: function (e) {
-			this.submitFilterForm(e.target.form);
+			titleArea.querySelector("button.title-container").disabled = !e.detail.enabled;
+			titleArea[e.detail.enabled ? "addEventListener" : "removeEventListener"]("click", this._onHeaderClicked, false);
 		}
 	});
 });

@@ -12,6 +12,9 @@ define([
 	"app/core/location/manager",
 	"app/core/authentication/eventbrite",
 	"app/models/user",
+
+	"app/contracts/search",
+
 	"app/views/bars/top-bar",
 	"app/views/bars/bottom-bar",
 	"app/views/pages/welcome",
@@ -23,14 +26,24 @@ define([
 	"app/views/settings/about",
 	"app/views/settings/account",
 	"app/views/settings/privacy"
-], function (_, config, winUtils, templateUtils, WinRouter, dispatcher, StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager, User, TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage, ExplorePage, SearchPage, AboutSettingsView, AccountSettingsView, PrivacySettingsView) {
+], function (_, config, winUtils, templateUtils, WinRouter, dispatcher,
+			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager,
+			User,
+			SearchContract,
+			TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage, ExplorePage, SearchPage,
+			AboutSettingsView, AccountSettingsView, PrivacySettingsView
+) {
+
 	"use strict";
 
 	var storageManager = new StorageManager(new StorageAdapter(), config.state.storageKey),
 		locationManager = new LocationManager(new CoordinatesDetector(), new LocationResolver()),
 		state = {
 			user: new User(new AuthenticationManager(config.proxies.eventbrite, winUtils)),
-			dispatcher: dispatcher
+			dispatcher: dispatcher,
+			contracts: {
+				search: new SearchContract()
+			}
 		},
 		toolBelt = {
 			win: winUtils,
@@ -96,19 +109,24 @@ define([
 
 			this._navigationPromise.cancel();
 
-			if (this._page) {
-				this._page.unload();
-				this._page.removeEventListener("event", this._dispatchPageEvent, false);
+			if(this._page instanceof PageClass && typeof this._page.refresh === "function"){
+				this._navigationPromise = this._page.refresh.apply(this._page, Array.prototype.slice.call(arguments, 1));
+			} else {
+				if (this._page) {
+					this._page.unload();
+					this._page.removeEventListener("event", this._dispatchPageEvent, false);
+				}
+
+				this._page = createView(PageClass);
+
+				this._page.addEventListener("event", this._dispatchPageEvent, false);
+
+				this._navigationPromise = this._page.render.apply(this._page, Array.prototype.slice.call(arguments, 1));
 			}
 
-			this._page = createView(PageClass);
-
-			this._page.addEventListener("event", this._dispatchPageEvent, false);
-
-			return this._navigationPromise = this._page.render.apply(this._page, Array.prototype.slice.call(arguments, 1))
-				.then(function(){
-					progress.style.visibility = "hidden";
-				});
+			return this._navigationPromise.then(function(){
+				progress.style.visibility = "hidden";
+			});
 		},
 
 		routes: {
@@ -142,11 +160,11 @@ define([
 		},
 
 		explore: function(id, params){
-			if(this._page instanceof ExplorePage){
-				return this._page.refresh(id, params);
-			} else {
-				return this._navigateTo(ExplorePage, id, params);
-			}
+			return this._navigateTo(ExplorePage, id, params);
+		},
+
+		refresh: function(){
+			return this._navigateTo(this._page.constructor);
 		}
 	}))();
 
@@ -158,8 +176,40 @@ define([
 		state.dispatcher.dispatchEvent("user:initialized", data);
 	});
 
+	state.contracts.search.addEventListener("query:submitted", function(e){
+		if(e.detail.queryText){
+			WinJS.Navigation.navigate("search/" + e.detail.queryText);
+		} else {
+			WinJS.Navigation.navigate("search");
+		}
+	});
+
+	state.dispatcher.addEventListener("command:categories", function(){
+		WinJS.Navigation.navigate("categories");
+	});
+
+	state.dispatcher.addEventListener("command:search", function(){
+		WinJS.Navigation.navigate("search");
+	});
+
+	state.dispatcher.addEventListener("command:location", function(){
+		locationManager.getLocation().then(function (location) {
+			var previousLocation = state.user.get("location");
+			if (location && (!previousLocation || previousLocation.lat !== location.lat || previousLocation.lon !== location.lon)) {
+				state.user.set("location", location);
+				router.refresh();
+			}
+		}, function () {
+			toolBelt.win.showPrompt(
+				"Your location cannot be found.",
+				"Please, change your Permissions in Settings to allow Eventy to access your location"
+			);
+		});
+	});
+
 	return {
-		start: function (e) {
+		start: function (activationDetail) {
+			state.contracts.search.setup();
 
 			var navigateToInitialPage = function (e) {
 				if (state.user.isAuthenticated()) {
@@ -183,18 +233,25 @@ define([
 					return storageManager.getProperty("user");
 				})
 				.then(function(userData){
+					var location;
 
 					if(userData){
 						state.user.initialize(userData);
 					}
 
-					// detect location
-					locationManager.getLocation().then(function(location){
-						state.user.set("location", location);
-						navigateToInitialPage(e);
-					}, function (e) {
-						navigateToInitialPage(e);
-					});
+					location = state.user.get("location");
+
+					if (location && location.city) {
+						navigateToInitialPage(activationDetail);
+					} else {
+						// detect location
+						WinJS.Promise.timeout(5000, locationManager.getLocation()).then(function(location){
+							state.user.set("location", location);
+							navigateToInitialPage(activationDetail);
+						}, function(e){
+							navigateToInitialPage(activationDetail);
+						});
+					}
 				});
 		}
 	};

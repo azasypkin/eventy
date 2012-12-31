@@ -10,7 +10,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 
 		this._onExploreCommandInvoked = this._onExploreCommandInvoked.bind(this);
 
-		this._state.dispatcher.addEventListener("exploreCommandInvoked", this._onExploreCommandInvoked, false);
+		this._state.dispatcher.addEventListener("command:explore", this._onExploreCommandInvoked, false);
 		this._state.dispatcher.addEventListener("filter:submitted", this._onFilterSubmitted, false);
 
 		this._proxy = new Proxy();
@@ -42,13 +42,13 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 			}
 		},
 
-		_createListView: function(parameters){
-			this._dataSource = new EventsCollection(this._, this._config.proxies.eventbrite, this._proxy, parameters);
+		_createListView: function(filter){
 			this.wc = new WinJS.UI.ListView(document.getElementById("event-list-view"), {
 				layout: {type: WinJS.UI.GridLayout},
-				itemDataSource: this._dataSource,
 				itemTemplate: this._itemTemplate.bind(this)
 			});
+
+			this._updateDataSource(filter);
 		},
 
 		getBarsSettings: function(){
@@ -59,8 +59,9 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 				show: true
 			}, {
 				type: "bottom",
-				enabled: false,
-				commands: ["explore"]
+				enabled: true,
+				commands: ["location", "categories", "refine"],
+				sticky:true
 			}];
 		},
 
@@ -80,13 +81,37 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 						filter: filter
 					});
 
-					return this._prepareParameters(filter);
+					return filter;
 				}.bind(this))
 				.then(this._createListView.bind(this))
 				.then(function(){
 					this.wc.addEventListener("selectionchanged", this._onSelectionChanged);
 					this.wc.addEventListener("iteminvoked", this._onItemInvoked);
 				}.bind(this));
+		},
+
+		refresh: function(query){
+			var filter = {
+				show: true,
+				query: query
+			};
+
+			this._state.dispatcher.dispatchEvent("updateBarState", {
+				type: "top",
+				filter: filter
+			});
+
+			this._updateDataSource(filter);
+
+			return WinJS.Promise.wrap();
+		},
+
+		_updateDataSource: function(filter){
+			this._dataSource = new EventsCollection(this._, this._config.proxies.eventbrite, this._proxy, this._prepareParameters(filter));
+
+			WinJS.UI.setOptions(this.wc, {
+				itemDataSource: this._dataSource
+			});
 		},
 
 		unload: function(){
@@ -104,7 +129,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 				}
 			});
 
-			this._state.dispatcher.removeEventListener("exploreCommandInvoked", this._onExploreCommandInvoked, false);
+			this._state.dispatcher.removeEventListener("command:explore", this._onExploreCommandInvoked, false);
 			this._state.dispatcher.removeEventListener("filter:submitted", this._onFilterSubmitted, false);
 		},
 
@@ -137,13 +162,14 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 			this.wc.selection.getItems().then(function(items){
 				var hasItemsSelected = items.length > 0,
 					properties = {
-						type: "bottom",
-						show: hasItemsSelected,
-						sticky: hasItemsSelected,
-						enabled: hasItemsSelected
+						type: "bottom"
 					};
 
-				properties[hasItemsSelected ? "showCommands" : "hideCommands"] = ["explore"];
+				properties[hasItemsSelected ? "showCommands" : "hideCommands"] = ["globalSeparator", "explore"];
+
+				if(hasItemsSelected){
+					properties.show = hasItemsSelected;
+				}
 
 				this._state.dispatcher.dispatchEvent("updateBarState", properties);
 			}.bind(this));
@@ -173,11 +199,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 		},
 
 		_onFilterSubmitted: function(e){
-			this._dataSource = new EventsCollection(this._, this._config.proxies.eventbrite, this._proxy, this._prepareParameters(e.detail));
-
-			WinJS.UI.setOptions(this.wc, {
-				itemDataSource: this._dataSource
-			});
+			this._updateDataSource(e.detail);
 		}
 	});
 });

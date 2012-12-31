@@ -8,8 +8,8 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 		this._onOpenInBrowserCommandInvoked = this._onOpenInBrowserCommandInvoked.bind(this);
 		this._onPageSelected = this._onPageSelected.bind(this);
 
-		this._state.dispatcher.addEventListener("nextCommandInvoked", this._onNextCommandInvoked, false);
-		this._state.dispatcher.addEventListener("openInBrowserCommandInvoked", this._onOpenInBrowserCommandInvoked, false);
+		this._state.dispatcher.addEventListener("command:next", this._onNextCommandInvoked, false);
+		this._state.dispatcher.addEventListener("command:openInBrowser", this._onOpenInBrowserCommandInvoked, false);
 
 		this._proxy = new Proxy();
 	}, {
@@ -59,7 +59,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 				show: true,
 				sticky: true,
 				title: this._config.labels["Header.ExploreView"],
-				commands: ["openInBrowser", "next"]
+				commands: ["search", "globalSeparator", "openInBrowser", "next"]
 			}];
 		},
 
@@ -102,8 +102,8 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 				}
 			});
 
-			this._state.dispatcher.removeEventListener("nextCommandInvoked", this._onNextCommandInvoked, false);
-			this._state.dispatcher.removeEventListener("openInBrowserCommandInvoked", this._onOpenInBrowserCommandInvoked, false);
+			this._state.dispatcher.removeEventListener("command:next", this._onNextCommandInvoked, false);
+			this._state.dispatcher.removeEventListener("command:openInBrowser", this._onOpenInBrowserCommandInvoked, false);
 		},
 
 		_onNextCommandInvoked: function(){
