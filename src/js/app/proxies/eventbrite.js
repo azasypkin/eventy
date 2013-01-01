@@ -159,6 +159,55 @@ define([
 			}
 		},
 
+		getUserUpcomingEvents: function (params) {
+			params = {
+				type: params.type
+			};
+			if (this._useFakeData) {
+				return this._getFake("userUpcomingEvents");
+			} else {
+				return WinJS.xhr({
+					url: this._buildUrl("user_list_tickets", params),
+					responseType: this._config.dataType,
+					headers: this._getHeaders(),
+					timeout: this._config.timeout
+				}).then(function(data){
+					data = JSON.parse(data.responseText);
+					var result = [],
+						ids = [],
+						ticket,
+						order,
+						i,
+						j;
+
+					// first element is the summary
+					if (data && !data.error && data.user_tickets && data.user_tickets.length > 1) {
+						for (i = 1; i < data.user_tickets.length; i++) {
+							ticket = data.user_tickets[i];
+							for(j = 0; j < ticket.orders.length; j++){
+								order = ticket.orders[j].order;
+								if(ids.indexOf(order.event.id) < 0){
+									result.push(this._convertToEvent(order.event, params));
+								}
+							}
+						}
+					} else if(data.error){
+						return WinJS.Promise.wrapError(
+							new BaseError("SearchEvents request failed.", BaseError.Codes.API_FAILED, data.error)
+						);
+					}
+					return {
+						total: result.length,
+						items: result
+					};
+				}.bind(this), function(e){
+						return WinJS.Promise.wrapError(
+							new BaseError("SearchEvents request failed.", BaseError.Codes.XHR_FAILED, e)
+						);
+					});
+			}
+		},
+
 		getUserDetails: function () {
 			if (this._useFakeData) {
 				return this._getFake("userDetails");
@@ -249,10 +298,10 @@ define([
 						var mappedCategory = this._reverseCategoriesIndex[categoryId],
 							category = {
 								id: mappedCategory,
-								requestedBy: request.category.indexOf(mappedCategory) >= 0
+								requestedBy: request.category && request.category.indexOf(mappedCategory) >= 0
 							};
 						// category by which item was requested should be in the beginning
-						if(category.requestedBy){
+						if (category.requestedBy) {
 							event.categories.unshift(category);
 						} else {
 							event.categories.push(category);
@@ -260,6 +309,11 @@ define([
 						event.categories.push();
 					}.bind(this));
 				}
+			} else {
+				event.categories = [{
+					id: "other",
+					requestedBy: false
+				}];
 			}
 
 			event.color = globalConfig.dictionaries.categories[event.categories[0].id].color;

@@ -23,6 +23,14 @@ define(["app/views/pages/base"],function(BaseView){
 		wc: null,
 
 		_groups: {
+			"yourEvents": {
+				parameters: {
+					type: "all"
+				},
+				items: null,
+				name: "Your upcoming events",
+				order: 0
+			},
 			"nearby": {
 				parameters: {
 					within: 60,
@@ -31,7 +39,7 @@ define(["app/views/pages/base"],function(BaseView){
 				},
 				items: null,
 				name: "Around me",
-				order: 0
+				order: 1
 			},
 			"this_week": {
 				parameters: {
@@ -41,7 +49,7 @@ define(["app/views/pages/base"],function(BaseView){
 				},
 				items: null,
 				name: "This week",
-				order: 1
+				order: 2
 			}
 		},
 
@@ -63,7 +71,7 @@ define(["app/views/pages/base"],function(BaseView){
 		},
 
 		_loadItems: function(groupKey, parameters){
-			return this._proxy.searchEvents(parameters).then(function(data){
+			return this._proxy[groupKey === "yourEvents" ? "getUserUpcomingEvents" : "searchEvents"](parameters).then(function(data){
 				this._groups[groupKey].items = data.items;
 				if(--this._stillLoading === 0){
 					this._onItemsReady();
