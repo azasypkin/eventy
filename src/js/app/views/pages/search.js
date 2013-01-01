@@ -148,6 +148,13 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 				this.wc.removeEventListener("iteminvoked", this._onItemInvoked);
 			}
 
+			this._state.dispatcher.dispatchEvent("updateBarState", {
+				type: "top",
+				secondaryTitle: {
+					title: ""
+				}
+			});
+
 			this._state.dispatcher.removeEventListener("command:explore", this._onExploreCommandInvoked, false);
 			this._state.dispatcher.removeEventListener("filter:submitted", this._onFilterSubmitted, false);
 		},
@@ -157,38 +164,25 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 				timePeriodName;
 
 			if(filter.query){
-				titleFragments.push("<strong>'" + filter.query + "'</strong>");
-			} else if(!filter.category) {
-				titleFragments.push("Events");
+				titleFragments.push("'" + filter.query + "'");
 			}
 
 			if(filter.category){
-				if(!filter.query){
-					titleFragments.push("<strong>" + this._config.dictionaries.categories[filter.category].name + "</strong>");
-				} else {
-					titleFragments.push("in <strong>" + this._config.dictionaries.categories[filter.category].name + "</strong>");
-				}
+				titleFragments.push(this._config.dictionaries.categories[filter.category].name);
 			}
 
 			if(filter.location){
-				titleFragments.push("in <strong>" + filter.location + "</strong>");
+				titleFragments.push(filter.location);
 			}
 
-			if(filter.date){
-				timePeriodName = '<strong>'+this._config.dictionaries.timePeriods[filter.date].name + '</strong>';
-				if(filter.date === "today"){
-					titleFragments.splice(1, 0, timePeriodName + "'s");
-				} else if(filter.date === "future" || filter.date === "past" || filter.date === "all"){
-					titleFragments.splice(1, 0, timePeriodName);
-				} else {
-					titleFragments.push("within " + timePeriodName);
-				}
+			if(filter.date && filter.date !== "all"){
+				titleFragments.push(this._config.dictionaries.timePeriods[filter.date].name);
 			}
 
 			this._state.dispatcher.dispatchEvent("updateBarState", {
 				type: "top",
 				secondaryTitle: {
-					title: titleFragments.join(' '),
+					title: "<strong>Criteria:</strong> " + titleFragments.join(', '),
 					color: "#fff"
 				}
 			});
@@ -269,8 +263,15 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 		},
 
 		_onFilterSubmitted: function (e) {
+			var userFilter = this._state.user.get("filter"),
+				filter = e.detail;
+
+			if(userFilter && userFilter.category){
+				filter.category = userFilter.category;
+			}
+
 			this._helpers.progress.show();
-			this._updateDataSource(e.detail).then(function () {
+			this._updateDataSource(filter).then(function () {
 				this._helpers.progress.hide();
 			}.bind(this));
 		}
