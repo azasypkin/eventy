@@ -44,7 +44,7 @@ define([
 			if(token){
 				parameters.access_token = token;
 			} else {
-				parameters.app_key = this._appKey;
+				parameters.app_key = this._config.appKey;
 			}
 
 			keys = Object.keys(this._prepareParameters(parameters));

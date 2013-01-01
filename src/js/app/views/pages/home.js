@@ -29,7 +29,8 @@ define(["app/views/pages/base"],function(BaseView){
 				},
 				items: null,
 				name: "Your upcoming events",
-				order: 0
+				order: 0,
+				authenticatedUserRequired: true
 			},
 			"nearby": {
 				parameters: {
@@ -101,6 +102,7 @@ define(["app/views/pages/base"],function(BaseView){
 					location = this._state.user.get("location"),
 					groupKeys = Object.keys(this._groups),
 					groupKey,
+					group,
 					i;
 
 				this._itemsLoadCompleteCallback = complete;
@@ -114,13 +116,20 @@ define(["app/views/pages/base"],function(BaseView){
 					parameters.city = location.city;
 				}
 
-				this._stillLoading = groupKeys.length;
+				this._stillLoading = 0;
 
 				for(i = 0; i < groupKeys.length; i++){
 					groupKey = groupKeys[i];
+					group = this._groups[groupKey];
 
-					// load items nearby
-					this._loadItems(groupKey, this._.extend({}, parameters, this._groups[groupKey].parameters));
+					group.items = null;
+
+					if(!group.authenticatedUserRequired || this._state.user.isAuthenticated()){
+						this._stillLoading++;
+						
+						// load items nearby
+						this._loadItems(groupKey, this._.extend({}, parameters, this._groups[groupKey].parameters));
+					}
 				}
 			}.bind(this));
 		},
