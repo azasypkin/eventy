@@ -124,6 +124,7 @@
     <Content Include="js\app\models\counters.js" />
     <Content Include="js\app\models\geo.js" />
     <Content Include="js\app\models\user.js" />
+    <Content Include="js\app\models\userDetails.js" />
     <Content Include="js\app\proxies\virtualearth.js" />
     <Content Include="js\app\utils\format.js" />
     <Content Include="js\app\utils\string.js" />

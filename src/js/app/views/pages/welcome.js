@@ -28,6 +28,8 @@ define(["app/views/pages/base"],function(BaseView){
 
 		render: function(){
 			return BaseView.prototype.render.apply(this, arguments).then(function(){
+				this._state.counters.set("firstTimeVisit", true);
+
 				document.getElementById("btn-try").addEventListener("click", this._onTryButtonClicked, false);
 				document.getElementById("btn-connect").addEventListener("click", this._onConnectButtonClicked, false);
 			}.bind(this));
@@ -53,16 +55,7 @@ define(["app/views/pages/base"],function(BaseView){
 		},
 
 		_onConnectButtonClicked: function(){
-			this._state.user.authenticate().then(function (result) {
-				if (result) {
-					this._navigateToNextPage();
-				}
-			}.bind(this), function(){
-				this._helpers.win.showPrompt(
-					"Unable to connect to Eventbrite",
-					"There was a problem trying to connect to Eventbrite. Please try again later."
-				);
-			}.bind(this));
+			WinJS.UI.SettingsFlyout.showSettings("account-setting-container", "/html/views/settings/account.html");
 		}
 	});
 });

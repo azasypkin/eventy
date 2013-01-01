@@ -2,6 +2,8 @@ define([
 	"underscore",
 	"config",
 
+	"app/proxies/eventbrite",
+
 	"app/utils/win",
 	"app/utils/template",
 	"app/utils/string",
@@ -33,6 +35,7 @@ define([
 	"app/views/settings/account",
 	"app/views/settings/privacy"
 ], function (_, config,
+			Proxy,
 			winUtils, templateUtils, stringUtils, formatUtils,
 			WinRouter, dispatcher,
 			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager,
@@ -78,19 +81,18 @@ define([
 				search: new SearchContract()
 			}
 		},
+		proxy = new Proxy({
+			user: state.user
+		}),
 		activationKinds = Windows.ApplicationModel.Activation.ActivationKind;
 
 	var createView = function(ViewClass){
-		return new ViewClass(_, config, state, toolBelt);
+		return new ViewClass(_, config, proxy, state, toolBelt);
 	};
 
-	// define settings
-	AccountSettingsView.state = state;
-	AccountSettingsView.helpers = toolBelt;
-
-	WinJS.UI.Pages.define("/html/views/settings/about.html", AboutSettingsView);
-	WinJS.UI.Pages.define("/html/views/settings/account.html", AccountSettingsView);
-	WinJS.UI.Pages.define("/html/views/settings/privacy.html", PrivacySettingsView);
+	WinJS.UI.Pages.define("/html/views/settings/about.html", createView(AboutSettingsView));
+	WinJS.UI.Pages.define("/html/views/settings/account.html", createView(AccountSettingsView));
+	WinJS.UI.Pages.define("/html/views/settings/privacy.html", createView(PrivacySettingsView));
 
 	WinJS.Application.addEventListener("settings", function (setting) {
 		setting.detail.applicationcommands = {};

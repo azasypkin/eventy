@@ -1,10 +1,15 @@
 define([
 	"underscore",
 	"config",
+
 	"app/utils/datetime",
+
+	"app/core/errors/base_error",
+
 	"app/models/event",
-	"app/models/category"
-], function (_, globalConfig, dateUtils, Event, Category) {
+	"app/models/category",
+	"app/models/userDetails"
+], function (_, globalConfig, dateUtils, BaseError, Event, Category, UserDetails) {
 	"use strict";
 
 	return WinJS.Class.define(function(options){
@@ -30,33 +35,31 @@ define([
 
 		_buildUrl: function (path, params) {
 			var url = path ? this._url + path : this._url,
+				parameters = params || {},
+				token = this._user.get("token"),
 				i,
 				key,
 				keys;
 
-			if(params){
-				keys = Object.keys(this._prepareParameters(params));
+			if(token){
+				parameters.access_token = token;
+			} else {
+				parameters.app_key = this._appKey;
+			}
 
-				for(i = 0; i < keys.length; i++){
-					key = keys[i];
-					url += (i === 0 ? "?" : "&") + key + "=" + params[key];
-				}
+			keys = Object.keys(this._prepareParameters(parameters));
+
+			for(i = 0; i < keys.length; i++){
+				key = keys[i];
+				url += (i === 0 ? "?" : "&") + key + "=" + parameters[key];
 			}
 
 			return url;
 		},
 
 		_prepareParameters: function (parameters) {
-			var token = this._user.get("token");
-
 			if (parameters.date) {
 				parameters.date = this._prepareDateRange(parameters.date);
-			}
-
-			if(token){
-				parameters.access_token = token;
-			} else {
-				parameters.app_key = this._appKey;
 			}
 
 			if(parameters.category && parameters.category instanceof Array && parameters.category.length > 0){
@@ -123,22 +126,13 @@ define([
 		},
 
 		searchEvents: function (params) {
-			var headers = {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			token = this._user.get("token");
-
-			if(token){
-				headers.Authorization = "Bearer " + token;
-			}
-
 			if (this._useFakeData) {
 				return this._getFake("events");
 			} else {
 				return WinJS.xhr({
-					url: this._buildUrl(null, params),
+					url: this._buildUrl("event_search", params),
 					responseType: this._config.dataType,
-					headers: headers,
+					headers: this._getHeaders(),
 					timeout: this._config.timeout
 				}).then(function(data){
 					data = JSON.parse(data.responseText);
@@ -148,16 +142,69 @@ define([
 						for (var i = 1; i < data.events.length; i++) {
 							result.push(this._convertToEvent(data.events[i].event, params));
 						}
+					} else if(data.error){
+						return WinJS.Promise.wrapError(
+							new BaseError("SearchEvents request failed.", BaseError.Codes.API_FAILED, data.error)
+						);
 					}
 					return {
 						total: result.length > 0 ? data.events[0].summary.total_items : 0,
 						items: result
 					};
-				}.bind(this));
+				}.bind(this), function(e){
+					return WinJS.Promise.wrapError(
+						new BaseError("SearchEvents request failed.", BaseError.Codes.XHR_FAILED, e)
+					);
+				});
 			}
 		},
 
-		getFake: function (name) {
+		getUserDetails: function () {
+			if (this._useFakeData) {
+				return this._getFake("userDetails");
+			} else {
+				return WinJS.xhr({
+					url: this._buildUrl("user_get"),
+					responseType: this._config.dataType,
+					headers: this._getHeaders(),
+					timeout: this._config.timeout
+				}).then(function(data){
+					try{
+						data = JSON.parse(data.responseText);
+					} catch(e){}
+
+					if (data && !data.error && data.user) {
+						return new UserDetails({
+							id: data.user.user_id,
+							email: data.user.email
+						});
+					} else {
+						return WinJS.Promise.wrapError(
+							new BaseError("GetUserDetails request failed.", BaseError.Codes.API_FAILED, data && data.error)
+						);
+					}
+				}.bind(this), function(e){
+					return WinJS.Promise.wrapError(
+						new BaseError("GetUserDetails request failed.", BaseError.Codes.XHR_FAILED, e)
+					);
+				});
+			}
+		},
+
+		_getHeaders: function(){
+			var headers = {
+					"Content-Type": "application/json; charset=utf-8"
+				},
+				token = this._user.get("token");
+
+			if(token){
+				headers.Authorization = "Bearer " + token;
+			}
+
+			return headers;
+		},
+
+		_getFake: function (name) {
 			var self = this;
 
 			return new WinJS.Promise(function(complete){

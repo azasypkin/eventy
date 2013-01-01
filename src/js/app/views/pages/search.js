@@ -1,4 +1,4 @@
-define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/events"],function(BaseView, Proxy, EventsCollection){
+define(["app/views/pages/base", "app/collections/events"],function(BaseView, EventsCollection){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
@@ -13,10 +13,6 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 
 		this._state.dispatcher.addEventListener("command:explore", this._onExploreCommandInvoked, false);
 		this._state.dispatcher.addEventListener("filter:submitted", this._onFilterSubmitted, false);
-
-		this._proxy = new Proxy({
-			user: this._state.user
-		});
 	}, {
 
 		view: "/html/views/pages/search/main.html",

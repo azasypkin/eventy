@@ -33,19 +33,33 @@
 			return this._innerData;
 		},
 
-		authenticate: function(){
-			return this._authenticator.authenticate().then(function (token) {
-				if (token) {
-					this.set("token", token);
-					return true;
-				} else {
-					return false;
-				}
-			}.bind(this));
+		authenticate: function(proxy){
+			return this._authenticator.authenticate()
+				.then(function (token) {
+					if (token) {
+						this.set("token", token);
+						return true;
+					} else {
+						return false;
+					}
+				}.bind(this))
+				.then(function(isTokenReceived){
+					if(isTokenReceived){
+						return proxy.getUserDetails().then(function(details){
+							this.set("id", details.id);
+							this.set("email", details.email);
+
+							return true;
+						}.bind(this));
+					}
+					return isTokenReceived;
+				}.bind(this));
 		},
 
 		signOut: function(){
 			this.set("token", null);
+			this.set("id", null);
+			this.set("email", null);
 		}
 	});
 
