@@ -2,10 +2,9 @@
 
 @import url("views/pages/welcome.css");
 @import url("views/pages/categories.css");
-@import url("views/pages/home.css");
-@import url("views/pages/search.css");
 @import url("views/pages/explore.css");
 @import url("views/bars/top-bar.css");
 @import url("views/search-refine.css");
+@import url("views/tiles.css");
 
 @import url("views/settings/common.css");

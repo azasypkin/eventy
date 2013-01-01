@@ -59,11 +59,10 @@
     <Content Include="css\views\bars\top-bar.css" />
     <Content Include="css\views\pages\categories.css" />
     <Content Include="css\views\pages\explore.css" />
-    <Content Include="css\views\pages\home.css" />
-    <Content Include="css\views\pages\search.css" />
     <Content Include="css\views\pages\welcome.css" />
     <Content Include="css\views\search-refine.css" />
     <Content Include="css\views\settings\common.css" />
+    <Content Include="css\views\tiles.css" />
     <Content Include="html\index.html" />
     <Content Include="html\views\bars\bottom-bar.html" />
     <Content Include="html\views\bars\top-bar.html" />
@@ -89,6 +88,7 @@
     <Content Include="img\logo.scale-140.png" />
     <Content Include="img\logo.scale-180.png" />
     <Content Include="img\logo.scale-80.png" />
+    <Content Include="img\no-thumbnail.png" />
     <Content Include="img\small-logo.scale-100.png" />
     <Content Include="img\small-logo.scale-140.png" />
     <Content Include="img\small-logo.scale-180.png" />
@@ -125,6 +125,7 @@
     <Content Include="js\app\models\geo.js" />
     <Content Include="js\app\models\user.js" />
     <Content Include="js\app\proxies\virtualearth.js" />
+    <Content Include="js\app\utils\format.js" />
     <Content Include="js\app\utils\string.js" />
     <Content Include="js\app\utils\template.js" />
     <Content Include="js\app\utils\win.js" />

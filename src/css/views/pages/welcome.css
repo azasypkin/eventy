@@ -58,6 +58,10 @@
 			width: 230px;
 		}
 
+		.welcome-page .welcome-prompt .signin-controls #btn-connect{
+			background-color: #ec5000;
+		}
+
 			.welcome-page .welcome-prompt .signin-controls button .eventbrite-capital{
 				font-style: italic;
 				font-size: 160%;

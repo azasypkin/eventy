@@ -1,4 +1,11 @@
 ﻿#search-refine-form input[type=submit] {
-	cursor: pointer;
-	margin-left: 60px;
+	margin-left: 189px;
 }
+
+	#search-refine-form #search-within {
+		margin-left: 21px;
+	}
+
+	#search-refine-form #search-date {
+		width:100%;
+	}

@@ -32,7 +32,14 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
-				return this._helpers.template.parseTemplateToDomNode(this.templates.item, item.data);
+				return this._helpers.template.parseTemplateToDomNode(this.templates.item, {
+					title: item.data.title,
+					date: this._helpers.format.date(item.data.date),
+					color: item.data.color,
+					city: item.data.city,
+					thumbnail: item.data.thumbnail ? item.data.thumbnail : "/img/no-thumbnail.png",
+					category: this._config.dictionaries.categories[item.data.categories[0].id].name
+				});
 			}.bind(this));
 		},
 
@@ -109,10 +116,20 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 				filter.date = "this_week";
 			}
 
+			if(!filter.within){
+				filter.within = "50";
+			}
+
+			if(!filter.withinType){
+				filter.withinType = "M";
+			}
+
 			return filter;
 		},
 
 		_updateDataSource: function(filter){
+
+			this._helpers.noData.hide();
 
 			this._updateSecondaryTitle(filter);
 
@@ -155,6 +172,8 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 				}
 			});
 
+			this._helpers.noData.hide();
+
 			this._state.dispatcher.removeEventListener("command:explore", this._onExploreCommandInvoked, false);
 			this._state.dispatcher.removeEventListener("filter:submitted", this._onFilterSubmitted, false);
 		},
@@ -196,6 +215,14 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 
 			if(filter.location){
 				parameters.city = filter.location;
+
+				if(filter.within){
+					parameters.within = filter.within;
+				}
+
+				if(filter.withinType){
+					parameters.within_unit = filter.withinType;
+				}
 			}
 
 			if(filter.date){
@@ -240,6 +267,11 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 
 		_onLoadingStateChanged: function(e){
 			if (this._itemsLoadCompleteCallback && e.target.winControl.loadingState === "itemsLoaded") {
+				e.target.winControl.itemDataSource.getCount().then(function(count){
+					if(count === 0){
+						this._helpers.noData.show();
+					}
+				}.bind(this));
 				this._itemsLoadCompleteCallback();
 				this._itemsLoadCompleteCallback = null;
 			}

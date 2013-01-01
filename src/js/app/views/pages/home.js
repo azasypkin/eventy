@@ -53,7 +53,14 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
-				return this._helpers.template.parseTemplateToDomNode(this.templates.item, item.data.data);
+				return this._helpers.template.parseTemplateToDomNode(this.templates.item, {
+					title: item.data.data.title,
+					date: this._helpers.format.date(item.data.data.date),
+					color: item.data.data.color,
+					city: item.data.data.city,
+					thumbnail: item.data.data.thumbnail ? item.data.data.thumbnail : "/img/no-thumbnail.png",
+					category: this._config.dictionaries.categories[item.data.data.categories[0].id].name
+				});
 			}.bind(this));
 		},
 

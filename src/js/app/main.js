@@ -5,6 +5,7 @@ define([
 	"app/utils/win",
 	"app/utils/template",
 	"app/utils/string",
+	"app/utils/format",
 
 	"app/router",
 	"app/dispatcher",
@@ -31,7 +32,9 @@ define([
 	"app/views/settings/about",
 	"app/views/settings/account",
 	"app/views/settings/privacy"
-], function (_, config, winUtils, templateUtils, stringUtils, WinRouter, dispatcher,
+], function (_, config,
+			winUtils, templateUtils, stringUtils, formatUtils,
+			WinRouter, dispatcher,
 			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager,
 			User, Counters,
 			SearchContract,
@@ -47,6 +50,7 @@ define([
 			win: winUtils,
 			template: templateUtils,
 			string: stringUtils,
+			format: formatUtils,
 			progress: {
 				_progress: document.getElementById("progress-indicator-holder"),
 				show: function(){
@@ -54,6 +58,15 @@ define([
 				},
 				hide: function(){
 					this._progress.style.visibility = "hidden";
+				}
+			},
+			noData: {
+				_noData: document.getElementById("no-data-holder"),
+				show: function(){
+					WinJS.Utilities.addClass(this._noData, "active");
+				},
+				hide: function(){
+					WinJS.Utilities.removeClass(this._noData, "active");
 				}
 			}
 		},

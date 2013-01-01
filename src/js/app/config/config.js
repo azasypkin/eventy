@@ -15,7 +15,7 @@ define(["libs/requirejs/plugins/i18n!app/config/localization/nls/labels"], funct
 			eventbrite: {
 				url: "http://www.eventbrite.com/json/event_search/",
 				oAuthUrl: "https://www.eventbrite.com/oauth/authorize?response_type=code&client_id={appKey}",
-				appKey: "HJRMDNYKBVBDIMJBYI",
+				appKey: "VJEDOCS2JTNP7MGHPS",
 				dataType: "json",
 				timeout: 10000,
 

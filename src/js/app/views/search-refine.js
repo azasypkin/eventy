@@ -57,6 +57,14 @@ define(["app/views/base"],function(BaseView){
 				filter["search-location"].value = state.location;
 			}
 
+			if (typeof state.within === "string" && filter["search-within"].value !== state.within) {
+				filter["search-within"].value = state.within;
+			}
+
+			if (typeof state.withinType === "string" && filter["search-within-type"].value !== state.withinType) {
+				filter["search-within-type"].value = state.withinType;
+			}
+
 			if(typeof state.date === "string" && filter["search-date"].value !== state.date){
 				filter["search-date"].value = state.date;
 			}
@@ -66,7 +74,9 @@ define(["app/views/base"],function(BaseView){
 			this._state.dispatcher.dispatchEvent("filter:submitted", {
 				location:	form["search-location"].value,
 				query:		form["search-query"].value,
-				date:		form["search-date"].value
+				date:		form["search-date"].value,
+				within:		form["search-within"].value,
+				withinType:	form["search-within-type"].value
 			});
 		},
 
@@ -76,6 +86,8 @@ define(["app/views/base"],function(BaseView){
 
 			filter[eventActionMethodName]("submit", this._onFilterSubmitted);
 			filter["search-date"][eventActionMethodName]("change", this._onFilterSelectChange);
+			filter["search-within"][eventActionMethodName]("change", this._onFilterSelectChange);
+			filter["search-within-type"][eventActionMethodName]("change", this._onFilterSelectChange);
 			filter["search-query"][eventActionMethodName]("change", this._onFilterQueryChange);
 
 			this._state.contracts.search.setShowOnKeyboardInput(!attach);
