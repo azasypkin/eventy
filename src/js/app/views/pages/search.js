@@ -113,6 +113,9 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 		},
 
 		_updateDataSource: function(filter){
+
+			this._updateSecondaryTitle(filter);
+
 			// update filter with the latest values
 			this._state.dispatcher.dispatchEvent("updateBarState", {
 				type: "bottom",
@@ -147,6 +150,48 @@ define(["app/views/pages/base", "app/proxies/eventbrite", "app/collections/event
 
 			this._state.dispatcher.removeEventListener("command:explore", this._onExploreCommandInvoked, false);
 			this._state.dispatcher.removeEventListener("filter:submitted", this._onFilterSubmitted, false);
+		},
+
+		_updateSecondaryTitle: function(filter){
+			var titleFragments = [],
+				timePeriodName;
+
+			if(filter.query){
+				titleFragments.push("<strong>'" + filter.query + "'</strong>");
+			} else if(!filter.category) {
+				titleFragments.push("Events");
+			}
+
+			if(filter.category){
+				if(!filter.query){
+					titleFragments.push("<strong>" + this._config.dictionaries.categories[filter.category].name + "</strong>");
+				} else {
+					titleFragments.push("in <strong>" + this._config.dictionaries.categories[filter.category].name + "</strong>");
+				}
+			}
+
+			if(filter.location){
+				titleFragments.push("in <strong>" + filter.location + "</strong>");
+			}
+
+			if(filter.date){
+				timePeriodName = '<strong>'+this._config.dictionaries.timePeriods[filter.date].name + '</strong>';
+				if(filter.date === "today"){
+					titleFragments.splice(1, 0, timePeriodName + "'s");
+				} else if(filter.date === "future" || filter.date === "past" || filter.date === "all"){
+					titleFragments.splice(1, 0, timePeriodName);
+				} else {
+					titleFragments.push("within " + timePeriodName);
+				}
+			}
+
+			this._state.dispatcher.dispatchEvent("updateBarState", {
+				type: "top",
+				secondaryTitle: {
+					title: titleFragments.join(' '),
+					color: "#fff"
+				}
+			});
 		},
 
 		_prepareParameters: function(filter){

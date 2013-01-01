@@ -77,6 +77,8 @@ define(["app/views/base"],function(BaseView){
 			filter[eventActionMethodName]("submit", this._onFilterSubmitted);
 			filter["search-date"][eventActionMethodName]("change", this._onFilterSelectChange);
 			filter["search-query"][eventActionMethodName]("change", this._onFilterQueryChange);
+
+			this._state.contracts.search.setShowOnKeyboardInput(!attach);
 		},
 
 		_onAfterHide: function(){

@@ -66,7 +66,8 @@ define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, N
 					if(parameters.secondaryTitle){
 						secondaryTitle = document.getElementById("page-secondary-title");
 						if(typeof parameters.secondaryTitle.title === "string"){
-							secondaryTitle.innerText = parameters.secondaryTitle.title;
+							secondaryTitle.innerHTML = parameters.secondaryTitle.title;
+							secondaryTitle.title = secondaryTitle.innerText;
 						}
 
 						if(parameters.secondaryTitle.color){
