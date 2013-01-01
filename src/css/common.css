@@ -1,4 +1,4 @@
-﻿body{
+﻿body, #eventy .win-flyout{
 	background-color: rgb(29, 29, 29);
 	background-image: -ms-linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);
 
@@ -6,6 +6,8 @@
 	background-size:4px 4px;
 
 	font-family: 'Segoe UI';
+
+	color: #fff;
 }
 
 button.command-button, input[type=submit].command-button {

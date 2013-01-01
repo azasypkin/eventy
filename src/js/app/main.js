@@ -261,8 +261,12 @@ define([
 						if(userCategories && userCategories.length > 0){
 							if(e.kind === activationKinds.launch){
 								return WinJS.Navigation.navigate("home");
-							} else if(e.kind === activationKinds.search){
-								return WinJS.Navigation.navigate("search/" + e.queryText);
+							} else if (e.kind === activationKinds.search) {
+								if (e.detail.queryText) {
+									return WinJS.Navigation.navigate("search/" + e.queryText);
+								} else {
+									return WinJS.Navigation.navigate("search");
+								}
 							}
 						} else {
 							return WinJS.Navigation.navigate("firstTime_categories");
