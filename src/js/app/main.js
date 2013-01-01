@@ -71,7 +71,7 @@ define([
 			}
 		},
 		state = {
-			user: new User(new AuthenticationManager(config.proxies.eventbrite, winUtils)),
+			user: new User(new AuthenticationManager(config.proxies.eventbrite, toolBelt)),
 			dispatcher: dispatcher,
 			counters: new Counters(toolBelt),
 			contracts: {

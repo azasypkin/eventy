@@ -11,7 +11,9 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		this._state.dispatcher.addEventListener("command:explore", this._onExploreCommandInvoked);
 
-		this._proxy = new Proxy();
+		this._proxy = new Proxy({
+			user: this._state.user
+		});
 	}, {
 
 		view: "/html/views/pages/home/main.html",

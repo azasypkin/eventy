@@ -117,28 +117,47 @@
 	};*/
 
 	"use strict";
-	return WinJS.Class.define(function(config, win){
+	return WinJS.Class.define(function(config, helpers){
 		this._config = config;
-		this._win = win;
+		this._helpers = helpers;
 
-		this._url = this._config.oAuthUrl.replace("{appKey}", this._config.appKey);
+		this._accessCodeUrl = this._helpers.string.format(
+			this._config.oAuthAccessCodeUrl,
+			{appKey: this._config.appKey}
+		);
 	}, {
 		authenticate: function(){
-			return this._win.webAuth(this._url, "http://localhost/").then(function(result){
+			return this._helpers.win.webAuth(this._accessCodeUrl, "http://localhost/").then(function(result){
 				var uri,
 					queryParameter,
+					accessCode,
 					i;
 				if(result && result.responseData){
 					uri = new Windows.Foundation.Uri(result.responseData);
 					for(i = 0; i < uri.queryParsed.length; i++){
 						queryParameter = uri.queryParsed[i];
 						if(queryParameter.name === "code"){
-							return queryParameter.value;
+							accessCode = queryParameter.value;
+							break;
 						}
+					}
+					if(accessCode){
+						return WinJS.xhr({
+							url: this._config.oAuthAccessTokenUrl,
+							type: "POST",
+							data: this._helpers.string.format(this._config.oAuthAccessTokenPostData, {
+								code: accessCode,
+								client_secret: this._config.oAuthClientSecret,
+								client_id: this._config.appKey
+							}) ,
+							headers: {"Content-type": "application/x-www-form-urlencoded"}
+						}).then(function(data){
+							return JSON.parse(data.responseText).access_token;
+						}.bind(this));
 					}
 				}
 				return "";
-			}).then(null, function(e){
+			}.bind(this)).then(null, function(e){
 				return WinJS.Promise.wrapError(
 					new BaseError("User was unable to authenticate", BaseError.Codes.AUTHENTICATION_FAILED, e)
 				);

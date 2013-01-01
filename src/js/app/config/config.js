@@ -13,8 +13,11 @@ define(["libs/requirejs/plugins/i18n!app/config/localization/nls/labels"], funct
 
 		proxies: {
 			eventbrite: {
-				url: "http://www.eventbrite.com/json/event_search/",
-				oAuthUrl: "https://www.eventbrite.com/oauth/authorize?response_type=code&client_id={appKey}",
+				url: "https://www.eventbrite.com/json/event_search/",
+				oAuthAccessCodeUrl: "https://www.eventbrite.com/oauth/authorize?response_type=code&client_id={appKey}",
+				oAuthAccessTokenUrl: "https://www.eventbrite.com/oauth/token",
+				oAuthClientSecret: "MNEQTU7SLUFJBALEPOHSBEJI7W3Z4JDSG3HAP7R4WPUJZ72SFB",
+				oAuthAccessTokenPostData: "code={code}&client_secret={client_secret}&client_id={client_id}&grant_type=authorization_code",
 				appKey: "VJEDOCS2JTNP7MGHPS",
 				dataType: "json",
 				timeout: 10000,

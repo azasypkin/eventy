@@ -10,8 +10,8 @@ define([
 	return WinJS.Class.define(function(options){
 		options = options || {};
 		this._config = globalConfig.proxies.eventbrite;
-		this._url = options.url || this._config.url;
-		this._appKey = options.appKey || this._config.appKey;
+		this._url = this._config.url;
+		this._user= options.user;
 		this._useFakeData = options.useFakeData !== undefined ? options.useFakeData : false;
 		this._reverseCategoriesIndex = this._buildCategoryReverseIndex();
 	},{
@@ -47,12 +47,18 @@ define([
 		},
 
 		_prepareParameters: function (parameters) {
+			var token = this._user.get("token");
+
 			if (parameters.date) {
 				parameters.date = this._prepareDateRange(parameters.date);
 			}
-			if(!parameters.app_key){
+
+			if(token){
+				parameters.access_token = token;
+			} else {
 				parameters.app_key = this._appKey;
 			}
+
 			if(parameters.category && parameters.category instanceof Array && parameters.category.length > 0){
 				parameters.category = _.map(parameters.category, function(category){
 					return this._config.categories[category];
@@ -117,7 +123,14 @@ define([
 		},
 
 		searchEvents: function (params) {
-			var self = this;
+			var headers = {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			token = this._user.get("token");
+
+			if(token){
+				headers.Authorization = "Bearer " + token;
+			}
 
 			if (this._useFakeData) {
 				return this._getFake("events");
@@ -125,7 +138,7 @@ define([
 				return WinJS.xhr({
 					url: this._buildUrl(null, params),
 					responseType: this._config.dataType,
-					headers: {"Content-Type": "application/json; charset=utf-8"},
+					headers: headers,
 					timeout: this._config.timeout
 				}).then(function(data){
 					data = JSON.parse(data.responseText);
@@ -133,14 +146,14 @@ define([
 					// first element is the summary
 					if (data && !data.error && data.events && data.events.length > 1) {
 						for (var i = 1; i < data.events.length; i++) {
-							result.push(self._convertToEvent(data.events[i].event, params));
+							result.push(this._convertToEvent(data.events[i].event, params));
 						}
 					}
 					return {
 						total: result.length > 0 ? data.events[0].summary.total_items : 0,
 						items: result
 					};
-				});
+				}.bind(this));
 			}
 		},
 
@@ -229,7 +242,7 @@ define([
 			// here we need timezone to determine current date in the specified time zone
 			var result = {
 				offset: this._config.timezones[jsonEvent.timezone],
-				repeats: jsonEvent.repeats && jsonEvent.repeats.toLowerCase() == "yes" ? true : false,
+				repeats: jsonEvent.repeats && jsonEvent.repeats.toLowerCase() === "yes" ? true : false,
 				date: dateUtils.getUtcDateFromFormat(jsonEvent.start_date, "yyyy-MM-dd HH:mm:ss", this._config.timezones[jsonEvent.timezone])
 			};
 
