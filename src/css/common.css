@@ -86,3 +86,10 @@ button.command-button, input[type=submit].command-button {
 .right{
 	float: right;
 }
+
+@media screen and (-ms-view-state: snapped) {
+	#content {
+		padding-top: 70px;
+		padding-bottom: 0;
+	}
+}

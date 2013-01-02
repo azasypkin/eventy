@@ -83,6 +83,10 @@ define(["app/views/pages/base"],function(BaseView){
 					thumbnail: item.data.data.thumbnail ? item.data.data.thumbnail : "/img/no-thumbnail.png",
 					category: this._config.dictionaries.categories[item.data.data.categories[0].id].name,
 					distance: item.data.data.distance
+				}).then(function(node){
+					node.title = item.data.data.title;
+
+					return node;
 				});
 			}.bind(this));
 		},
@@ -183,7 +187,7 @@ define(["app/views/pages/base"],function(BaseView){
 
 		_createListView: function(events){
 			this.wc = new WinJS.UI.ListView(document.getElementById("event-list-view"), {
-				layout: {type: WinJS.UI.GridLayout},
+				layout: { type: this.isSnapped ? WinJS.UI.ListLayout : WinJS.UI.GridLayout },
 				itemTemplate: this._itemTemplate.bind(this)
 			});
 
@@ -279,6 +283,29 @@ define(["app/views/pages/base"],function(BaseView){
 				}
 				this._exploreItems(result);
 			}.bind(this));
+		},
+
+		_onSnapped: function () {
+			BaseView.prototype._onSnapped.apply(this, arguments);
+
+			if(this.wc){
+				WinJS.UI.setOptions(this.wc, {
+					layout: {
+						type: WinJS.UI.ListLayout
+					}
+				});
+			}
+		},
+
+		_onUnSnapped: function () {
+			BaseView.prototype._onUnSnapped.apply(this, arguments);
+			if(this.wc){
+				WinJS.UI.setOptions(this.wc, {
+					layout: {
+						type: WinJS.UI.GridLayout
+					}
+				});
+			}
 		}
 	});
 });

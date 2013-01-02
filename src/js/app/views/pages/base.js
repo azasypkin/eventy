@@ -7,6 +7,8 @@ define(["app/views/base"], function(BaseView){
 
 		searchOnKeyboardInput: false,
 
+		layout: WinJS.UI.GridLayout,
+
 		render: function(){
 			this._initBars();
 

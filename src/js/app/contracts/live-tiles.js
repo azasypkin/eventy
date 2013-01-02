@@ -31,7 +31,7 @@
 							tileTitleEl = tileXml.getElementsByTagName("text")[0],
 							tileImgEl = tileXml.getElementsByTagName("image")[0];
 
-						tileImgEl.setAttribute("src", item.thumbnail ? item.thumbnail : "/img/no-thumbnail.png");
+						tileImgEl.setAttribute("src", item.thumbnail);
 						tileTitleEl.innerText = item.title;
 
 						this._tileUpdater.update(tileNotification);

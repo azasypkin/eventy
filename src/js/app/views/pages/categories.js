@@ -59,7 +59,9 @@ define(["app/views/pages/base"],function(BaseView){
 			}
 
 			this.wc = new WinJS.UI.ListView(document.getElementById("category-list-view"), {
-				layout: {type: WinJS.UI.GridLayout},
+				layout: {
+					type: this.isSnapped ? WinJS.UI.ListLayout : WinJS.UI.GridLayout
+				},
 				itemDataSource: (new WinJS.Binding.List(data)).dataSource,
 				itemTemplate: this._itemTemplate.bind(this),
 				tapBehavior: "toggleSelect"
@@ -133,6 +135,27 @@ define(["app/views/pages/base"],function(BaseView){
 
 				}.bind(this));
 			}
+		},
+
+		_onSnapped: function () {
+			BaseView.prototype._onSnapped.apply(this, arguments);
+
+			WinJS.UI.setOptions(this.wc, {
+				layout: {
+					type: WinJS.UI.ListLayout
+				}
+			});
+
+		},
+
+		_onUnSnapped: function () {
+			BaseView.prototype._onUnSnapped.apply(this, arguments);
+
+			WinJS.UI.setOptions(this.wc, {
+				layout: {
+					type: WinJS.UI.GridLayout
+				}
+			});
 		}
 	});
 });

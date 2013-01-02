@@ -9,8 +9,10 @@ define(function(){
 		this._helpers = helpers;
 
 		this._onRoute = this._onRoute.bind(this);
+		this._onWindowResized = this._onWindowResized.bind(this);
 
 		this._state.dispatcher.addEventListener("route", this._onRoute);
+		window.addEventListener("resize", this._onWindowResized, false);
 
 	}, {
 
@@ -18,9 +20,11 @@ define(function(){
 		container: null,
 		templates: {},
 
-		render: function(){
+		isSnapped: false,
 
-			//this._preCompileTemplates();
+		render: function () {
+
+			this.isSnapped = Windows.UI.ViewManagement.ApplicationView.value === Windows.UI.ViewManagement.ApplicationViewState.snapped;
 
 			return this._innerRender(this.view, this.container);
 		},
@@ -61,9 +65,27 @@ define(function(){
 
 		unload: function(){
 			this._state.dispatcher.removeEventListener("route", this._onRoute);
+
+			window.removeEventListener("resize", this._onWindowResized, false);
 		},
 
 		_onRoute: function(){
+		},
+
+		_onSnapped: function () {
+			this.isSnapped = true;
+		},
+
+		_onUnSnapped: function () {
+			this.isSnapped = false;
+		},
+
+		_onWindowResized: function () {
+			if (Windows.UI.ViewManagement.ApplicationView.value === Windows.UI.ViewManagement.ApplicationViewState.snapped && !this.isSnapped) {
+				this._onSnapped();
+			} else if(this.isSnapped) {
+				this._onUnSnapped();
+			}
 		},
 
 		raiseEvent: function(name, data){

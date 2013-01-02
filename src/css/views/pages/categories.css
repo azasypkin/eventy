@@ -16,3 +16,13 @@
 #button-container {
 	float: right;
 }
+
+
+@media screen and (-ms-view-state: snapped) {
+	.categories-page .win-listview .win-item {
+		width: 250px;
+		height: 100px;
+
+		font-size: 100%;
+	}
+}
