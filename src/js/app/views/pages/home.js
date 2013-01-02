@@ -173,6 +173,8 @@ define(["app/views/pages/base"],function(BaseView){
 		_updateDataSource: function(events){
 			var bindingList = this._getBindingList(events);
 
+			this._state.contracts.liveTiles.populate(events);
+
 			WinJS.UI.setOptions(this.wc, {
 				itemDataSource: bindingList.dataSource,
 				groupDataSource: bindingList.groups.dataSource
@@ -185,17 +187,16 @@ define(["app/views/pages/base"],function(BaseView){
 				itemTemplate: this._itemTemplate.bind(this)
 			});
 
+			this.wc.addEventListener("selectionchanged", this._onSelectionChanged);
+			this.wc.addEventListener("iteminvoked", this._onItemInvoked);
+
 			this._updateDataSource(events);
 		},
 
 		render: function () {
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(this._loadEvents.bind(this))
-				.then(this._createListView.bind(this))
-				.then(function(){
-					this.wc.addEventListener("selectionchanged", this._onSelectionChanged);
-					this.wc.addEventListener("iteminvoked", this._onItemInvoked);
-				}.bind(this));
+				.then(this._createListView.bind(this));
 		},
 
 		refresh: function(){

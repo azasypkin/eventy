@@ -110,6 +110,7 @@
     <Content Include="img\wide-logo.scale-180.png" />
     <Content Include="img\wide-logo.scale-80.png" />
     <Content Include="js\app\collections\events.js" />
+    <Content Include="js\app\contracts\live-tiles.js" />
     <Content Include="js\app\contracts\search.js" />
     <Content Include="js\app\core\authentication\eventbrite.js" />
     <Content Include="js\app\core\errors\base_error.js" />
@@ -123,8 +124,8 @@
     <Content Include="js\app\dispatcher.js" />
     <Content Include="js\app\models\counters.js" />
     <Content Include="js\app\models\geo.js" />
+    <Content Include="js\app\models\user-details.js" />
     <Content Include="js\app\models\user.js" />
-    <Content Include="js\app\models\userDetails.js" />
     <Content Include="js\app\proxies\virtualearth.js" />
     <Content Include="js\app\rate_prompt.js" />
     <Content Include="js\app\utils\format.js" />

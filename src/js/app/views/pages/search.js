@@ -94,7 +94,13 @@ define(["app/views/pages/base", "app/collections/events"],function(BaseView, Eve
 		},
 
 		_buildFilter: function(query, category){
-			var filter = this._state.user.get("filter") || {};
+			var filter = this._state.user.get("filter") || {},
+				location = this._state.user.get("location");
+
+			// if we have user location and user didn't set another location through search filter
+			if (!filter.location && location && location.city){
+				filter.location = location.city;
+			}
 
 			if(query){
 				filter.query = query;

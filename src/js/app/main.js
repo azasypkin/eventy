@@ -25,6 +25,7 @@ define([
 	"app/models/counters",
 
 	"app/contracts/search",
+	"app/contracts/live-tiles",
 
 	"app/views/bars/top-bar",
 	"app/views/bars/bottom-bar",
@@ -43,7 +44,7 @@ define([
 			WinRouter, dispatcher, RatePrompt,
 			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager,
 			User, Counters,
-			SearchContract,
+			SearchContract, LiveTilesContract,
 			TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage, ExplorePage, SearchPage,
 			AboutSettingsView, AccountSettingsView, PrivacySettingsView
 ) {
@@ -82,7 +83,8 @@ define([
 			dispatcher: dispatcher,
 			counters: new Counters(toolBelt),
 			contracts: {
-				search: new SearchContract()
+				search: new SearchContract(),
+				liveTiles: new LiveTilesContract()
 			}
 		},
 		proxy = new Proxy({

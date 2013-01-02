@@ -8,7 +8,7 @@ define([
 
 	"app/models/event",
 	"app/models/category",
-	"app/models/userDetails"
+	"app/models/user-details"
 ], function (_, globalConfig, dateUtils, BaseError, Event, Category, UserDetails) {
 	"use strict";
 
@@ -68,7 +68,7 @@ define([
 				}.bind(this));
 			}
 
-			if(!parameters.city && parameters.within){
+			if(!parameters.city && (!parameters.longitude || !parameters.latitude) && parameters.within){
 				delete parameters.within;
 			}
 
