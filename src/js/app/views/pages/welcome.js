@@ -22,6 +22,10 @@ define(["app/views/pages/base"],function(BaseView){
 
 		getBarsSettings: function(){
 			return [{
+				type: "top",
+				enabled: false
+			}, {
+				type: "bottom",
 				enabled: false
 			}];
 		},

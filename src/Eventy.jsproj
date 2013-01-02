@@ -126,6 +126,7 @@
     <Content Include="js\app\models\user.js" />
     <Content Include="js\app\models\userDetails.js" />
     <Content Include="js\app\proxies\virtualearth.js" />
+    <Content Include="js\app\rate_prompt.js" />
     <Content Include="js\app\utils\format.js" />
     <Content Include="js\app\utils\string.js" />
     <Content Include="js\app\utils\template.js" />

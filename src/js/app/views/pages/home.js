@@ -34,7 +34,7 @@ define(["app/views/pages/base"],function(BaseView){
 			},
 			"nearby": {
 				parameters: {
-					within: 60,
+					within: 5,
 					date: "this_month",
 					sort_by: "city"
 				},
@@ -44,7 +44,7 @@ define(["app/views/pages/base"],function(BaseView){
 			},
 			"this_week": {
 				parameters: {
-					within: 120,
+					within: 100,
 					date: "this_week",
 					sort_by: "date"
 				},
@@ -126,7 +126,7 @@ define(["app/views/pages/base"],function(BaseView){
 
 					if(!group.authenticatedUserRequired || this._state.user.isAuthenticated()){
 						this._stillLoading++;
-						
+
 						// load items nearby
 						this._loadItems(groupKey, this._.extend({}, parameters, this._groups[groupKey].parameters));
 					}

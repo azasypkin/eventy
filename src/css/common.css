@@ -10,6 +10,15 @@
 	color: #fff;
 }
 
+#eventy .win-flyout.win-menu button{
+	color: #fff;
+}
+
+	#eventy .win-flyout.win-menu button:hover{
+		color: #fff;
+		background-color: rgb(95, 55, 190);
+	}
+
 button.command-button, input[type=submit].command-button {
 	font-size: 120%;
 	background-color: rgb(95, 55, 190);	

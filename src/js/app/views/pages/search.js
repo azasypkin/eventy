@@ -115,7 +115,7 @@ define(["app/views/pages/base", "app/collections/events"],function(BaseView, Eve
 			}
 
 			if(!filter.within){
-				filter.within = "50";
+				filter.within = "10";
 			}
 
 			if(!filter.withinType){

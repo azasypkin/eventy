@@ -55,10 +55,16 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		getBarsSettings: function(){
 			return [{
+				type: "top",
 				enabled: true,
 				show: true,
 				sticky: true,
-				title: this._config.labels["Header.ExploreView"],
+				title: this._config.labels["Header.ExploreView"]
+			},{
+				type: "bottom",
+				enabled: true,
+				show: true,
+				sticky: true,
 				commands: ["search", "globalSeparator", "openInBrowser", "next"]
 			}];
 		},
@@ -112,8 +118,8 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		_onOpenInBrowserCommandInvoked: function () {
 			this.wc.itemDataSource.itemFromIndex(this.wc.currentPage).then(function (item) {
-				Windows.System.Launcher.launchUriAsync(new Windows.Foundation.Uri(item.data.url));
-			});
+				this._helpers.win.launchURI(item.data.url);
+			}.bind(this));
 		},
 
 		_onPageSelected: function(){

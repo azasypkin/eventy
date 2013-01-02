@@ -137,6 +137,10 @@
 
 			return Windows.Storage.StorageFile.getFileFromApplicationUriAsync(url)
 				.then(Windows.Storage.FileIO.readTextAsync);
+		},
+
+		launchURI: function(uriString){
+			return Windows.System.Launcher.launchUriAsync(new Windows.Foundation.Uri(uriString));
 		}
 	};
 });

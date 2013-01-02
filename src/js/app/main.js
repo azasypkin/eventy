@@ -8,9 +8,12 @@ define([
 	"app/utils/template",
 	"app/utils/string",
 	"app/utils/format",
+	"app/utils/datetime",
 
 	"app/router",
 	"app/dispatcher",
+	"app/rate_prompt",
+
 	"app/core/storage/adapters/roaming",
 	"app/core/storage/manager",
 	"app/core/location/coordinates/windows",
@@ -36,8 +39,8 @@ define([
 	"app/views/settings/privacy"
 ], function (_, config,
 			Proxy,
-			winUtils, templateUtils, stringUtils, formatUtils,
-			WinRouter, dispatcher,
+			winUtils, templateUtils, stringUtils, formatUtils, dateUtils,
+			WinRouter, dispatcher, RatePrompt,
 			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager,
 			User, Counters,
 			SearchContract,
@@ -54,6 +57,7 @@ define([
 			template: templateUtils,
 			string: stringUtils,
 			format: formatUtils,
+			date: dateUtils,
 			progress: {
 				_progress: document.getElementById("progress-indicator-holder"),
 				show: function(){
@@ -251,6 +255,13 @@ define([
 			);
 		});
 	}, false);
+
+	state.dispatcher.addEventListener("command:next", function(){
+		var currentNumberOfViewedEvents = state.counters.get("viewedEvents") + 1;
+		state.counters.set("viewedEvents", currentNumberOfViewedEvents);
+	});
+
+	(new RatePrompt(toolBelt, state.counters)).setup();
 
 	return {
 		_isInitialized: false,

@@ -408,6 +408,22 @@ define(["config"], function (config) {
 
 		utcDate: function (date, offset) {
 			return date - (60000 * offset);
+		},
+
+		/**
+		 * Converts local date to UTC based date
+		 * @param {Date} date Local date to convert
+		 * @returns {Date}
+		 */
+		convertDateToUTC: function (date) {
+			return new Date(
+				date.getUTCFullYear(),
+				date.getUTCMonth(),
+				date.getUTCDate(),
+				date.getUTCHours(),
+				date.getUTCMinutes(),
+				date.getUTCSeconds()
+			);
 		}
 	}
 });

@@ -13,7 +13,9 @@
 			// user postponed to rate application
 			userPostponedToRate: false,
 			// user postponed to rate application at the specified time
-			ratePromptLastTime: null
+			ratePromptLastTime: null,
+			// number of viewed events
+			viewedEvents: 0
 		};
 		this._helpers = helpers;
 	}, {
@@ -29,6 +31,9 @@
 					if(data.userAgreedToRate){
 						this._innerData.userAgreedToRate = data.userAgreedToRate;
 					}
+					if(data.viewedEvents){
+						this._innerData.viewedEvents = data.viewedEvents;
+					}
 				} else {
 					this._innerData = data;
 				}
@@ -41,6 +46,11 @@
 			this._innerData[key] = value;
 
 			this.dispatchEvent("changed", {
+				key: key,
+				value: value
+			});
+
+			this.dispatchEvent("changed:"+key, {
 				key: key,
 				value: value
 			});
