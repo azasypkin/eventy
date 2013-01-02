@@ -36,7 +36,8 @@ define(["app/views/pages/base", "app/collections/events"],function(BaseView, Eve
 					color: item.data.color,
 					city: item.data.city,
 					thumbnail: item.data.thumbnail ? item.data.thumbnail : "/img/no-thumbnail.png",
-					category: this._config.dictionaries.categories[item.data.categories[0].id].name
+					category: this._config.dictionaries.categories[item.data.categories[0].id].name,
+					distance: item.data.distance
 				});
 			}.bind(this));
 		},
@@ -93,12 +94,7 @@ define(["app/views/pages/base", "app/collections/events"],function(BaseView, Eve
 		},
 
 		_buildFilter: function(query, category){
-			var filter = this._state.user.get("filter") || {},
-				location = this._state.user.get("location");
-
-			if(!filter.location && location && location.city){
-				filter.location = location.city;
-			}
+			var filter = this._state.user.get("filter") || {};
 
 			if(query){
 				filter.query = query;
@@ -207,13 +203,20 @@ define(["app/views/pages/base", "app/collections/events"],function(BaseView, Eve
 
 		_prepareParameters: function(filter){
 			var userCategories = this._state.user.get("categories"),
+				location = this._state.user.get("location"),
 				parameters = {
 					sort_by: "date"
 				};
 
-			if(filter.location){
+			// if we have user location and user didn't set another location through search filter
+			if(location && (typeof filter.location !== "string" || (location.city && filter.location.toLowerCase() === location.city.toLowerCase()))){
+				parameters.latitude = location.lat;
+				parameters.longitude = location.lon;
+			} else if(filter.location){
 				parameters.city = filter.location;
+			}
 
+			if(parameters.city || (parameters.latitude && parameters.longitude)){
 				if(filter.within){
 					parameters.within = filter.within;
 				}

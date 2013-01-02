@@ -35,8 +35,7 @@ define(["app/views/pages/base"],function(BaseView){
 			"nearby": {
 				parameters: {
 					within: 5,
-					date: "this_month",
-					sort_by: "city"
+					date: "this_month"
 				},
 				items: null,
 				name: "Around me",
@@ -58,6 +57,22 @@ define(["app/views/pages/base"],function(BaseView){
 		_itemsLoadCompleteCallback: null,
 		_itemsLoadErrorCallback: null,
 
+		getBarsSettings: function () {
+			return [{
+				type: "top",
+				title: this._config.labels["Header.HomeView"],
+				enabled: true,
+				show: true,
+				sticky: true
+			}, {
+				type: "bottom",
+				commands: ["location", "search", "categories"],
+				enabled: true,
+				show: true,
+				sticky: true
+			}];
+		},
+
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
 				return this._helpers.template.parseTemplateToDomNode(this.templates.item, {
@@ -66,7 +81,8 @@ define(["app/views/pages/base"],function(BaseView){
 					color: item.data.data.color,
 					city: item.data.data.city,
 					thumbnail: item.data.data.thumbnail ? item.data.data.thumbnail : "/img/no-thumbnail.png",
-					category: this._config.dictionaries.categories[item.data.data.categories[0].id].name
+					category: this._config.dictionaries.categories[item.data.data.categories[0].id].name,
+					distance: item.data.data.distance
 				});
 			}.bind(this));
 		},
@@ -170,22 +186,6 @@ define(["app/views/pages/base"],function(BaseView){
 			});
 
 			this._updateDataSource(events);
-		},
-
-		getBarsSettings: function(){
-			return [{
-				type: "top",
-				title: this._config.labels["Header.HomeView"],
-				enabled: true,
-				show: true,
-				sticky: true
-			}, {
-				type: "bottom",
-				commands: ["location", "search", "categories"],
-				enabled: true,
-				show: true,
-				sticky: true
-			}];
 		},
 
 		render: function () {

@@ -284,7 +284,8 @@ define([
 					description: jsonEvent.description,
 					city: jsonEvent.venue ? jsonEvent.venue.city : "",
 					venue: jsonEvent.venue ? jsonEvent.venue.name : "",
-					country: jsonEvent.venue ? jsonEvent.venue.country : ""
+					country: jsonEvent.venue ? jsonEvent.venue.country : "",
+					distance: jsonEvent.distance ? jsonEvent.distance : ""
 				});
 
 			var popularity = jsonEvent.capacity - 0;

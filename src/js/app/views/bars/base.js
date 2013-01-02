@@ -72,6 +72,25 @@ define(["app/views/base"],function(BaseView){
 						this.wc.hideCommands(e.detail.hideCommands);
 					}
 
+					if (e.detail.enableCommands && e.detail.enableCommands.length > 0) {
+						this._.each(e.detail.enableCommands, function (commandId) {
+							var command = this.wc.getCommandById(commandId);
+							if (command && command.disabled) {
+								command.disabled = false;
+							}
+						}.bind(this));
+					}
+
+					if (e.detail.disableCommands && e.detail.disableCommands.length > 0) {
+						this._.each(e.detail.disableCommands, function (commandId) {
+							var command = this.wc.getCommandById(commandId);
+							if (command && !command.disabled) {
+								command.disabled = true;
+							}
+						}.bind(this));
+					}
+
+
 					if (e.detail.enabled === true && this.wc.disabled) {
 						this.wc.disabled = false;
 					} else if (e.detail.enabled === false && !this.wc.disabled) {

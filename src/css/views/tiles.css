@@ -44,4 +44,11 @@
 				bottom: 0;
 			}
 
+			.tiles.win-listview .win-item .event-details .event-details-distance{
+				position: absolute;
+				bottom: 0;
+				right: 10px;
+				font-weight: bolder;
+			}
+
 

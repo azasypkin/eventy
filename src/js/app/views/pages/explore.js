@@ -6,7 +6,10 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 		this._onNextCommandInvoked = this._onNextCommandInvoked.bind(this);
 		this._onOpenInBrowserCommandInvoked = this._onOpenInBrowserCommandInvoked.bind(this);
+
 		this._onPageSelected = this._onPageSelected.bind(this);
+		this._onPageVisibilityChanged = this._onPageVisibilityChanged.bind(this);
+
 
 		this._state.dispatcher.addEventListener("command:next", this._onNextCommandInvoked, false);
 		this._state.dispatcher.addEventListener("command:openInBrowser", this._onOpenInBrowserCommandInvoked, false);
@@ -26,6 +29,22 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 		_currentItemId: null,
 		_previousPage: null,
 
+		getBarsSettings: function () {
+			return [{
+				type: "top",
+				enabled: true,
+				show: true,
+				sticky: true,
+				title: this._config.labels["Header.ExploreView"]
+			}, {
+				type: "bottom",
+				enabled: true,
+				show: true,
+				sticky: true,
+				commands: ["search", "globalSeparator", "openInBrowser", "next"]
+			}];
+		},
+
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
 				return this._setupFrame(item.data.id, item.data.url);
@@ -36,6 +55,7 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 			var frame = document.createElement("iframe");
 
 			frame.id = id;
+
 			frame.src = src ? src : this._emptyFrameSrc;
 
 			//frame.addEventListener("load", this.onFrameLoaded);
@@ -48,37 +68,23 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 			var itemsList = new WinJS.Binding.List(events);
 
 			this.wc = new WinJS.UI.FlipView(document.getElementById("explore-flip-view"), {
-				itemDataSource: itemsList.dataSource,
 				itemTemplate: this._itemTemplate.bind(this)
 			});
-		},
 
-		getBarsSettings: function(){
-			return [{
-				type: "top",
-				enabled: true,
-				show: true,
-				sticky: true,
-				title: this._config.labels["Header.ExploreView"]
-			},{
-				type: "bottom",
-				enabled: true,
-				show: true,
-				sticky: true,
-				commands: ["search", "globalSeparator", "openInBrowser", "next"]
-			}];
+			this.wc.addEventListener("pageselected", this._onPageSelected, false);
+			this.wc.addEventListener("pagevisibilitychanged", this._onPageVisibilityChanged, false);
+
+			WinJS.UI.setOptions(this.wc, {
+				itemDataSource: itemsList.dataSource
+			});
 		},
 
 		render: function (id, params) {
 			// id is integer
 			this._currentItemId = id - 0;
-			return BaseView.prototype.render.apply(this, arguments)
-				.then(function(){
-					return this._createFlipView(params.items);
-				}.bind(this))
-				.then(function(){
-					this.wc.addEventListener("pageselected", this._onPageSelected, false);
-				}.bind(this));
+			return BaseView.prototype.render.apply(this, arguments)	.then(function(){
+				return this._createFlipView(params.items);
+			}.bind(this));
 		},
 
 		refresh: function (id) {
@@ -127,6 +133,17 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 				var backStackLength = WinJS.Navigation.history.backStack.length,
 					newUrl;
 
+				this.wc.count().then(function (count) {
+					var properties = {
+						type: "bottom"
+					};
+
+					properties[this.wc.currentPage !== count - 1 ? "enableCommands" : "disableCommands"] = ["next"];
+
+					this._state.dispatcher.dispatchEvent("updateBarState", properties);
+
+				}.bind(this));
+
 				if(this._currentItemId !== item.data.id){
 					this._currentItemId = item.data.id;
 
@@ -147,14 +164,22 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 
 				this._previousPage = this.wc.currentPage;
 
-				this._state.dispatcher.dispatchEvent("updateBarState", {
-					type: "top",
-					secondaryTitle: {
-						title: item.data.title,
-						color: this._config.dictionaries.categories[item.data.categories[0].id].color
-					}
-				});
 			}.bind(this));
+		},
+
+		_onPageVisibilityChanged: function(e){
+			var isVisible = e.detail.visible;
+			if (isVisible) {
+				this.wc.itemDataSource.itemFromIndex(this.wc.currentPage).then(function (item) {
+					this._state.dispatcher.dispatchEvent("updateBarState", {
+						type: "top",
+						secondaryTitle: {
+							title: item.data.title,
+							color: this._config.dictionaries.categories[item.data.categories[0].id].color
+						}
+					});
+				}.bind(this));
+			}
 		}
 	});
 });

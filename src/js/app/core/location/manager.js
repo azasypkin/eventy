@@ -13,6 +13,11 @@
 						lon: coordinates.lon,
 						city: result.city
 					};
+				}, function(e){
+					return {
+						lat: coordinates.lat,
+						lon: coordinates.lon
+					};
 				});
 			}.bind(this));
 		}

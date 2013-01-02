@@ -14,5 +14,6 @@
 		this.venue = options.venue;
 		this.country = options.country;
 		this.color = options.color;
+		this.distance = options.distance;
 	});
 });

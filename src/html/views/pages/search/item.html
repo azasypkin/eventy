@@ -1,4 +1,4 @@
-<div id="<%=id%>" class="list-view-item" >
+<div class="list-view-item" >
 	<div class="event-category" style="background-color: <%=color%>"></div>
 	<div class="event-thumbnail" style="background-image: url(<%=thumbnail%>)"></div>
 	<div class="event-details">
@@ -6,5 +6,8 @@
 		<p><%= date %></p>
 		<p><%= city %></p>
 		<p class="event-details-category-name" style="color: <%=color%>"><%= category %></p>
+		<% if(distance) {%>
+			<p class="event-details-distance"><%= distance %></p>
+		<% } %>
 	</div>
 </div>
