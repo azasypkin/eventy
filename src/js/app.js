@@ -15,11 +15,11 @@
 
 	WinJS.Binding.optimizeBindingReferences = true;
 
-	var app = WinJS.Application;
-	var activation = Windows.ApplicationModel.Activation;
-	var nav = WinJS.Navigation;
+	var winApp = WinJS.Application,
+		activation = Windows.ApplicationModel.Activation,
+		nav = WinJS.Navigation;
 
-	app.addEventListener("activated", function (args) {
+	winApp.addEventListener("activated", function (args) {
 		//if (args.detail.kind === activation.ActivationKind.launch) {
 			if (args.detail.previousExecutionState !== activation.ApplicationExecutionState.terminated) {
 				// TODO: This application has been newly launched. Initialize
@@ -29,13 +29,14 @@
 				// Restore application state here.
 			}
 
-			if (app.sessionState.history) {
-				nav.history = app.sessionState.history;
+			if (winApp.sessionState.history) {
+				nav.history = winApp.sessionState.history;
 			}
+
 			args.setPromise(WinJS.UI.processAll().then(function () {
 				return new WinJS.Promise(function(complete){
 					require(["app/main"], function(app){
-						app.start(args.detail).then(function(){
+						app.start(winApp, args.detail).then(function () {
 							complete();
 						});
 					});
@@ -50,13 +51,13 @@
 		//}
 	});
 
-	app.oncheckpoint = function (args) {
+	winApp.oncheckpoint = function (args) {
 		// TODO: This application is about to be suspended. Save any state
 		// that needs to persist across suspensions here. If you need to
 		// complete an asynchronous operation before your application is
 		// suspended, call args.setPromise().
-		app.sessionState.history = nav.history;
+		winApp.sessionState.history = nav.history;
 	};
 
-	app.start();
+	winApp.start();
 })();

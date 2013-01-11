@@ -13,6 +13,7 @@ define([
 	"app/router",
 	"app/dispatcher",
 	"app/rate_prompt",
+	"app/analytics",
 
 	"app/core/storage/adapters/roaming",
 	"app/core/storage/manager",
@@ -42,7 +43,7 @@ define([
 ], function (_, config,
 			Proxy,
 			winUtils, templateUtils, stringUtils, formatUtils, dateUtils,
-			WinRouter, dispatcher, RatePrompt,
+			WinRouter, dispatcher, RatePrompt, Analytics,
 			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager,
 			User, Counters,
 			SearchContract, LiveTilesContract, ShareContract,
@@ -56,6 +57,7 @@ define([
 		activationKinds = Windows.ApplicationModel.Activation.ActivationKind,
 		state = {},
 		toolBelt = {},
+		analytics,
 		proxy;
 
 	toolBelt = {
@@ -97,6 +99,8 @@ define([
 		user: state.user,
 		helpers: toolBelt
 	});
+
+	analytics = new Analytics(state);
 
 	var createView = function(ViewClass){
 		return new ViewClass(_, config, proxy, state, toolBelt);
@@ -233,6 +237,10 @@ define([
 		}
 	}, false);
 
+	state.contracts.share.addEventListener("requested", function(e){
+		state.dispatcher.dispatchEvent("share:requested");
+	}, false);
+
 	state.dispatcher.addEventListener("command:categories", function(){
 		WinJS.Navigation.navigate("categories");
 	}, false);
@@ -273,7 +281,7 @@ define([
 	return {
 		_isInitialized: false,
 
-		start: function (activationDetail) {
+		start: function (winApp, activationDetail) {
 			var initPromise,
 				navigateToInitialPage = function (e) {
 					if (state.user.isAuthenticated() || !state.counters.get("firstTimeVisit")) {
@@ -301,6 +309,14 @@ define([
 			} else {
 				state.contracts.search.setup();
 				state.contracts.share.setup();
+
+				if(config.environment === "production"){
+					analytics.setup();
+
+					winApp.addEventListener("error", function(e){
+						analytics.logLastChanceException(e);
+					}, false);
+				}
 
 				initPromise = WinJS.Promise.join([createView(BottomBarView).render(), createView(TopBarView).render()]);
 			}

@@ -11,6 +11,8 @@ define(["libs/requirejs/plugins/i18n!app/config/localization/nls/labels"], funct
 			copyRights: "Copyright &copy; ALZA 2013"
 		},
 
+		environment: "production",
+
 		labels: labels,
 
 		proxies: {

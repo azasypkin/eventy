@@ -109,6 +109,7 @@
     <Content Include="img\wide-logo.scale-140.png" />
     <Content Include="img\wide-logo.scale-180.png" />
     <Content Include="img\wide-logo.scale-80.png" />
+    <Content Include="js\app\analytics.js" />
     <Content Include="js\app\collections\events.js" />
     <Content Include="js\app\contracts\live-tiles.js" />
     <Content Include="js\app\contracts\search.js" />
@@ -133,6 +134,8 @@
     <Content Include="js\app\utils\string.js" />
     <Content Include="js\app\utils\template.js" />
     <Content Include="js\app\utils\win.js" />
+    <Content Include="js\libs\MarkedUp.js" />
+    <Content Include="packages.config" />
     <None Include="Eventy_StoreKey.pfx" />
     <Content Include="js\app\main.js" />
     <Content Include="js\app\router.js" />
@@ -169,6 +172,13 @@
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="Microsoft.WinJS.1.0, Version=1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MarkedUp">
+      <HintPath>packages\MarkedUp.0.6.7\lib\winrt45\MarkedUp.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+      <Private>true</Private>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
   <!-- To modify your build process, add your task inside one of the targets below then uncomment
