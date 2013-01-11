@@ -55,7 +55,7 @@
 
 @media screen and (-ms-view-state: snapped) {
 	.tiles.win-listview .win-item {
-		width: 250px;
+		width: 249px;
 
 		-ms-grid-columns: 1fr;
 		-ms-grid-rows: 10px 1fr;
