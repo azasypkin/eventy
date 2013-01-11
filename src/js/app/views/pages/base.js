@@ -21,6 +21,10 @@ define(["app/views/base"], function(BaseView){
 			return [];
 		},
 
+		isShareSupported: function(){
+			return false;
+		},
+
 		_initBars: function(){
 			this._.each(this.getBarsSettings(), function(bar){
 				this._state.dispatcher.dispatchEvent("updateBarState", bar);

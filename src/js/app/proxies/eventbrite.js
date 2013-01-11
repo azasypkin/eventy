@@ -19,6 +19,7 @@ define([
 		this._user= options.user;
 		this._useFakeData = options.useFakeData !== undefined ? options.useFakeData : false;
 		this._reverseCategoriesIndex = this._buildCategoryReverseIndex();
+		this._helpers = options.helpers;
 	},{
 		_buildCategoryReverseIndex: function(){
 			var categoryKeys = Object.keys(this._config.categories),
@@ -286,7 +287,17 @@ define([
 					venue: jsonEvent.venue ? jsonEvent.venue.name : "",
 					country: jsonEvent.venue ? jsonEvent.venue.country : "",
 					distance: jsonEvent.distance ? jsonEvent.distance : ""
-				});
+			});
+
+			// temporal fix - sanitizing event description
+
+			if (event.description && event.description.indexOf("<") >= 0) {
+				try{
+					event.description = this._helpers.win.parseStringToHtmlDocument(event.description).body.innerText;
+				} catch(e){
+
+				}
+			}
 
 			var popularity = jsonEvent.capacity - 0;
 			// to avoid 0-s

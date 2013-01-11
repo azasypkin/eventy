@@ -29,6 +29,21 @@ define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Pro
 		_currentItemId: null,
 		_previousPage: null,
 
+		isShareSupported: function(){
+			return true;
+		},
+
+		getDataToShare: function(){
+			return this.wc.itemDataSource.itemFromIndex(this.wc.currentPage).then(function (item) {
+				return {
+					url: item.data.url,
+					title: item.data.title,
+					description: item.data.description,
+					thumbnail: item.data.thumbnail
+				};
+			});
+		},
+
 		getBarsSettings: function () {
 			return [{
 				type: "top",

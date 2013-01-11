@@ -1,8 +1,6 @@
 ﻿define(["underscore", "app/utils/win"], function (_, win) {
 	"use strict";
 
-	var domParser = new window.DOMParser();
-
 	return {
 
 		/**
@@ -26,10 +24,10 @@
 		parseTemplateToDomNode: function(pathOrTemplate, data){
 			// check whether we have ready template function instead of path
 			if(typeof pathOrTemplate === "function"){
-				return domParser.parseFromString(pathOrTemplate(data), "text/html").body.firstChild;
+				return win.parseStringToHtmlDocument(pathOrTemplate(data)).body.firstChild;
 			}
 			return this.getTemplate(pathOrTemplate).then(function(template){
-				return domParser.parseFromString(template(data), "text/html").body.firstChild;
+				return win.parseStringToHtmlDocument(template(data)).body.firstChild;
 			});
 		},
 

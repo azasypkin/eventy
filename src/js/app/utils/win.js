@@ -1,7 +1,8 @@
 ﻿define(function () {
 	"use strict";
 
-	var promptPromise;
+	var promptPromise,
+		domParser = new window.DOMParser();
 
 	// Public Methods
 	return {
@@ -132,15 +133,22 @@
 			.then(Windows.Storage.FileIO.readTextAsync);
 		},
 
-		getAppFileContent: function (path) {
+		getAppFileStream: function(path){
 			var url = new Windows.Foundation.Uri("ms-appx://" + path);
 
-			return Windows.Storage.StorageFile.getFileFromApplicationUriAsync(url)
-				.then(Windows.Storage.FileIO.readTextAsync);
+			return Windows.Storage.StorageFile.getFileFromApplicationUriAsync(url);
+		},
+
+		getAppFileContent: function (path) {
+			return this.getAppFileStream(path).then(Windows.Storage.FileIO.readTextAsync);
 		},
 
 		launchURI: function(uriString){
 			return Windows.System.Launcher.launchUriAsync(new Windows.Foundation.Uri(uriString));
+		},
+
+		parseStringToHtmlDocument: function (htmlString) {
+			return domParser.parseFromString(htmlString, "text/html");
 		}
 	};
 });

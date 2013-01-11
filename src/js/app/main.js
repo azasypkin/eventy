@@ -26,6 +26,7 @@ define([
 
 	"app/contracts/search",
 	"app/contracts/live-tiles",
+	"app/contracts/share",
 
 	"app/views/bars/top-bar",
 	"app/views/bars/bottom-bar",
@@ -44,53 +45,58 @@ define([
 			WinRouter, dispatcher, RatePrompt,
 			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager,
 			User, Counters,
-			SearchContract, LiveTilesContract,
+			SearchContract, LiveTilesContract, ShareContract,
 			TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage, ExplorePage, SearchPage,
 			AboutSettingsView, AccountSettingsView, PrivacySettingsView
 ) {
-
 	"use strict";
 
 	var storageManager = new StorageManager(new StorageAdapter(), config.state.storageKey),
 		locationManager = new LocationManager(new CoordinatesDetector(), new LocationResolver()),
-		toolBelt = {
-			win: winUtils,
-			template: templateUtils,
-			string: stringUtils,
-			format: formatUtils,
-			date: dateUtils,
-			progress: {
-				_progress: document.getElementById("progress-indicator-holder"),
-				show: function(){
-					this._progress.style.visibility = "visible";
-				},
-				hide: function(){
-					this._progress.style.visibility = "hidden";
-				}
+		activationKinds = Windows.ApplicationModel.Activation.ActivationKind,
+		state = {},
+		toolBelt = {},
+		proxy;
+
+	toolBelt = {
+		win: winUtils,
+		template: templateUtils,
+		string: stringUtils,
+		format: formatUtils,
+		date: dateUtils,
+		progress: {
+			_progress: document.getElementById("progress-indicator-holder"),
+			show: function(){
+				this._progress.style.visibility = "visible";
 			},
-			noData: {
-				_noData: document.getElementById("no-data-holder"),
-				show: function(){
-					WinJS.Utilities.addClass(this._noData, "active");
-				},
-				hide: function(){
-					WinJS.Utilities.removeClass(this._noData, "active");
-				}
+			hide: function(){
+				this._progress.style.visibility = "hidden";
 			}
 		},
-		state = {
-			user: new User(new AuthenticationManager(config.proxies.eventbrite, toolBelt)),
-			dispatcher: dispatcher,
-			counters: new Counters(toolBelt),
-			contracts: {
-				search: new SearchContract(),
-				liveTiles: new LiveTilesContract()
+		noData: {
+			_noData: document.getElementById("no-data-holder"),
+			show: function(){
+				WinJS.Utilities.addClass(this._noData, "active");
+			},
+			hide: function(){
+				WinJS.Utilities.removeClass(this._noData, "active");
 			}
-		},
-		proxy = new Proxy({
-			user: state.user
-		}),
-		activationKinds = Windows.ApplicationModel.Activation.ActivationKind;
+		}
+	};
+
+	state.user = new User(new AuthenticationManager(config.proxies.eventbrite, toolBelt));
+	state.dispatcher = dispatcher;
+	state.counters = new Counters(toolBelt);
+	state.contracts = {
+		search: new SearchContract(),
+		liveTiles: new LiveTilesContract(),
+		share: new ShareContract(config, state)
+	};
+
+	proxy = new Proxy({
+		user: state.user,
+		helpers: toolBelt
+	});
 
 	var createView = function(ViewClass){
 		return new ViewClass(_, config, proxy, state, toolBelt);
@@ -122,7 +128,6 @@ define([
 	});
 
 	var router = new (WinJS.Class.mix(WinRouter, {
-		_page: null,
 		_navigationPromise: WinJS.Promise.as(),
 
 		_dispatchPageEvent: function(e){
@@ -140,19 +145,19 @@ define([
 
 			this._navigationPromise.cancel();
 
-			if(this._page instanceof PageClass && typeof this._page.refresh === "function"){
-				this._navigationPromise = this._page.refresh.apply(this._page, Array.prototype.slice.call(arguments, 1));
+			if(state.page instanceof PageClass && typeof state.page.refresh === "function"){
+				this._navigationPromise = state.page.refresh.apply(state.page, Array.prototype.slice.call(arguments, 1));
 			} else {
-				if (this._page) {
-					this._page.unload();
-					this._page.removeEventListener("event", this._dispatchPageEvent, false);
+				if (state.page) {
+					state.page.unload();
+					state.page.removeEventListener("event", this._dispatchPageEvent, false);
 				}
 
-				this._page = createView(PageClass);
+				state.page = createView(PageClass);
 
-				this._page.addEventListener("event", this._dispatchPageEvent, false);
+				state.page.addEventListener("event", this._dispatchPageEvent, false);
 
-				this._navigationPromise = this._page.render.apply(this._page, Array.prototype.slice.call(arguments, 1));
+				this._navigationPromise = state.page.render.apply(state.page, Array.prototype.slice.call(arguments, 1));
 			}
 
 			return this._navigationPromise.then(function(){
@@ -200,7 +205,7 @@ define([
 		},
 
 		refresh: function(){
-			return this._navigateTo(this._page.constructor);
+			return this._navigateTo(state.page.constructor);
 		}
 	}))();
 
@@ -295,6 +300,7 @@ define([
 				initPromise = WinJS.Promise.wrap();
 			} else {
 				state.contracts.search.setup();
+				state.contracts.share.setup();
 
 				initPromise = WinJS.Promise.join([createView(BottomBarView).render(), createView(TopBarView).render()]);
 			}

@@ -112,6 +112,7 @@
     <Content Include="js\app\collections\events.js" />
     <Content Include="js\app\contracts\live-tiles.js" />
     <Content Include="js\app\contracts\search.js" />
+    <Content Include="js\app\contracts\share.js" />
     <Content Include="js\app\core\authentication\eventbrite.js" />
     <Content Include="js\app\core\errors\base_error.js" />
     <Content Include="js\app\core\errors\handler.js" />

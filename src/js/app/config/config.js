@@ -4,6 +4,8 @@ define(["libs/requirejs/plugins/i18n!app/config/localization/nls/labels"], funct
 	return {
 		version: "1.0.0.0",
 
+		name: "Eventy",
+
 		author: {
 			company: "ALZA",
 			copyRights: "Copyright &copy; ALZA 2013"
