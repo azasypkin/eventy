@@ -310,7 +310,7 @@ define([
 				.then(function(){
 					return storageManager.getProperty("user").then(function(user){
 						if(user){
-							state.user.initialize(user);
+							return state.user.initialize(user);
 						}
 					});
 				})

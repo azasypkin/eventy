@@ -7,9 +7,33 @@
 	}, {
 
 		initialize: function(data){
+			var initializationPromise;
+
 			this._innerData = data || {};
 
-			this.dispatchEvent("initialized");
+			// we need to reinitialize user token if it's present avoiding user interaction
+			// in case something wrong with token: user revoked access or token is expired, we'll try to renew it with the
+			// minimal user interaction and in the worst case we remove all user specific data and force user go to
+			// welcome page again
+			//if(this.get("token")){
+			//	initializationPromise = this._authenticator.retrieveToken(this.get("code")).then(function(token){
+			//		if (token) {
+			//			this.set("token", token);
+			//		} else {
+			//			this.signOut();
+			//		}
+			//	}.bind(this), function(){
+			//		this.signOut();
+
+			//		return WinJS.Promise.wrap();
+			//	}.bind(this));
+			//} else {
+			//	initializationPromise = WinJS.Promise.wrap();
+			//}
+
+			//return initializationPromise.then(function(){
+				this.dispatchEvent("initialized");
+			//}.bind(this));
 		},
 
 		set: function(key, value){
@@ -35,9 +59,10 @@
 
 		authenticate: function(proxy){
 			return this._authenticator.authenticate()
-				.then(function (token) {
-					if (token) {
-						this.set("token", token);
+				.then(function (authenticationData) {
+					if (authenticationData) {
+						this.set("code", authenticationData.code);
+						this.set("token", authenticationData.token);
 						return true;
 					} else {
 						return false;
@@ -57,6 +82,7 @@
 		},
 
 		signOut: function(){
+			this.set("code", null);
 			this.set("token", null);
 			this.set("id", null);
 			this.set("email", null);
