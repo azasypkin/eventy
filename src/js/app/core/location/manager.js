@@ -7,7 +7,11 @@
 	},{
 		getLocation: function(){
 			return this._detector.getCoordinates().then(function(coordinates){
-				return this._resolver.resolve(coordinates.lat, coordinates.lon).then(function(result){
+				return {
+					lat: coordinates.lat,
+					lon: coordinates.lon
+				};
+				/*return this._resolver.resolve(coordinates.lat, coordinates.lon).then(function(result){
 					return {
 						lat: coordinates.lat,
 						lon: coordinates.lon,
@@ -18,7 +22,7 @@
 						lat: coordinates.lat,
 						lon: coordinates.lon
 					};
-				});
+				});*/
 			}.bind(this));
 		}
 	});

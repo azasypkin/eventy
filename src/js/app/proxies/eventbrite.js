@@ -69,14 +69,20 @@ define([
 				}.bind(this));
 			}
 
-			if(!parameters.city && (!parameters.longitude || !parameters.latitude) && parameters.within){
-				delete parameters.within;
+			if(!parameters.city && !parameters.longitude){
+				if(parameters.within){
+					delete parameters.within;
+				}
+
+				if(parameters.within_unit){
+					delete parameters.within_unit;
+				}
 			}
 
 			return parameters;
 		},
 
-		//[WORKAROUND]: Workaround for EventBrite bugs with next week and next month
+		//[WORKAROUND]: Workaround for Eventbrite bugs with next week and next month
 		_prepareDateRange: function (dateRange) {
 			if (dateRange === 'next_week' || dateRange === 'next_month') {
 				// we consider current client time and timezone as base time

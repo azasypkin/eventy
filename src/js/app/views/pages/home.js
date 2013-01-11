@@ -132,8 +132,9 @@ define(["app/views/pages/base"],function(BaseView){
 					parameters.category = userCategories;
 				}
 
-				if(location && location.city){
-					parameters.city = location.city;
+				if(location){
+					parameters.latitude = location.lat;
+					parameters.longitude = location.lon;
 				}
 
 				this._stillLoading = 0;

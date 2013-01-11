@@ -251,16 +251,10 @@ define([
 
 	state.dispatcher.addEventListener("command:location", function(){
 		locationManager.getLocation().then(function (location) {
-			var previousLocation = state.user.get("location"),
-				filter = state.user.get("filter") || {};
+			var previousLocation = state.user.get("location");
 
 			if (location && (!previousLocation || previousLocation.lat !== location.lat || previousLocation.lon !== location.lon)) {
 				state.user.set("location", location);
-				// we also have to update location in last user filter as user forced change of location
-				if(location.city){
-					filter.location = location.city;
-					state.user.set("filter", filter);
-				}
 				router.refresh();
 			}
 		}, function () {
@@ -339,7 +333,7 @@ define([
 				.then(function(){
 					var location = state.user.get("location");
 
-					if (location && location.city) {
+					if (location) {
 						navigateToInitialPage(activationDetail);
 					} else {
 						// detect location

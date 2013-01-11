@@ -80,6 +80,8 @@ define(["libs/requirejs/plugins/i18n!app/config/localization/nls/labels"], funct
 					"Europe/Stockholm": 60,
 					"Europe/Paris":60,
 					"Europe/Berlin": 60,
+					"Europe/Warsaw": 60,
+					"Europe/Amsterdam": 60,
 
 					"Australia/Sydney":600,
 					"Australia/Adelaide":570,

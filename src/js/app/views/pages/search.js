@@ -11,8 +11,12 @@ define(["app/views/pages/base", "app/collections/events"],function(BaseView, Eve
 
 		this._onExploreCommandInvoked = this._onExploreCommandInvoked.bind(this);
 
+		this._onLocationChanged = this._onLocationChanged.bind(this);
+
 		this._state.dispatcher.addEventListener("command:explore", this._onExploreCommandInvoked, false);
 		this._state.dispatcher.addEventListener("filter:submitted", this._onFilterSubmitted, false);
+
+		this._state.user.addEventListener("changed", this._onLocationChanged, false);
 	}, {
 
 		view: "/html/views/pages/search/main.html",
@@ -101,9 +105,8 @@ define(["app/views/pages/base", "app/collections/events"],function(BaseView, Eve
 			var filter = this._state.user.get("filter") || {},
 				location = this._state.user.get("location");
 
-			// if we have user location and user didn't set another location through search filter
-			if (!filter.location && location && location.city){
-				filter.location = location.city;
+			if(location && !filter.city){
+				filter.useCurrentLocation = true;
 			}
 
 			if(query){
@@ -180,6 +183,8 @@ define(["app/views/pages/base", "app/collections/events"],function(BaseView, Eve
 
 			this._state.dispatcher.removeEventListener("command:explore", this._onExploreCommandInvoked, false);
 			this._state.dispatcher.removeEventListener("filter:submitted", this._onFilterSubmitted, false);
+
+			this._state.user.removeEventListener("changed", this._onLocationChanged, false);
 		},
 
 		_updateSecondaryTitle: function(filter){
@@ -194,8 +199,8 @@ define(["app/views/pages/base", "app/collections/events"],function(BaseView, Eve
 				titleFragments.push(this._config.dictionaries.categories[filter.category].name);
 			}
 
-			if(filter.location){
-				titleFragments.push(filter.location);
+			if(filter.city){
+				titleFragments.push(filter.city);
 			}
 
 			if(filter.date && filter.date !== "all"){
@@ -218,22 +223,19 @@ define(["app/views/pages/base", "app/collections/events"],function(BaseView, Eve
 					sort_by: "date"
 				};
 
-			// if we have user location and user didn't set another location through search filter
-			if(location && (typeof filter.location !== "string" || (location.city && filter.location.toLowerCase() === location.city.toLowerCase()))){
+			if(filter.city){
+				parameters.city = filter.city;
+			} else if(location){
 				parameters.latitude = location.lat;
 				parameters.longitude = location.lon;
-			} else if(filter.location){
-				parameters.city = filter.location;
 			}
 
-			if(parameters.city || (parameters.latitude && parameters.longitude)){
-				if(filter.within){
-					parameters.within = filter.within;
-				}
+			if(filter.within){
+				parameters.within = filter.within;
+			}
 
-				if(filter.withinType){
-					parameters.within_unit = filter.withinType;
-				}
+			if(filter.withinType){
+				parameters.within_unit = filter.withinType;
 			}
 
 			if(filter.date){
@@ -317,6 +319,16 @@ define(["app/views/pages/base", "app/collections/events"],function(BaseView, Eve
 			this._updateDataSource(filter).then(function () {
 				this._helpers.progress.hide();
 			}.bind(this));
+		},
+
+		_onLocationChanged: function(e){
+			var filter = this._state.user.get("filter");
+			if(e.detail && e.detail.key === "location" && filter){
+				filter.city = null;
+				filter.useCurrentLocation = true;
+
+				this._state.user.set("filter", filter);
+			}
 		},
 
 		_onSnapped: function () {

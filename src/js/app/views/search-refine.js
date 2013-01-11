@@ -47,14 +47,24 @@ define(["app/views/base"],function(BaseView){
 
 		update: function(state){
 			var filter = document.getElementById("search-refine-form"),
+				cityInput = filter["search-city"],
+				isCurrentLocation,
 				eventActionMethodName;
 
 			if (typeof state.query === "string" && filter["search-query"].value !== state.query) {
 				filter["search-query"].value = state.query;
 			}
 
-			if(typeof state.location === "string" && filter["search-location"].value !== state.location){
-				filter["search-location"].value = state.location;
+			if(state.useCurrentLocation){
+				cityInput.value = "";
+
+				cityInput.placeholder = this._config.labels["Location.Current"];
+			} else {
+				if(typeof state.city === "string" && cityInput.value !== state.city){
+					cityInput.value = state.city;
+				}
+
+				cityInput.placeholder = this._config.labels["Location.DefaultPlaceHolder"];
 			}
 
 			if (typeof state.within === "string" && filter["search-within"].value !== state.within) {
@@ -72,8 +82,8 @@ define(["app/views/base"],function(BaseView){
 
 		submitFilterForm: function(form){
 			this._state.dispatcher.dispatchEvent("filter:submitted", {
-				location:	form["search-location"].value,
-				query:		form["search-query"].value,
+				city:       form["search-city"].value,
+				query:      form["search-query"].value,
 				date:		form["search-date"].value,
 				within:		form["search-within"].value,
 				withinType:	form["search-within-type"].value
