@@ -14,3 +14,7 @@
 #eventy #account-setting-container .command-button{
 	width: 230px;
 }
+
+#eventy #privacy-setting-container a{
+	color: rgb(85, 155, 232);
+}

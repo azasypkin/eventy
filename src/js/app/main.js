@@ -235,6 +235,7 @@ define([
 		} else {
 			WinJS.Navigation.navigate("search");
 		}
+		state.dispatcher.dispatchEvent("search:requested");
 	}, false);
 
 	state.contracts.share.addEventListener("requested", function(e){

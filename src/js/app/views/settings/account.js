@@ -24,9 +24,12 @@
 				} else {
 					this._state.user.authenticate(this._proxy).then(function (result) {
 						if (result) {
+							this._state.dispatcher.dispatchEvent("account:connected");
 							this._navigateToNextPage();
 						}
 					}.bind(this), function(){
+						this._state.dispatcher.dispatchEvent("account:failedToConnect");
+
 						this._helpers.win.showPrompt(
 							"Unable to connect to Eventbrite",
 							"There was a problem trying to connect to Eventbrite. Please try again later."
