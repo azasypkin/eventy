@@ -1,0 +1,28 @@
+{
+  "name": "Eventy",
+  "description": "Windows 8 App for displaying eventbrite data in Metro, more convenient style. Supports search and share windows 8 native contracts.",
+  "version": "1.0.0",
+  "author": "ALZA",
+  "homepage": "http://eventy-app.blogspot.com/",
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:azasypkin/eventy.git"
+  },
+  "dist": "./build/src",
+  "src": "./src/",
+  "main": "./src/js/app",
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "dependencies": {
+    "grunt-contrib-requirejs": "~0.3.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0rc5",
+    "grunt-contrib-jshint": "~0.1.0",
+    "grunt-contrib-clean": "~0.4.0a",
+    "grunt-cli": "~0.1.6",
+    "grunt-contrib-copy": "~0.3.2",
+    "grunt-contrib-requirejs": "~0.3.4"
+  }
+}
