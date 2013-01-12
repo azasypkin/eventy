@@ -1,4 +1,4 @@
-define(function(){
+﻿define(function(){
 	"use strict";
 
 	var View = WinJS.Class.define(function(_, config, proxy, state, helpers){

@@ -1,4 +1,4 @@
-define(["app/views/pages/base"],function(BaseView){
+﻿define(["app/views/pages/base"],function(BaseView){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){

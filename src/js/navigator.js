@@ -21,7 +21,7 @@
 				document.body.onkeypress = this._keypressHandler.bind(this);
 				document.body.onmspointerup = this._mspointerupHandler.bind(this);
 
-				Application.navigator = this;
+				//Application.navigator = this;
 			}, {
 				home: "",
 				/// <field domElement="true" />
@@ -133,7 +133,7 @@
 							backButton.setAttribute("disabled", "disabled");
 						}
 					}
-				},
+				}
 			}
 		)
 	});

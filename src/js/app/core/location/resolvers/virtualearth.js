@@ -1,4 +1,4 @@
-define([ "config", "app/proxies/virtualearth", "app/core/errors/base_error"], function(config, Proxy, BaseError) {
+﻿define([ "config", "app/proxies/virtualearth", "app/core/errors/base_error"], function(config, Proxy, BaseError) {
 	"use strict";
 
 	var labels = config.labels;

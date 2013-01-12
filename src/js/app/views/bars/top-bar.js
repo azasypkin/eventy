@@ -1,4 +1,4 @@
-define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, NavigationMenu){
+﻿define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, NavigationMenu){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){

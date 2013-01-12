@@ -1,4 +1,4 @@
-define(["app/views/bars/base", "app/views/search-refine"],function(BaseView, SearchRefineView){
+﻿define(["app/views/bars/base", "app/views/search-refine"],function(BaseView, SearchRefineView){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){

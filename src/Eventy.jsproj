@@ -49,124 +49,24 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageCertificateKeyFile>Eventy_StoreKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>7E8A7FB547260E4422508C3D1FD1774C04886C8A</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Include="css\common.css" />
-    <Content Include="css\index.css" />
-    <Content Include="css\views\bars\top-bar.css" />
-    <Content Include="css\views\pages\categories.css" />
-    <Content Include="css\views\pages\explore.css" />
-    <Content Include="css\views\pages\welcome.css" />
-    <Content Include="css\views\search-refine.css" />
-    <Content Include="css\views\settings\common.css" />
-    <Content Include="css\views\tiles.css" />
-    <Content Include="html\index.html" />
-    <Content Include="html\views\bars\bottom-bar.html" />
-    <Content Include="html\views\bars\top-bar.html" />
-    <Content Include="html\views\pages\categories\item.html" />
-    <Content Include="html\views\pages\categories\main.html" />
-    <Content Include="html\views\pages\explore\item.html" />
-    <Content Include="html\views\pages\explore\main.html" />
-    <Content Include="html\views\pages\home\item.html" />
-    <Content Include="html\views\pages\home\main.html" />
-    <Content Include="html\views\pages\search\item.html" />
-    <Content Include="html\views\pages\search\main.html" />
-    <Content Include="html\views\pages\welcome\main.html" />
-    <Content Include="html\views\search-refine.html" />
-    <Content Include="html\views\settings\about.html" />
-    <Content Include="html\views\settings\account.html" />
-    <Content Include="html\views\settings\privacy.html" />
-    <Content Include="img\badge-logo.scale-100.png" />
-    <Content Include="img\badge-logo.scale-140.png" />
-    <Content Include="img\badge-logo.scale-180.png" />
-    <Content Include="img\connect-to-eventbrite.png" />
-    <Content Include="img\eventbrite-logo-white.png" />
-    <Content Include="img\logo.scale-100.png" />
-    <Content Include="img\logo.scale-140.png" />
-    <Content Include="img\logo.scale-180.png" />
-    <Content Include="img\logo.scale-80.png" />
-    <Content Include="img\no-thumbnail.png" />
-    <Content Include="img\small-logo.scale-100.png" />
-    <Content Include="img\small-logo.scale-140.png" />
-    <Content Include="img\small-logo.scale-180.png" />
-    <Content Include="img\small-logo.scale-80.png" />
-    <Content Include="img\small-logo.target-16.png" />
-    <Content Include="img\small-logo.target-256.png" />
-    <Content Include="img\small-logo.target-32.png" />
-    <Content Include="img\small-logo.target-48.png" />
-    <Content Include="img\smalllogo.scale-100.png" />
-    <Content Include="img\splashscreen.scale-100.png" />
-    <Content Include="img\splashscreen.scale-140.png" />
-    <Content Include="img\splashscreen.scale-180.png" />
-    <Content Include="img\store-logo.scale-100.png" />
-    <Content Include="img\store-logo.scale-140.png" />
-    <Content Include="img\store-logo.scale-180.png" />
-    <Content Include="img\welcome-logo.png" />
-    <Content Include="img\wide-logo.scale-100.png" />
-    <Content Include="img\wide-logo.scale-140.png" />
-    <Content Include="img\wide-logo.scale-180.png" />
-    <Content Include="img\wide-logo.scale-80.png" />
-    <Content Include="js\app\analytics.js" />
-    <Content Include="js\app\collections\events.js" />
-    <Content Include="js\app\contracts\live-tiles.js" />
-    <Content Include="js\app\contracts\search.js" />
-    <Content Include="js\app\contracts\share.js" />
-    <Content Include="js\app\core\authentication\eventbrite.js" />
-    <Content Include="js\app\core\errors\base_error.js" />
-    <Content Include="js\app\core\errors\handler.js" />
-    <Content Include="js\app\core\location\coordinates\windows.js" />
-    <Content Include="js\app\core\location\manager.js" />
-    <Content Include="js\app\core\location\resolvers\virtualearth.js" />
-    <Content Include="js\app\core\storage\adapters\localstorage.js" />
-    <Content Include="js\app\core\storage\adapters\roaming.js" />
-    <Content Include="js\app\core\storage\manager.js" />
-    <Content Include="js\app\dispatcher.js" />
-    <Content Include="js\app\models\counters.js" />
-    <Content Include="js\app\models\geo.js" />
-    <Content Include="js\app\models\user-details.js" />
-    <Content Include="js\app\models\user.js" />
-    <Content Include="js\app\proxies\virtualearth.js" />
-    <Content Include="js\app\rate_prompt.js" />
-    <Content Include="js\app\utils\format.js" />
-    <Content Include="js\app\utils\string.js" />
-    <Content Include="js\app\utils\template.js" />
-    <Content Include="js\app\utils\win.js" />
-    <Content Include="js\libs\MarkedUp.js" />
+    <Content Include="css\*.css" />
+    <Content Include="css\**\*.css" />
+    <Content Include="html\*.html" />
+    <Content Include="html\**\*.html" />
+    <Content Include="js\*.js" />
+    <Content Include="js\**\*.js" />
+    <Content Include="img\*.png" />
+
     <Content Include="packages.config" />
     <None Include="Eventy_StoreKey.pfx" />
-    <Content Include="js\app\main.js" />
-    <Content Include="js\app\router.js" />
-    <Content Include="js\app\views\bars\base.js" />
-    <Content Include="js\app\views\bars\bottom-bar.js" />
-    <Content Include="js\app\views\bars\top-bar.js" />
-    <Content Include="js\app\views\base.js" />
-    <Content Include="js\app\views\navigation-menu.js" />
-    <Content Include="js\app\views\pages\base.js" />
-    <Content Include="js\app\views\pages\categories.js" />
-    <Content Include="js\app\views\pages\explore.js" />
-    <Content Include="js\app\views\pages\home.js" />
-    <Content Include="js\app\views\pages\search.js" />
-    <Content Include="js\app\views\pages\welcome.js" />
-    <Content Include="js\app\config\config.js" />
-    <Content Include="js\app\config\localization\nls\en-EN\labels.js" />
-    <Content Include="js\app\config\localization\nls\labels.js" />
-    <Content Include="js\app\models\category.js" />
-    <Content Include="js\app\models\event.js" />
-    <Content Include="js\app\proxies\eventbrite.js" />
-    <Content Include="js\app\utils\datetime.js" />
-    <Content Include="js\app.js" />
-    <Content Include="js\app\views\search-refine.js" />
-    <Content Include="js\app\views\settings\about.js" />
-    <Content Include="js\app\views\settings\account.js" />
-    <Content Include="js\app\views\settings\privacy.js" />
-    <Content Include="js\libs\lodash.min.js" />
-    <Content Include="js\libs\requirejs\plugins\i18n.js" />
-    <Content Include="js\libs\requirejs\plugins\text.js" />
-    <Content Include="js\libs\requirejs\require.js" />
-    <Content Include="js\navigator.js" />
+  
     <None Include="Package.StoreAssociation.xml" />
     <None Include="Eventy_TemporaryKey.pfx" />
   </ItemGroup>

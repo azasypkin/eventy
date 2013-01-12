@@ -1,4 +1,4 @@
-define(["app/views/pages/base", "app/collections/events"],function(BaseView, EventsCollection){
+﻿define(["app/views/pages/base", "app/collections/events"],function(BaseView, EventsCollection){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){

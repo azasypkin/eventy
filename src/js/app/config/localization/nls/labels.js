@@ -1,4 +1,4 @@
-define({
+﻿define({
 	"root": {
 		"Header.HomeView": "Home",
 		"Header.CategoriesView": "Categories",

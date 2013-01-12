@@ -1,4 +1,4 @@
-define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
+﻿define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
