@@ -61,7 +61,7 @@
 		"ErrorMessages.DataCurrentlyIsUnavailablePart2": "search criteria.",
 		"ErrorMessages.DataCurrentlyIsUnavailablePart2Title": "Change search criteria",
 		"ErrorMessages.YourLocationCannotBeFound":"Your location cannot be found.",
-		"ErrorMessages.YourLocationCannotBeFoundChangePermissions":"Your location cannot be found. Change your Permissions to allow EventsHeatMap to use your location.",
+		"ErrorMessages.YourLocationCannotBeFoundChangePermissions":"Your location cannot be found. Change your Permissions to allow Eventy to use your location.",
 		"Flyouts.Filter.SubmitLabel": "Apply",
 		"DateAndTime.Months.January": "January",
 		"DateAndTime.Months.February": "February",

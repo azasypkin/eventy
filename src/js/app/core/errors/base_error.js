@@ -37,7 +37,7 @@
 			e.message === canceledErrorName;
 	};
 
-	BaseError.isStumbleError = function(e){
+	BaseError.isBaseError = function(e){
 		return e instanceof BaseError;
 	};
 

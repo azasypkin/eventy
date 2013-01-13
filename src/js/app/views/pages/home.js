@@ -6,6 +6,7 @@
 
 		this._onSelectionChanged = this._onSelectionChanged.bind(this);
 		this._onItemInvoked = this._onItemInvoked.bind(this);
+		this._onLoadingStateChanged = this._onLoadingStateChanged.bind(this);
 
 		this._onExploreCommandInvoked = this._onExploreCommandInvoked.bind(this);
 
@@ -53,6 +54,7 @@
 			}
 		},
 
+		_loadingErrors: [],
 		_stillLoading: 0,
 		_itemsLoadCompleteCallback: null,
 		_itemsLoadErrorCallback: null,
@@ -97,7 +99,9 @@
 				if(--this._stillLoading === 0){
 					this._onItemsReady();
 				}
-			}.bind(this), function(){
+			}.bind(this), function (e) {
+				this._loadingErrors.push(e);
+
 				if(--this._stillLoading === 0){
 					this._onItemsReady();
 				}
@@ -121,6 +125,7 @@
 					userCategories = this._state.user.get("categories"),
 					location = this._state.user.get("location"),
 					groupKeys = Object.keys(this._groups),
+					requests = [],
 					groupKey,
 					group,
 					i;
@@ -138,6 +143,7 @@
 				}
 
 				this._stillLoading = 0;
+				this._loadingErrors = [];
 
 				for(i = 0; i < groupKeys.length; i++){
 					groupKey = groupKeys[i];
@@ -146,12 +152,26 @@
 					group.items = null;
 
 					if(!group.authenticatedUserRequired || this._state.user.isAuthenticated()){
-						this._stillLoading++;
-
-						// load items nearby
-						this._loadItems(groupKey, this._.extend({}, parameters, this._groups[groupKey].parameters));
+						requests.push({
+							key: groupKey,
+							parameters: this._.extend({}, parameters, this._groups[groupKey].parameters)
+						});
 					}
 				}
+
+				// this inefficient trick here cause we want to know real value for this._stillLoading before we issue any request
+				// to avoid race condition
+				if (requests.length > 0) {
+					this._stillLoading = requests.length;
+
+					requests.forEach(function (request) {
+						this._loadItems(request.key, request.parameters);
+					}.bind(this));
+
+				} else {
+					this._onItemsReady();
+				}
+
 			}.bind(this));
 		},
 
@@ -175,8 +195,10 @@
 				}.bind(this));
 		},
 
-		_updateDataSource: function(events){
+		_updateDataSource: function (events) {
 			var bindingList = this._getBindingList(events);
+
+			this._helpers.noData.hide();
 
 			this._state.contracts.liveTiles.populate(events);
 
@@ -192,8 +214,9 @@
 				itemTemplate: this._itemTemplate.bind(this)
 			});
 
-			this.wc.addEventListener("selectionchanged", this._onSelectionChanged);
-			this.wc.addEventListener("iteminvoked", this._onItemInvoked);
+			this.wc.addEventListener("selectionchanged", this._onSelectionChanged, false);
+			this.wc.addEventListener("iteminvoked", this._onItemInvoked, false);
+			this.wc.addEventListener("loadingstatechanged", this._onLoadingStateChanged, false);
 
 			this._updateDataSource(events);
 		},
@@ -201,12 +224,20 @@
 		render: function () {
 			return BaseView.prototype.render.apply(this, arguments)
 				.then(this._loadEvents.bind(this))
-				.then(this._createListView.bind(this));
+				.then(function(events){
+					this._createListView(events);
+				}.bind(this), function (e) {
+					this._createListView([]);
+					return WinJS.Promise.wrapError(e);
+				}.bind(this));
 		},
 
 		refresh: function(){
 			return this._loadEvents().then(function(events){
 				this._updateDataSource(events);
+			}.bind(this), function (e) {
+				this._updateDataSource([]);
+				return WinJS.Promise.wrapError(e);
 			}.bind(this));
 		},
 
@@ -214,9 +245,12 @@
 			BaseView.prototype.unload.apply(this, arguments);
 
 			if (this.wc) {
-				this.wc.removeEventListener("selectionchanged", this._onSelectionChanged);
-				this.wc.removeEventListener("iteminvoked", this._onItemInvoked);
+				this.wc.removeEventListener("selectionchanged", this._onSelectionChanged, false);
+				this.wc.removeEventListener("iteminvoked", this._onItemInvoked, false);
+				this.wc.removeEventListener("loadingstatechanged", this._onLoadingStateChanged, false);
 			}
+
+			this._helpers.noData.hide();
 
 			this._state.dispatcher.removeEventListener("command:explore", this._onExploreCommandInvoked);
 		},
@@ -240,7 +274,12 @@
 				}
 			}
 
-			this._itemsLoadCompleteCallback(itemsMerged);
+			// we notify user that something went wrong only if all requests are failed
+			if(this._loadingErrors.length > 0 && itemsMerged.length === 0){
+				this._itemsLoadErrorCallback(this._loadingErrors[0]);
+			} else {
+				this._itemsLoadCompleteCallback(itemsMerged);
+			}
 
 			this._itemsLoadCompleteCallback = null;
 			this._itemsLoadErrorCallback = null;
@@ -267,6 +306,16 @@
 			e.detail.itemPromise.then(function (item) {
 				this._exploreItems([item.data.data]);
 			}.bind(this));
+		},
+
+		_onLoadingStateChanged: function(e){
+			if (e.target.winControl.loadingState === "itemsLoaded") {
+				e.target.winControl.itemDataSource.getCount().then(function(count){
+					if(count === 0){
+						this._helpers.noData.show();
+					}
+				}.bind(this));
+			}
 		},
 
 		_onExploreCommandInvoked: function(){

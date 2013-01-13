@@ -21,6 +21,7 @@
 	"app/core/location/resolvers/virtualearth",
 	"app/core/location/manager",
 	"app/core/authentication/eventbrite",
+	"app/core/errors/handler",
 
 	"app/models/user",
 	"app/models/counters",
@@ -44,7 +45,7 @@
 			Proxy,
 			winUtils, templateUtils, stringUtils, formatUtils, dateUtils,
 			WinRouter, dispatcher, RatePrompt, Analytics,
-			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager,
+			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager, ErrorHandler,
 			User, Counters,
 			SearchContract, LiveTilesContract, ShareContract,
 			TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage, ExplorePage, SearchPage,
@@ -56,11 +57,12 @@
 		locationManager = new LocationManager(new CoordinatesDetector(), new LocationResolver()),
 		activationKinds = Windows.ApplicationModel.Activation.ActivationKind,
 		state = {},
-		toolBelt = {},
+		helpers = {},
 		analytics,
+		errorHandler,
 		proxy;
 
-	toolBelt = {
+	helpers = {
 		win: winUtils,
 		template: templateUtils,
 		string: stringUtils,
@@ -86,9 +88,9 @@
 		}
 	};
 
-	state.user = new User(new AuthenticationManager(config.proxies.eventbrite, toolBelt));
+	state.user = new User(new AuthenticationManager(config.proxies.eventbrite, helpers));
 	state.dispatcher = dispatcher;
-	state.counters = new Counters(toolBelt);
+	state.counters = new Counters(helpers);
 	state.contracts = {
 		search: new SearchContract(),
 		liveTiles: new LiveTilesContract(),
@@ -97,13 +99,15 @@
 
 	proxy = new Proxy({
 		user: state.user,
-		helpers: toolBelt
+		helpers: helpers
 	});
 
-	analytics = new Analytics(state);
+	analytics = new Analytics(config, state);
+
+	errorHandler = new ErrorHandler(config, helpers, state, analytics);
 
 	var createView = function(ViewClass){
-		return new ViewClass(_, config, proxy, state, toolBelt);
+		return new ViewClass(_, config, proxy, state, helpers);
 	};
 
 	WinJS.UI.Pages.define("/html/views/settings/about.html", createView(AboutSettingsView));
@@ -145,7 +149,7 @@
 
 		_navigateTo: function(PageClass){
 
-			toolBelt.progress.show();
+			helpers.progress.show();
 
 			this._navigationPromise.cancel();
 
@@ -165,7 +169,11 @@
 			}
 
 			return this._navigationPromise.then(function(){
-				toolBelt.progress.hide();
+				helpers.progress.hide();
+			}, function(e){
+				helpers.progress.hide();
+
+				return WinJS.Promise.wrapError(e);
 			});
 		},
 
@@ -238,7 +246,7 @@
 		state.dispatcher.dispatchEvent("search:requested");
 	}, false);
 
-	state.contracts.share.addEventListener("requested", function(e){
+	state.contracts.share.addEventListener("requested", function(){
 		state.dispatcher.dispatchEvent("share:requested");
 	}, false);
 
@@ -259,7 +267,7 @@
 				router.refresh();
 			}
 		}, function () {
-			toolBelt.win.showPrompt(
+			helpers.win.showPrompt(
 				"Your location cannot be found.",
 				"Please, change your Permissions in Settings to allow Eventy to access your location"
 			);
@@ -271,7 +279,7 @@
 		state.counters.set("viewedEvents", currentNumberOfViewedEvents);
 	});
 
-	(new RatePrompt(toolBelt, state.counters)).setup();
+	(new RatePrompt(helpers, state.counters)).setup();
 
 	return {
 		_isInitialized: false,
@@ -304,14 +312,11 @@
 			} else {
 				state.contracts.search.setup();
 				state.contracts.share.setup();
+				analytics.setup();
 
-				if(config.environment === "production"){
-					analytics.setup();
-
-					winApp.addEventListener("error", function(e){
-						analytics.logLastChanceException(e);
-					}, false);
-				}
+				winApp.addEventListener("error", function(e){
+					return errorHandler.handle(e);
+				}, false);
 
 				initPromise = WinJS.Promise.join([createView(BottomBarView).render(), createView(TopBarView).render()]);
 			}
@@ -326,9 +331,7 @@
 				})
 				.then(function(){
 					return storageManager.getProperty("user").then(function(user){
-						if(user){
-							return state.user.initialize(user);
-						}
+						return user ? state.user.initialize(user) : WinJS.Promise.wrap();
 					});
 				})
 				.then(function(){
@@ -341,7 +344,7 @@
 						WinJS.Promise.timeout(5000, locationManager.getLocation()).then(function(location){
 							state.user.set("location", location);
 							navigateToInitialPage(activationDetail);
-						}, function(e){
+						}, function(){
 							navigateToInitialPage(activationDetail);
 						});
 					}

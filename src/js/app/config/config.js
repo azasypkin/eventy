@@ -11,7 +11,7 @@
 			copyRights: "Copyright &copy; ALZA 2013"
 		},
 
-		environment: "production",
+		mode: "development",
 
 		labels: labels,
 
@@ -309,6 +309,13 @@
 				{ name: "(GMT +12:00) Fiji, Kamchatka, Marshall Is.", offset: 12 },
 				{ name: "(GMT +13:00) Nuku'alofa", offset: 13 }
 			]
+		},
+
+		analytics: {
+			keys: {
+				production: "0fb94de1-de87-4522-a0c5-ee4ab48af4b1",
+				development: "6cf127dd-2695-4901-b76b-ef64d7079e89"
+			}
 		}
 	};
 });

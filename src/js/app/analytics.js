@@ -1,7 +1,7 @@
 ﻿define(["app/core/errors/base_error"], function (BaseError) {
 	"use strict";
 
-	return WinJS.Class.define(function(state){
+	return WinJS.Class.define(function(config, state){
 		this._onShareRequested = this._onShareRequested.bind(this);
 		this._onSearchRequested = this._onSearchRequested.bind(this);
 
@@ -10,10 +10,13 @@
 
 		this._onExploreCommand = this._onExploreCommand.bind(this);
 
+		this._config = config;
 		this._state = state;
+
+		this._isSetup = false;
 	}, {
 		setup: function(){
-			MK.initialize("6cf127dd-2695-4901-b76b-ef64d7079e89");
+			MK.initialize(this._config.analytics.keys[this._config.mode]);
 
 			MK.registerNavigationFrame();
 
@@ -24,14 +27,24 @@
 			this._state.dispatcher.addEventListener("account:failedToConnect", this._onAccountFailedToConnect, false);
 
 			this._state.dispatcher.addEventListener("command:explore", this._onExploreCommand, false);
+
+			this._isSetup = true;
 		},
 
 		log: function (entryName) {
 
 		},
 
+		error: function(e){
+			if(this._isSetup){
+				MK.error(e.message, e);
+			}
+		},
+
 		logLastChanceException: function (e) {
-			MK.logLastChanceException(e);
+			if(this._isSetup){
+				MK.logLastChanceException(e);
+			}
 		},
 
 		unload: function(){

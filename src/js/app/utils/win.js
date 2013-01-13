@@ -1,8 +1,9 @@
-﻿define(function () {
+﻿define(["app/core/errors/base_error"], function (BaseError) {
 	"use strict";
 
 	var promptPromise,
-		domParser = new window.DOMParser();
+		domParser = new window.DOMParser(),
+		winConnectivity = Windows.Networking.Connectivity;
 
 	// Public Methods
 	return {
@@ -149,6 +150,26 @@
 
 		parseStringToHtmlDocument: function (htmlString) {
 			return domParser.parseFromString(htmlString, "text/html");
+		},
+
+		isOnline: function () {
+			var connectionProfile;
+
+			try{
+				connectionProfile = winConnectivity.NetworkInformation.getInternetConnectionProfile();
+				return connectionProfile !== null
+					&& connectionProfile.getNetworkConnectivityLevel() !== winConnectivity.NetworkConnectivityLevel.none;
+			} catch(e){
+				return false;
+			}
+		},
+
+		ensureIsOnline: function(){
+			return this.isOnline()
+				? WinJS.Promise.wrap()
+				: WinJS.Promise.wrapError(
+					new BaseError("No internet connection.", BaseError.Codes.NO_INTERNET_CONNECTION)
+				);
 		}
 	};
 });

@@ -8,6 +8,7 @@
 		this._onItemInvoked = this._onItemInvoked.bind(this);
 		this._onLoadingStateChanged = this._onLoadingStateChanged.bind(this);
 		this._onFilterSubmitted = this._onFilterSubmitted.bind(this);
+		this._onDataSourceError = this._onDataSourceError.bind(this);
 
 		this._onExploreCommandInvoked = this._onExploreCommandInvoked.bind(this);
 
@@ -30,7 +31,9 @@
 		wc: null,
 
 		_dataSource: null,
+		_dataSourceErrors: [],
 		_itemsLoadCompleteCallback: null,
+		_itemsLoadErrorCallback: null,
 
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
@@ -66,9 +69,9 @@
 				itemTemplate: this._itemTemplate.bind(this)
 			});
 
-			this.wc.addEventListener("selectionchanged", this._onSelectionChanged);
-			this.wc.addEventListener("iteminvoked", this._onItemInvoked);
-			this.wc.addEventListener("loadingstatechanged", this._onLoadingStateChanged);
+			this.wc.addEventListener("selectionchanged", this._onSelectionChanged, false);
+			this.wc.addEventListener("iteminvoked", this._onItemInvoked, false);
+			this.wc.addEventListener("loadingstatechanged", this._onLoadingStateChanged, false);
 
 			return this._updateDataSource(filter);
 		},
@@ -149,14 +152,23 @@
 			// update user state filter
 			this._state.user.set("filter", this._.extend(this._state.user.get("filter") || {}, filter));
 
+			if (this._dataSource) {
+				this._dataSource.removeEventListener("error", this._onDataSourceError, false);
+			}
+
 			// create new data source to refresh list view
 			this._dataSource = new EventsCollection(this._, this._config.proxies.eventbrite, this._proxy, this._prepareParameters(filter));
+
+			this._dataSource.addEventListener("error", this._onDataSourceError, false);
+
+			this._dataSourceErrors = [];
 
 			// we removed all items, so selection has changed for sure :)
 			this._onSelectionChanged();
 
-			return new WinJS.Promise(function(complete){
+			return new WinJS.Promise(function(complete, error){
 				this._itemsLoadCompleteCallback = complete;
+				this._itemsLoadErrorCallback = error;
 
 				WinJS.UI.setOptions(this.wc, {
 					itemDataSource: this._dataSource
@@ -168,8 +180,9 @@
 			BaseView.prototype.unload.apply(this, arguments);
 
 			if (this.wc) {
-				this.wc.removeEventListener("selectionchanged", this._onSelectionChanged);
-				this.wc.removeEventListener("iteminvoked", this._onItemInvoked);
+				this.wc.removeEventListener("selectionchanged", this._onSelectionChanged, false);
+				this.wc.removeEventListener("iteminvoked", this._onItemInvoked, false);
+				this.wc.removeEventListener("loadingstatechanged", this._onLoadingStateChanged, false);
 			}
 
 			this._state.dispatcher.dispatchEvent("updateBarState", {
@@ -278,15 +291,30 @@
 			}.bind(this));
 		},
 
+		_tryComplete: function(error){
+			if(this._itemsLoadCompleteCallback){
+				if(error){
+					this._itemsLoadErrorCallback(error);
+				} else {
+					this._itemsLoadCompleteCallback();
+				}
+
+				this._itemsLoadCompleteCallback = null;
+				this._itemsLoadErrorCallback = null;
+			} else if (error) {
+				return WinJS.Promise.wrapError(error);
+			}
+		},
+
 		_onLoadingStateChanged: function(e){
-			if (this._itemsLoadCompleteCallback && e.target.winControl.loadingState === "itemsLoaded") {
+			if (e.target.winControl.loadingState === "itemsLoaded") {
 				e.target.winControl.itemDataSource.getCount().then(function(count){
 					if(count === 0){
 						this._helpers.noData.show();
 					}
 				}.bind(this));
-				this._itemsLoadCompleteCallback();
-				this._itemsLoadCompleteCallback = null;
+
+				this._tryComplete();
 			}
 		},
 
@@ -318,6 +346,10 @@
 			this._helpers.progress.show();
 			this._updateDataSource(filter).then(function () {
 				this._helpers.progress.hide();
+			}.bind(this), function (e) {
+				this._helpers.progress.hide();
+
+				return WinJS.Promise.wrapError(e);
 			}.bind(this));
 		},
 
@@ -352,6 +384,10 @@
 					}
 				});
 			}
+		},
+
+		_onDataSourceError: function (e) {
+			this._tryComplete(e.detail);
 		}
 	});
 });

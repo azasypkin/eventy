@@ -1,11 +1,12 @@
 ﻿define(function () {
 	"use strict";
 
-	var DataAdapter = WinJS.Class.define(function(_, config, proxy, parameters){
+	var DataAdapter = WinJS.Class.define(function(_, config, proxy, parameters, parent) {
 		this._ =  _;
 		this._config = config;
 		this._parameters = parameters;
 		this._proxy = proxy;
+		this._parent = parent;
 
 		this.itemsFromIndex = this.itemsFromIndex.bind(this);
 		this.getCount = this.getCount.bind(this);
@@ -40,9 +41,10 @@
 					}),
 					absoluteIndex: requestIndex
 				};
-			}.bind(this), function(){
+			}.bind(this), function(e){
+				this._parent.dispatchEvent("error", e);
 				return WinJS.Promise.wrapError(new WinJS.ErrorFromName(WinJS.UI.FetchError.noResponse));
-			});
+			}.bind(this));
 		},
 
 		getCount: function () {
@@ -54,9 +56,12 @@
 	});
 
 	return WinJS.Class.derive(WinJS.UI.VirtualizedDataSource, function () {
-		var adapter = Object.create(DataAdapter.prototype);
+		var adapter = Object.create(DataAdapter.prototype),
+			parameters = arguments;
 
-		DataAdapter.apply(adapter, arguments);
+		[].push.call(parameters, this);
+
+		DataAdapter.apply(adapter, parameters);
 
 		this._baseDataSourceConstructor(adapter);
 	});

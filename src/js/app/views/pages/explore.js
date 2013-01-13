@@ -97,8 +97,10 @@
 		render: function (id, params) {
 			// id is integer
 			this._currentItemId = id - 0;
-			return BaseView.prototype.render.apply(this, arguments)	.then(function(){
+			return BaseView.prototype.render.apply(this, arguments).then(function(){
 				return this._createFlipView(params.items);
+			}.bind(this)).then(function(){
+				return this._helpers.win.ensureIsOnline();
 			}.bind(this));
 		},
 
@@ -109,10 +111,10 @@
 					if(item.data.id === this._currentItemId){
 						return this.wc.previous();
 					}
-					return WinJS.Promise.wrap();
+					return this._helpers.win.ensureIsOnline();
 				}.bind(this));
 			}
-			return WinJS.Promise.wrap();
+			return this._helpers.win.ensureIsOnline();
 		},
 
 		unload: function(){
@@ -195,6 +197,7 @@
 					});
 				}.bind(this));
 			}
+			return this._helpers.win.ensureIsOnline();
 		}
 	});
 });

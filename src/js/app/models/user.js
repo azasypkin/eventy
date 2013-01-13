@@ -70,11 +70,14 @@
 				}.bind(this))
 				.then(function(isTokenReceived){
 					if(isTokenReceived){
-						return proxy.getUserDetails().then(function(details){
-							this.set("id", details.id);
-							this.set("email", details.email);
+						return proxy.getUserDetails().then(function (details) {
+							if (details) {
+								this.set("id", details.id);
+								this.set("email", details.email);
 
-							return true;
+								return true;
+							}
+							return false;
 						}.bind(this));
 					}
 					return isTokenReceived;

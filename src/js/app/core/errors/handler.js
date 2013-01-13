@@ -1,101 +1,67 @@
-﻿define(function (require) {
+﻿define(["app/core/errors/base_error"], function (BaseError) {
 	"use strict";
 
-	var ms = require("libs/ms"),
-		StumbleError = require("libs/errors/stumble_error"),
-		route = require("libs/route"),
-		api = require("libs/api"),
-		storage = require("libs/storage"),
-		mediator = require("events/mediator");
-
-	var errorCodes = StumbleError.Codes,
-		genericErrorTitle = "Fiddlesticks!",
-		genericErrorMessage = "Something has gone awry in Stumbleland. Please try again in a few.";
+	var errorCodes = BaseError.Codes,
+		genericErrorTitle = "Aw, snap!",
+		genericErrorMessage = "Something has gone wrong with your request. Please try again in a few seconds.";
 
 	var handleAPIErrors = function(error){
 		var isHandled = false;
 
-		if (error.originalError._code === 5030) {
-			mediator.trigger("error:outOfStumbles", error);
-
-			var mode = storage.get("searchKeyword") || storage.get("stumbleName");
-			api.setStumbleMode();
-
-			ms.showPrompt(
-				"Honestly, we can't believe you made it this far.",
-				"You've reached the end of your " + mode + " Stumble adventure. Wanna try again? Dive into another interest."
+		if (error.originalError.error_type === "Request Error") {
+			this._helpers.win.showPrompt(
+				"Eventbrite can't process request.",
+				"It seems that something wrong with Eventbrite data. Please, try again later."
+			);
+			isHandled = true;
+		} else if (error.originalError.error_type === "Authentication Error") {
+			this._helpers.win.showPrompt(
+				"Eventbrite can't authenticate your request.",
+				"Please, try to connect your account to Eventbrite once again."
 			).then(function(){
-				storage.set("searchMode", false);
-				storage.remove("searchKeyword");
+				this._state.user.signOut();
 
-				route.navigate("home");
+				WinJS.Navigation.navigate("welcome");
 			});
 
 			isHandled = true;
-		} else if (error.originalError._code === 5060) {
-			//"5060" - STUMBLE_NO_INTERESTS
-			isHandled = true;
-
-			route.navigate("home");
-		} else {
-			// For now we agreed to handle all API errors
-			isHandled = true;
-			ms.showPrompt(genericErrorTitle, this.getDetailedUnhandledErrorMessage(error));
 		}
 
 		return isHandled;
 	};
 
-	return {
+	return WinJS.Class.define(function(config, helpers, state, analytics){
+		this._config = config;
+		this._helpers = helpers;
+		this._state = state;
+		this._analytics = analytics;
+	}, {
 		handle: function(e){
 			var error = e.detail.exception || e.detail.error || e.detail,
 				isHandled = false,
 				shouldBeLogged = true;
 
 			// let's skip all cancel errors as it's not actual errors
-			if(StumbleError.isCanceled(error)){
+			if(BaseError.isCanceled(error)){
 				isHandled = true;
-			} else if(StumbleError.isStumbleError(error)){
-
-				if(error.code === errorCodes.USER_NOT_AUTHENTICATED){
+			} else if(BaseError.isBaseError(error)){
+				if(error.code === errorCodes.NO_INTERNET_CONNECTION){
 					isHandled = true;
 					shouldBeLogged = false;
 
-					route.navigate("loggedout");
-
-				} else if(error.code === errorCodes.NO_INTERNET_CONNECTION){
-					isHandled = true;
-					shouldBeLogged = false;
-
-					ms.showPrompt(
-						"Oops! Where's the Internet?",
-						"It appears you aren't connected to the interwebs. Please check connectivity and try again."
-					).then(function(){
-						route.navigate("loggedout");
-					});
+					this._helpers.win.showPrompt(
+						"No internet connection!",
+						"It looks like you aren't connected to the internet. Please check connectivity and try again."
+					);
 
 				} else if(error.code === errorCodes.API_FAILED){
 					isHandled = handleAPIErrors(error);
 				} else if(error.code === errorCodes.XHR_FAILED){
 					// For now we agreed to handle all XHR errors
 					isHandled = true;
-					ms.showPrompt(genericErrorTitle, this.getDetailedUnhandledErrorMessage(error));
-				} else if (error.code === errorCodes.FB_AUTH_FAILED
-					|| error.code === errorCodes.FB_CANT_GET_USER
-					|| error.code === errorCodes.FB_LINK_FAILED) {
-
-					isHandled = true;
-
-					ms.showPrompt(
-						"Unable to connect to Facebook",
-						"There was a problem trying to connect to Facebook.  Please try again later."
-					);
-				} else if(error.code === errorCodes.SIGNUP_FAILED){
-					isHandled = true;
-
-					ms.showPrompt(
-						"Unable to sign up",
-						"Unable to sign up. Please try again later."
+					this._helpers.win.showPrompt(
+						genericErrorTitle,
+						this.getDetailedUnhandledErrorMessage(error)
 					);
 				}
 			}
@@ -103,42 +69,42 @@
 			if (!isHandled) {
 
 				// This is just for development mode, we don't crash app but show error prompt
-				if(this.isLoggingEnabled()){
+				if(this.isDevelopmentMode()){
 
 					isHandled = true;
 
-					ms.showPrompt(genericErrorTitle, this.getDetailedUnhandledErrorMessage(error));
+					this._helpers.win.showPrompt(genericErrorTitle, this.getDetailedUnhandledErrorMessage(error));
 				}
 
-				MK.logLastChanceException(error);
+				this._analytics.logLastChanceException(error);
 
 			} else if(shouldBeLogged){
-				ms.error(error);
+				this._analytics.error(error);
 			}
 
 			return isHandled;
 		},
 
-		isLoggingEnabled: function(){
-			return typeof window.suDM === "function" && window.suDM("logging");
+		isDevelopmentMode: function(){
+			return this._config.mode === "development";
 		},
 
 		getDetailedUnhandledErrorMessage: function(e){
 			var message;
 
-			if(this.isLoggingEnabled()){
+			if(this.isDevelopmentMode()){
 				if(typeof e === "string"){
 					message = e;
 				} else {
-					message = (StumbleError.isStumbleError(e) && e.originalError
+					message = (BaseError.isBaseError(e) && e.originalError
 						? e.originalError.message || e.originalError.description
 						: null
-					)
-					|| e.message
-					|| e.description;
+						)
+						|| e.message
+						|| e.description;
 				}
 			}
 			return message || genericErrorMessage;
 		}
-	};
+	});
 });

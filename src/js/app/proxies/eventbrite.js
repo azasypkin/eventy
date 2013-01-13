@@ -132,16 +132,26 @@
 			}
 		},
 
+		genericRequest: function (type, params) {
+			return this._helpers.win.ensureIsOnline().then(function () {
+				return WinJS.xhr({
+					url: this._buildUrl(type, params),
+					responseType: this._config.dataType,
+					headers: this._getHeaders(),
+					timeout: this._config.timeout
+				}).then(null, function (e) {
+					return WinJS.Promise.wrapError(
+						new BaseError("XHR request failed.", BaseError.Codes.XHR_FAILED, e)
+					);
+				});
+			}.bind(this));
+		},
+
 		searchEvents: function (params) {
 			if (this._useFakeData) {
 				return this._getFake("events");
 			} else {
-				return WinJS.xhr({
-					url: this._buildUrl("event_search", params),
-					responseType: this._config.dataType,
-					headers: this._getHeaders(),
-					timeout: this._config.timeout
-				}).then(function(data){
+				return this.genericRequest("event_search", params).then(function (data) {
 					data = JSON.parse(data.responseText);
 					var result = [];
 					// first element is the summary
@@ -149,7 +159,7 @@
 						for (var i = 1; i < data.events.length; i++) {
 							result.push(this._convertToEvent(data.events[i].event, params));
 						}
-					} else if(data.error){
+					} else if (data.error) {
 						return WinJS.Promise.wrapError(
 							new BaseError("SearchEvents request failed.", BaseError.Codes.API_FAILED, data.error)
 						);
@@ -158,11 +168,7 @@
 						total: result.length > 0 ? data.events[0].summary.total_items : 0,
 						items: result
 					};
-				}.bind(this), function(e){
-					return WinJS.Promise.wrapError(
-						new BaseError("SearchEvents request failed.", BaseError.Codes.XHR_FAILED, e)
-					);
-				});
+				}.bind(this));
 			}
 		},
 
@@ -173,12 +179,7 @@
 			if (this._useFakeData) {
 				return this._getFake("userUpcomingEvents");
 			} else {
-				return WinJS.xhr({
-					url: this._buildUrl("user_list_tickets", params),
-					responseType: this._config.dataType,
-					headers: this._getHeaders(),
-					timeout: this._config.timeout
-				}).then(function(data){
+				return this.genericRequest("user_list_tickets", params).then(function (data) {
 					data = JSON.parse(data.responseText);
 					var result = [],
 						ids = [],
@@ -191,14 +192,14 @@
 					if (data && !data.error && data.user_tickets && data.user_tickets.length > 1) {
 						for (i = 1; i < data.user_tickets.length; i++) {
 							ticket = data.user_tickets[i];
-							for(j = 0; j < ticket.orders.length; j++){
+							for (j = 0; j < ticket.orders.length; j++) {
 								order = ticket.orders[j].order;
-								if(ids.indexOf(order.event.id) < 0){
+								if (ids.indexOf(order.event.id) < 0) {
 									result.push(this._convertToEvent(order.event, params));
 								}
 							}
 						}
-					} else if(data.error){
+					} else if (data.error) {
 						return WinJS.Promise.wrapError(
 							new BaseError("SearchEvents request failed.", BaseError.Codes.API_FAILED, data.error)
 						);
@@ -207,11 +208,7 @@
 						total: result.length,
 						items: result
 					};
-				}.bind(this), function(e){
-						return WinJS.Promise.wrapError(
-							new BaseError("SearchEvents request failed.", BaseError.Codes.XHR_FAILED, e)
-						);
-					});
+				}.bind(this));
 			}
 		},
 
@@ -219,13 +216,8 @@
 			if (this._useFakeData) {
 				return this._getFake("userDetails");
 			} else {
-				return WinJS.xhr({
-					url: this._buildUrl("user_get"),
-					responseType: this._config.dataType,
-					headers: this._getHeaders(),
-					timeout: this._config.timeout
-				}).then(function(data){
-					try{
+				return this.genericRequest("user_get").then(function(data){
+					try {
 						data = JSON.parse(data.responseText);
 					} catch(e){}
 
@@ -234,16 +226,14 @@
 							id: data.user.user_id,
 							email: data.user.email
 						});
-					} else {
+					} else if(data.error) {
 						return WinJS.Promise.wrapError(
-							new BaseError("GetUserDetails request failed.", BaseError.Codes.API_FAILED, data && data.error)
+							new BaseError("GetUserDetails request failed.", BaseError.Codes.API_FAILED, data.error)
 						);
 					}
-				}.bind(this), function(e){
-					return WinJS.Promise.wrapError(
-						new BaseError("GetUserDetails request failed.", BaseError.Codes.XHR_FAILED, e)
-					);
-				});
+
+					return null;
+				}.bind(this));
 			}
 		},
 
