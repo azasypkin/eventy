@@ -21,12 +21,12 @@ module.exports = function(grunt) {
     copy: {
       dist:{
         files:{
-          '<%= pkg.dist %>/css/': '<%= pkg.src %>/css/**',
-          '<%= pkg.dist %>/html/': '<%= pkg.src %>/html/**',
-          '<%= pkg.dist %>/img/': '<%= pkg.src %>/img/**',
-          '<%= pkg.dist %>/js/': '<%= pkg.src %>/js/**',
-          '<%= pkg.dist %>/packages/': '<%= pkg.src %>/packages/**',
-          '<%= pkg.dist %>/': ['<%= pkg.src %>/*.pfx', '<%= pkg.src %>/*.xml', '<%= pkg.src %>/*.config', '<%= pkg.src %>/*.sln', '<%= pkg.src %>/*.appxmanifest', '<%= pkg.src %>/*.jsproj']
+          '<%= pkg.dist %>/css/'      : '<%= pkg.src %>/css/**',
+          '<%= pkg.dist %>/html/'     : '<%= pkg.src %>/html/**',
+          '<%= pkg.dist %>/img/'      : '<%= pkg.src %>/img/**',
+          '<%= pkg.dist %>/js/'       : '<%= pkg.src %>/js/**',
+          '<%= pkg.dist %>/packages/' : '<%= pkg.src %>/packages/**',
+          '<%= pkg.dist %>/'          : ['<%= pkg.src %>/*.pfx', '<%= pkg.src %>/*.xml', '<%= pkg.src %>/*.config', '<%= pkg.src %>/*.sln', '<%= pkg.src %>/*.appxmanifest', '<%= pkg.src %>/*.jsproj']
         }
       }
     },
