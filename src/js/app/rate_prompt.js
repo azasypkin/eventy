@@ -6,7 +6,7 @@
 		this._counters = counters;
 		this._triggerName = "viewedEvents";
 		this._millisecondInDay = 1000*60*60*24;
-		this._triggerValueToShowRatePrompt = 20;
+		this._triggerValueToShowRatePrompt = 15;
 		this._daysCountToShowRatePrompt = 4;
 	},{
 		setup: function(){
