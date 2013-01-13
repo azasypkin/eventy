@@ -118,5 +118,4 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', ['jshint','clean:prebuild', 'copy', 'requirejs', 'clean:postbuild']);
-
 };
