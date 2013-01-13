@@ -11,7 +11,7 @@
 			copyRights: "Copyright &copy; ALZA 2013"
 		},
 
-		mode: "production",
+		mode: "development",
 
 		labels: labels,
 

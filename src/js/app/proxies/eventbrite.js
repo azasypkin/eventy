@@ -159,7 +159,7 @@
 						for (var i = 1; i < data.events.length; i++) {
 							result.push(this._convertToEvent(data.events[i].event, params));
 						}
-					} else if (data.error) {
+					} else if (data.error && data.error.error_type !== "Not Found") {
 						return WinJS.Promise.wrapError(
 							new BaseError("SearchEvents request failed.", BaseError.Codes.API_FAILED, data.error)
 						);
@@ -199,7 +199,7 @@
 								}
 							}
 						}
-					} else if (data.error) {
+					} else if (data.error && data.error.error_type !== "Not Found") {
 						return WinJS.Promise.wrapError(
 							new BaseError("SearchEvents request failed.", BaseError.Codes.API_FAILED, data.error)
 						);

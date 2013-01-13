@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" StartPage="html\index.html">
-      <VisualElements DisplayName="Eventy" Logo="img\logo.png" SmallLogo="img\small-logo.png" Description="Eventy" ForegroundText="light" BackgroundColor="#000000">
+      <VisualElements DisplayName="Eventy" Logo="img\logo.png" SmallLogo="img\small-logo.png" Description="Eventy is handy social event exploring app based on Eventbrite data. It allows you to keep eye on events you can be interested in, you just need to say Eventy what event types suit your lifestyle and interests. Home page provides you with the events nearby and upcoming events in accordance with your event preferences. Once you see some cool event just tap to explore it in details or share it with friends via email, Facebook or Twitter. Moreover you can use advanced search to surf through events by specific query within this or next week\month, nearby or at any specific city in the world! You don't have to have your own Eventbrite account to use the app, but if you want to see Eventbrite's events you're going to attend just connect your account with Eventy just in three clicks. Enjoy and find out what is going on around you with Eventy!" ForegroundText="light" BackgroundColor="#000000">
         <DefaultTile ShowName="logoOnly" ShortName="Eventy" WideLogo="img\wide-logo.png" />
         <SplashScreen Image="img\splashscreen.png" BackgroundColor="#000000" />
         <InitialRotationPreference>

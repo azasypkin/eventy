@@ -339,8 +339,12 @@
 			var userFilter = this._state.user.get("filter"),
 				filter = e.detail;
 
-			if(userFilter && userFilter.category){
-				filter.category = userFilter.category;
+			if (userFilter) {
+				if (userFilter.category) {
+					filter.category = userFilter.category;
+				}
+
+				filter.useCurrentLocation = userFilter.useCurrentLocation && !filter.city;
 			}
 
 			this._helpers.progress.show();
