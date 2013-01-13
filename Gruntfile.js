@@ -72,17 +72,12 @@ module.exports = function(grunt) {
           appDir:'<%= pkg.dist %>',
           baseUrl:'./js',
           dir:'<%= pkg.dist %>',
-          optimize:"uglify",
+
+          optimize:"uglify2",
 
           optimizeCss:"standard.keepLines",
 
           removeCombined: true,
-
-          closure:{
-            CompilerOptions:{ },
-            CompilationLevel:'SIMPLE_OPTIMIZATIONS',
-            loggingLevel:'SEVERE'
-          },
 
           paths: {
             config: "app/config/config",
@@ -90,19 +85,22 @@ module.exports = function(grunt) {
             dataProxy: 'app/proxies/eventbrite'
           },
 
-          modules:[
-            {
-              name:"libs/requirejs/require"
-            },
-            {
-              name:"app"
-            }
-          ],
+          modules:[{
+            name:"libs/requirejs/require"
+          }, {
+            name:"app"
+          }],
 
           preserveLicenseComments: false,
 
-          uglify: {
-            no_mangle: true
+          uglify2: {
+            conditionals: true,
+            no_mangle: true,
+            evaluate: true,
+            booleans: true,
+            loops: true,
+            unused: true,
+            if_return: true
           },
 
           keepBuildDir: true
