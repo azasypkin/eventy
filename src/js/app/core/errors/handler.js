@@ -5,37 +5,37 @@
 		genericErrorTitle = "Aw, snap!",
 		genericErrorMessage = "Something has gone wrong with your request. Please try again in a few seconds.";
 
-	var handleAPIErrors = function(error){
-		var isHandled = false;
-
-		if (error.originalError.error_type === "Request Error") {
-			this._helpers.win.showPrompt(
-				"Eventbrite can't process request.",
-				"It seems that something wrong with Eventbrite data. Please, try again later."
-			);
-			isHandled = true;
-		} else if (error.originalError.error_type === "Authentication Error") {
-			this._helpers.win.showPrompt(
-				"Eventbrite can't authenticate your request.",
-				"Please, try to connect your account to Eventbrite once again."
-			).then(function(){
-				this._state.user.signOut();
-
-				WinJS.Navigation.navigate("welcome");
-			});
-
-			isHandled = true;
-		}
-
-		return isHandled;
-	};
-
 	return WinJS.Class.define(function(config, helpers, state, analytics){
 		this._config = config;
 		this._helpers = helpers;
 		this._state = state;
 		this._analytics = analytics;
 	}, {
+		_handleAPIErrors: function(error){
+			var isHandled = false;
+
+			if (error.originalError.error_type === "Request Error") {
+				this._helpers.win.showPrompt(
+					"Eventbrite can't process request.",
+					"It seems that something wrong with Eventbrite data. Please, try again later."
+				);
+				isHandled = true;
+			} else if (error.originalError.error_type === "Authentication Error") {
+				this._helpers.win.showPrompt(
+					"Eventbrite can't authenticate your request.",
+					"Please, try to connect your account to Eventbrite."
+				).then(function(){
+					this._state.user.signOut();
+
+					WinJS.Navigation.navigate("welcome");
+				}.bind(this));
+
+				isHandled = true;
+			}
+
+			return isHandled;
+		},
+
 		handle: function(e){
 			var error = e.detail.exception || e.detail.error || e.detail,
 				isHandled = false,
@@ -55,7 +55,7 @@
 					);
 
 				} else if(error.code === errorCodes.API_FAILED){
-					isHandled = handleAPIErrors(error);
+					isHandled = this._handleAPIErrors(error);
 				} else if(error.code === errorCodes.XHR_FAILED){
 					// For now we agreed to handle all XHR errors
 					isHandled = true;
