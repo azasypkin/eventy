@@ -109,6 +109,9 @@
 
 		_onFilterSubmitted: function (e) {
 			e.preventDefault();
+
+			this.wc.hide();
+
 			this.submitFilterForm(e.target);
 		},
 

@@ -6,7 +6,7 @@
 			date: function(value, format) {
 				return value.repeats
 					? config.labels["Proxy.TimePeriods.RepeatingEvent"]
-					: dateUtils.formatDate(new Date(dateUtils.offsetDate(value.date, value.offset)), format || "MMM dd, yyyy HH:mm");
+					: dateUtils.formatDate(new Date(dateUtils.offsetDate(value.date, value.offset)), format || "EE, NNN d, yyyy h:mm a");
 			}
 		};
 	}

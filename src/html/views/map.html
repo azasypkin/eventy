@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>Map</title>
+	<link href="winjs/css/ui-light.css" rel="stylesheet" type="text/css" />
+	<style type="text/css">
+		html { height: 100% }
+		body { height: 100%; margin: 0; padding: 0 }
+		#map { height: 100% }
+	</style>
+
+	<!-- We can include remote scripts because it is rendered in the web context (ms-wwa-web:///map.html)  -->
+	<script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+</head>
+<body>
+<div id="map"></div>
+<script type="text/javascript">
+	//This script handles all of the controls to the map API
+	(function () {
+		'use strict';
+
+		var getQueryStringParameter = function (name) {
+			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+			var regexS = "[\\?&]" + name + "=([^&#]*)";
+			var regex = new RegExp(regexS);
+			var results = regex.exec(window.location.search);
+			if(results == null) {
+				return "";
+			} else {
+				return decodeURIComponent(results[1].replace(/\+/g, " "));
+			}
+		}
+
+		document.addEventListener("DOMContentLoaded", function(){
+			//initialize the map
+			var point = new google.maps.LatLng(getQueryStringParameter("latitude"), getQueryStringParameter("longitude")),
+				myOptions = {
+					zoom: 15,
+					center: point,
+					mapTypeId: google.maps.MapTypeId.ROADMAP
+				},
+				map = new google.maps.Map(document.getElementById("map"), myOptions);
+
+			new google.maps.Marker({
+				position: point,
+				map: map,
+				title: getQueryStringParameter("venue")
+			});
+
+		}, false);
+	})();
+</script>
+</body>
+</html>

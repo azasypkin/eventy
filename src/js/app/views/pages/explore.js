@@ -1,4 +1,4 @@
-﻿define(["app/views/pages/base", "app/proxies/eventbrite"],function(BaseView, Proxy){
+﻿define(["app/views/pages/base"],function(BaseView){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
@@ -13,19 +13,19 @@
 
 		this._state.dispatcher.addEventListener("command:next", this._onNextCommandInvoked, false);
 		this._state.dispatcher.addEventListener("command:openInBrowser", this._onOpenInBrowserCommandInvoked, false);
-
-		this._proxy = new Proxy();
 	}, {
 
 		view: "/html/views/pages/explore/main.html",
 		container: document.getElementById("content"),
 		templates: {
-			item: "/html/views/pages/explore/item.html"
+			item: "/html/views/pages/explore/item.html",
+			frame: "/html/views/pages/explore/iframe.html"
 		},
 
 		wc: null,
 
 		_emptyFrameSrc: "about:blank",
+		_sandboxFrameSrc: "ms-appx:///html/views/pages/explore/iframe.html",
 		_currentItemId: null,
 		_previousPage: null,
 
@@ -62,27 +62,60 @@
 
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
-				return this._setupFrame(item.data.id, item.data.url);
+				var parsedStartDate = new Date(this._helpers.date.getDateFromFormat(item.data.start_date, "yyyy-MM-dd HH:mm:ss")),
+					parsedEndDate = new Date(this._helpers.date.getDateFromFormat(item.data.end_date, "yyyy-MM-dd HH:mm:ss"));
+
+				return this._helpers.template.parseTemplateToDomNode(this.templates.item, {
+					data: item.data,
+					formattedStartDate: this._helpers.date.formatDate(parsedStartDate, "EE, NNN d, yyyy h:mm a"),
+					formattedEndDate: this._helpers.date.formatDate(parsedEndDate, "EE, NNN d, yyyy h:mm a")
+				}).then(function (node) {
+					var styleNodes = node.querySelectorAll("style"),
+						mapContainer = node.querySelector(".map"),
+						frame = document.createElement("iframe"),
+						styleNode,
+						i;
+
+					if (styleNodes && styleNodes.length > 0) {
+						for (i = 0; i < styleNodes.length; i++) {
+							styleNode = styleNodes[i];
+
+							styleNode.parentNode.removeChild(styleNode);
+
+							//if (styleNode.styleSheet && styleNode.styleSheet.cssRules) {
+							//	for (j = 0; j < styleNode.styleSheet.cssRules.length; j++) {
+							//		rule = styleNode.styleSheet.cssRules[j];
+
+							//		if (rule.selectorText.toLowerCase() === "body") {
+							//			rule.selectorText = ".event-content";
+							//		} else {
+							//			rule.selectorText = ".event-content " + rule.selectorText;
+							//		}
+							//	}
+							//}
+						}
+					}
+
+					frame.width = "100%";
+					frame.height = "100%";
+
+					// embed map
+					frame.src = "ms-appx-web:///html/views/map.html"
+						+ "?latitude=" + item.data.latitude
+						+ "&longitude=" + item.data.longitude
+						+ "&venue=" + item.data.venue;
+					mapContainer.appendChild(frame);
+
+					return node;
+				}.bind(this));
 			}.bind(this));
 		},
 
-		_setupFrame: function(id, src){
-			var frame = document.createElement("iframe");
-
-			frame.id = id;
-
-			frame.src = src ? src : this._emptyFrameSrc;
-
-			//frame.addEventListener("load", this.onFrameLoaded);
-			//frame.addEventListener("error", this.onFrameError);
-
-			return frame;
-		},
-
 		_createFlipView: function(events){
-			var itemsList = new WinJS.Binding.List(events);
+			var itemsList = new WinJS.Binding.List(events),
+				flipViewContainer = document.getElementById("explore-flip-view");
 
-			this.wc = new WinJS.UI.FlipView(document.getElementById("explore-flip-view"), {
+			this.wc = new WinJS.UI.FlipView(flipViewContainer, {
 				itemTemplate: this._itemTemplate.bind(this)
 			});
 
@@ -122,6 +155,7 @@
 
 			if (this.wc) {
 				this.wc.removeEventListener("pageselected", this._onPageSelected, false);
+				this.wc.removeEventListener("pagevisibilitychanged", this._onPageVisibilityChanged, false);
 			}
 
 			this._state.dispatcher.dispatchEvent("updateBarState", {

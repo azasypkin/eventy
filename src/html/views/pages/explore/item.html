@@ -1,1 +1,112 @@
-﻿<iframe />
+﻿<article class="event-content" style="background-color: <%=data.styles.background_color%>; color:<%=data.styles.text_color%>;">
+	<% if(data.custom_header) { %>
+		<header class="main-header">
+			<div class="main"><%= data.custom_header %></div>
+		</header>
+	<% } %>
+
+	<section class="main">
+		<header>
+			<table>
+				<tr>
+					<td class="sub-header-info">
+						<div>
+							<h1>
+								<span><%= data.title %></span>
+							</h1>
+							<h2>
+								<a href="<%= data.organizer_url %>" target="_blank"><%= data.organizer_name %></a>
+							</h2>
+
+							<div class="event-network">
+								<h2><%= data.city %>, <%= data.region %></h2>
+							</div>
+						</div>
+					</td>
+					<td class="sub-header-logo">
+						<div class="event-title-image">
+							<% if(data.thumbnail) { %>
+								<img src="<%= data.thumbnail %>" >
+							<% } %>
+						</div>
+					</td>
+
+				</tr>
+			</table>
+		</header>
+
+		<section class="left-column">
+			<div class="panel" style="background-color: <%=data.styles.box_background_color%>; color:<%=data.styles.box_text_color%>; border-color: <%=data.styles.box_border_color%>;">
+				<div class="panel-head" style="background-color: <%=data.styles.box_header_background_color%>; color:<%=data.styles.box_header_text_color%>;">
+					<h3>Ticket Information</h3>
+				</div>
+
+				<% if(data.tickets.length > 0) { %>
+					<div class="panel-body">
+						<table width="100%" border="0" cellpadding="0" cellspacing="0">
+							<tr class="table-head">
+								<td width="40%" nowrap="nowrap">Ticket Type</td>
+								<td>Sales End</td>
+								<td>Price</td>
+							</tr>
+							<% data.tickets.forEach(function(ticket){ %>
+								<tr class="ticket_row">
+									<td><%= ticket.name %></td>
+									<td nowrap="nowrap"><%= ticket.end_date %></td>
+									<td nowrap="nowrap"><%= ticket.price %></td>
+								</tr>
+							<% }); %>
+						</table>
+					</div>
+				<% } %>
+				<div class="panel-footer">
+					<a href="<%=data.url%>">Order Now</a>
+				</div>
+				<div class="clear-float"></div>
+			</div>
+
+			<div class="panel" style="background-color: <%=data.styles.box_background_color%>; color:<%=data.styles.box_text_color%>; border-color: <%=data.styles.box_border_color%>;">
+				<div class="panel-head" style="background-color: <%=data.styles.box_header_background_color%>; color:<%=data.styles.box_header_text_color%>;">
+					<h3>Detail</h3>
+				</div>
+				<div class="panel-body">
+					<span><%= data.description %></span>
+				</div>
+			</div>
+		</section>
+
+		<section class="right-column">
+			<div class="panel when-where" style="background-color: <%=data.styles.box_background_color%>; color:<%=data.styles.box_text_color%>; border-color: <%=data.styles.box_border_color%>;">
+				<div class="panel-head" style="background-color: <%=data.styles.box_header_background_color%>; color:<%=data.styles.box_header_text_color%>;">
+					<h3>When & Where</h3>
+				</div>
+				<div class="panel-body">
+					<div class="map"></div>
+					<h2 style="margin-top: 3px;">
+						<br>
+						<b><span class="fn org"><%= data.venue %></span></b><br />
+						  <span class="adr">
+							<span class="street-address"><%= data.address %><br/></span>
+							<span class="locality"><%= data.city %></span>,
+							<span class="region"><%= data.region %></span> <%= data.postal_code %><br/>
+							<br/>
+						</span>
+					</h2>
+					<h2 style="padding-bottom: 0;">
+						<span class="dtstart">Start: <%= formattedStartDate %></span>
+						<br/>
+						<span class="dtend">End: <%= formattedEndDate %></span>
+					</h2>
+				</div>
+			</div>
+		</section>
+
+	<div class="clearfloat"></div>
+	</section>
+
+	<% if(data.custom_footer) { %>
+		<footer class="main-footer">
+			<div class="main"><%= data.custom_footer %></div>
+		</footer>
+	<% } %>
+</article>

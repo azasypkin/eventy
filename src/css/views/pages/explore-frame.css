@@ -1,0 +1,86 @@
+﻿body{
+	height: 100%;
+}
+
+.clearfloat {
+	clear: both;
+}
+ .event-content {
+		width: 100%;
+		height: 100%;
+	}
+
+		.event-content .main{
+			min-width: 700px;
+			vertical-align: top;
+			text-align: left;
+			width: 960px;
+			margin: auto;
+		}
+
+		.event-content header.main-header, .explore-page .event-content footer.main-footer {
+			width: 100%;
+			margin-bottom: 20px;
+			padding-top: 7px;
+		}
+
+		.event-content section.main{
+			min-width: 700px;
+			vertical-align: top;
+			text-align: left;
+		}
+
+			.event-content section.main header{
+				border-bottom: 1px dotted #C0BDB6;
+				margin-bottom: 18px;
+				padding-bottom: 14px;
+			}
+				.event-content section.main header table{
+					width: 960px;
+					border-collapse: collapse;
+					border-spacing: 0;
+				}
+
+					.event-content section.main header table td.sub-header-info{
+						vertical-align: bottom;
+					}
+
+						.event-content section.main header table td.sub-header-info h1{
+							margin-top: 8px;
+							font-size: 26px;
+							line-height: 28px;
+							font-weight: bold;
+							margin: 0;
+							padding-bottom: 5px;
+						}
+
+						.event-content section.main header table td.sub-header-info h2{
+							font-size: 17px;
+							text-align: left;
+							line-height: 21px;
+							color: #8D0000;
+							margin: 0;
+							padding: 0;
+							font-weight: 300;
+						}
+
+							.event-content section.main header table td.sub-header-info .event_network h2{
+								margin: 0;
+								padding: 0;
+								line-height: 21px;
+							}
+
+
+					.event-content section.main header table td.sub-header-logo{
+					}
+
+						.event-content section.main header table td.sub-header-logo .event-title-image {
+							margin-top: 10px;
+						}
+
+			.event-content section.main .left-column{
+				float: left;
+				width: 628px;
+				padding: 0;
+			}
+

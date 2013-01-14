@@ -278,22 +278,45 @@
 					date: this._getDate(jsonEvent),
 					thumbnail: jsonEvent.logo,
 					categories: [],
-					description: jsonEvent.description,
+					description: jsonEvent.description ? window.toStaticHTML(jsonEvent.description) : "",
 					city: jsonEvent.venue ? jsonEvent.venue.city : "",
+					region: jsonEvent.venue ? jsonEvent.venue.region : "",
 					venue: jsonEvent.venue ? jsonEvent.venue.name : "",
 					country: jsonEvent.venue ? jsonEvent.venue.country : "",
-					distance: jsonEvent.distance ? jsonEvent.distance : ""
+					distance: jsonEvent.distance ? jsonEvent.distance : "",
+					address: jsonEvent.venue ? jsonEvent.venue.address : "",
+					postal_code: jsonEvent.venue ? jsonEvent.venue.postal_code : "",
+					latitude: jsonEvent.venue ? jsonEvent.venue.latitude : "",
+					longitude: jsonEvent.venue ? jsonEvent.venue.longitude : "",
+					custom_header: jsonEvent.custom_header ? window.toStaticHTML(jsonEvent.custom_header) : "",
+					custom_footer: jsonEvent.custom_footer ? window.toStaticHTML(jsonEvent.custom_footer) : "",
+					organizer_name: jsonEvent.organizer ? jsonEvent.organizer.name : "",
+					organizer_url: jsonEvent.organizer ? jsonEvent.organizer.url : "",
+
+					start_date: jsonEvent.start_date,
+					end_date: jsonEvent.end_date,
+					timezone: jsonEvent.timezone,
+
+					styles: {
+						background_color: jsonEvent.background_color ? "#" + jsonEvent.background_color : "",
+						text_color: jsonEvent.text_color ? "#" + jsonEvent.text_color : "",
+						box_background_color: jsonEvent.box_background_color ? "#" + jsonEvent.box_background_color : "",
+						box_text_color: jsonEvent.box_text_color ? "#" + jsonEvent.box_text_color : "",
+						box_header_background_color: jsonEvent.box_header_background_color ? "#" + jsonEvent.box_header_background_color : "",
+						box_header_text_color: jsonEvent.box_header_text_color ? "#" + jsonEvent.box_header_text_color : "",
+						box_border_color: jsonEvent.box_border_color ? "#" + jsonEvent.box_border_color : ""
+					}
 			});
 
 			// temporal fix - sanitizing event description
-
+/*
 			if (event.description && event.description.indexOf("<") >= 0) {
 				try{
 					event.description = this._helpers.win.parseStringToHtmlDocument(event.description).body.innerText;
 				} catch(e){
 
 				}
-			}
+			}*/
 
 			var popularity = jsonEvent.capacity - 0;
 			// to avoid 0-s
@@ -322,6 +345,21 @@
 					id: "other",
 					requestedBy: false
 				}];
+			}
+
+			if(jsonEvent.tickets){
+				event.tickets = [];
+
+				jsonEvent.tickets.forEach(function (ticket) {
+					if (ticket.visible) {
+						event.tickets.push({
+							name: ticket.ticket.name,
+							description: ticket.ticket.description,
+							price: ticket.ticket.price + " " + ticket.ticket.currency,
+							end_date: ticket.ticket.end_date
+						});
+					}
+				});
 			}
 
 			event.color = globalConfig.dictionaries.categories[event.categories[0].id].color;
@@ -361,7 +399,7 @@
 
 				var scheduleType = repeatSchedule[0];
 
-				// currently we support just dayly repeats
+				// currently we support just daily repeats
 				if (scheduleType === 'daily') {
 					var today = new Date();
 					result.date = dateUtils.utcDate(today, -today.getTimezoneOffset());
