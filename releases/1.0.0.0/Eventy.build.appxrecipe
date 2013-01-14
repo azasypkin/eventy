@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Machine>ALZA</Machine>
+    <WindowsUser>Aleh</WindowsUser>
+    <SolutionConfiguration>Release|AnyCPU</SolutionConfiguration>
+    <PackageArchitecture>neutral</PackageArchitecture>
+  </PropertyGroup>
+  <ItemGroup>
+    <AppXManifest Include="D:\Projects\Eventy\build\package\Eventy\AppxManifest.xml">
+      <PackagePath>AppxManifest.xml</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppXManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\packages\MarkedUp.0.6.7\lib\winrt45\MarkedUp.winmd">
+      <PackagePath>MarkedUp.winmd</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\css\index.css">
+      <PackagePath>css\index.css</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\css\views\pages\explore-frame.css">
+      <PackagePath>css\views\pages\explore-frame.css</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\index.html">
+      <PackagePath>html\index.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\bars\bottom-bar.html">
+      <PackagePath>html\views\bars\bottom-bar.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\bars\top-bar.html">
+      <PackagePath>html\views\bars\top-bar.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\map.html">
+      <PackagePath>html\views\map.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\pages\categories\item.html">
+      <PackagePath>html\views\pages\categories\item.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\pages\categories\main.html">
+      <PackagePath>html\views\pages\categories\main.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\pages\explore\iframe.html">
+      <PackagePath>html\views\pages\explore\iframe.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\pages\explore\item.html">
+      <PackagePath>html\views\pages\explore\item.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\pages\explore\main.html">
+      <PackagePath>html\views\pages\explore\main.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\pages\home\item.html">
+      <PackagePath>html\views\pages\home\item.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\pages\home\main.html">
+      <PackagePath>html\views\pages\home\main.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\pages\search\item.html">
+      <PackagePath>html\views\pages\search\item.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\pages\search\main.html">
+      <PackagePath>html\views\pages\search\main.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\pages\welcome\main.html">
+      <PackagePath>html\views\pages\welcome\main.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\search-refine.html">
+      <PackagePath>html\views\search-refine.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\settings\about.html">
+      <PackagePath>html\views\settings\about.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\settings\account.html">
+      <PackagePath>html\views\settings\account.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\html\views\settings\privacy.html">
+      <PackagePath>html\views\settings\privacy.html</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\js\app.js">
+      <PackagePath>js\app.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\js\navigator.js">
+      <PackagePath>js\navigator.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\js\libs\MarkedUp.js">
+      <PackagePath>js\libs\MarkedUp.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\js\libs\requirejs\plugins\text.js">
+      <PackagePath>js\libs\requirejs\plugins\text.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\js\libs\requirejs\require.js">
+      <PackagePath>js\libs\requirejs\require.js</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\badge-logo.scale-100.png">
+      <PackagePath>img\badge-logo.scale-100.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\badge-logo.scale-140.png">
+      <PackagePath>img\badge-logo.scale-140.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\badge-logo.scale-180.png">
+      <PackagePath>img\badge-logo.scale-180.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\connect-to-eventbrite.png">
+      <PackagePath>img\connect-to-eventbrite.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\eventbrite-logo-white.png">
+      <PackagePath>img\eventbrite-logo-white.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\logo.scale-100.png">
+      <PackagePath>img\logo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\logo.scale-140.png">
+      <PackagePath>img\logo.scale-140.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\logo.scale-180.png">
+      <PackagePath>img\logo.scale-180.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\logo.scale-80.png">
+      <PackagePath>img\logo.scale-80.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\no-thumbnail.png">
+      <PackagePath>img\no-thumbnail.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\promo-targetsize-414.png">
+      <PackagePath>img\promo-targetsize-414.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\promo-targetsize-414x468.png">
+      <PackagePath>img\promo-targetsize-414x468.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\promo-targetsize-558x756.png">
+      <PackagePath>img\promo-targetsize-558x756.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\promo-targetsize-846x468.png">
+      <PackagePath>img\promo-targetsize-846x468.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\small-logo.scale-100.png">
+      <PackagePath>img\small-logo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\small-logo.scale-140.png">
+      <PackagePath>img\small-logo.scale-140.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\small-logo.scale-180.png">
+      <PackagePath>img\small-logo.scale-180.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\small-logo.scale-80.png">
+      <PackagePath>img\small-logo.scale-80.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\small-logo.target-16.png">
+      <PackagePath>img\small-logo.target-16.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\small-logo.target-256.png">
+      <PackagePath>img\small-logo.target-256.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\small-logo.target-32.png">
+      <PackagePath>img\small-logo.target-32.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\small-logo.target-48.png">
+      <PackagePath>img\small-logo.target-48.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\splashscreen.scale-100.png">
+      <PackagePath>img\splashscreen.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\splashscreen.scale-140.png">
+      <PackagePath>img\splashscreen.scale-140.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\splashscreen.scale-180.png">
+      <PackagePath>img\splashscreen.scale-180.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\store-logo.scale-100.png">
+      <PackagePath>img\store-logo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\store-logo.scale-140.png">
+      <PackagePath>img\store-logo.scale-140.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\store-logo.scale-180.png">
+      <PackagePath>img\store-logo.scale-180.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\welcome-logo.png">
+      <PackagePath>img\welcome-logo.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\wide-logo.scale-100.png">
+      <PackagePath>img\wide-logo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\wide-logo.scale-140.png">
+      <PackagePath>img\wide-logo.scale-140.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\wide-logo.scale-180.png">
+      <PackagePath>img\wide-logo.scale-180.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\img\wide-logo.scale-80.png">
+      <PackagePath>img\wide-logo.scale-80.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\src\packages.config">
+      <PackagePath>packages.config</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="D:\Projects\Eventy\build\package\Eventy\resources.pri">
+      <PackagePath>resources.pri</PackagePath>
+    </AppxPackagedFile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResolvedSDKReference Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows\v8.0\ExtensionSDKs\Microsoft.WinJS.1.0\1.0\">
+      <Name>Microsoft.WinJS.1.0</Name>
+      <Version>1.0.9200.20512</Version>
+      <Architecture>Neutral</Architecture>
+      <FrameworkIdentity>Name=Microsoft.WinJS.1.0, MinVersion=1.0.9200.20512</FrameworkIdentity>
+      <AppxLocation>C:\Program Files %28x86%29\Microsoft SDKs\Windows\v8.0\ExtensionSDKs\Microsoft.WinJS.1.0\1.0\Microsoft.WinJS.1.0.appx</AppxLocation>
+    </ResolvedSDKReference>
+  </ItemGroup>
+</Project>
