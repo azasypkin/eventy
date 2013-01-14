@@ -86,7 +86,8 @@
 		navigated: function () {
 			// now we should set trigger to true as it should be triggered when user press back button
 			winNavigation.history.current.state = {
-				trigger: true
+				trigger: true,
+				params: winNavigation.history.current.state && winNavigation.history.current.state.params
 			};
 		},
 

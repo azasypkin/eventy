@@ -83,6 +83,8 @@
 					"Europe/Warsaw": 60,
 					"Europe/Amsterdam": 60,
 
+					"Europe/Moscow": 180,
+
 					"Australia/Sydney":600,
 					"Australia/Adelaide":570,
 					"Asia/Singapore":480,
@@ -310,6 +312,8 @@
 				{ name: "(GMT +13:00) Nuku'alofa", offset: 13 }
 			]
 		},
+
+		googleAPIKey: "AIzaSyAD1mwBMDuuEvvqYCa_6__3XEhz3XYYWek",
 
 		analytics: {
 			keys: {

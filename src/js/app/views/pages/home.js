@@ -120,7 +120,7 @@
 			return new WinJS.Promise(function(complete, error){
 				// prepare parameters
 				var parameters = {
-						max: 2,
+						max: 10,
 						display: "custom_header,custom_footer"
 					},
 					userCategories = this._state.user.get("categories"),

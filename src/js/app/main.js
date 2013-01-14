@@ -209,6 +209,7 @@
 		},
 
 		explore: function(id, params){
+			state.counters.set("viewedEvents", state.counters.get("viewedEvents") + 1);
 			return this._navigateTo(ExplorePage, id, params);
 		},
 
@@ -273,11 +274,6 @@
 			);
 		});
 	}, false);
-
-	state.dispatcher.addEventListener("command:next", function(){
-		var currentNumberOfViewedEvents = state.counters.get("viewedEvents") + 1;
-		state.counters.set("viewedEvents", currentNumberOfViewedEvents);
-	});
 
 	(new RatePrompt(helpers, state.counters)).setup();
 

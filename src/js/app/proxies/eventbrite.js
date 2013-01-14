@@ -351,7 +351,7 @@
 				event.tickets = [];
 
 				jsonEvent.tickets.forEach(function (ticket) {
-					if (ticket.visible) {
+					if (ticket.ticket.visible === "true") {
 						event.tickets.push({
 							name: ticket.ticket.name,
 							description: ticket.ticket.description,

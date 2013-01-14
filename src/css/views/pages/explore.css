@@ -18,6 +18,10 @@
 		overflow-y: scroll;
 	}
 
+		.explore-page .event-content a {
+			cursor: pointer;
+		}
+
 		.explore-page .event-content .main{
 			min-width: 700px;
 			vertical-align: top;
@@ -80,13 +84,15 @@
 
 
 					.explore-page .event-content section.main header table td.sub-header-logo{
+						width: 300px;
+						text-align: center;
 					}
 
 						.explore-page .event-content section.main header table td.sub-header-logo .event-title-image {
 							margin-top: 10px;
 						}
 
-			.explore-page .event-content section.main .left-column .panel{
+			.explore-page .event-content section.main .panel{
 				margin-bottom: 20px;
 				border: 1px solid transparent;
 			}

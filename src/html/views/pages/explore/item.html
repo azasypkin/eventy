@@ -1,4 +1,4 @@
-﻿<article class="event-content" style="background-color: <%=data.styles.background_color%>; color:<%=data.styles.text_color%>;">
+﻿<article class="event-content" style="background-color: <%=data.styles.background_color%>; color:<%=data.styles.text_color%>;" >
 	<% if(data.custom_header) { %>
 		<header class="main-header">
 			<div class="main"><%= data.custom_header %></div>
@@ -58,10 +58,13 @@
 							<% }); %>
 						</table>
 					</div>
+					<div class="panel-footer">
+						<a href="<%=data.url%>">Order Now</a>
+					</div>
+				<% } else {%>
+					No tickets available
 				<% } %>
-				<div class="panel-footer">
-					<a href="<%=data.url%>">Order Now</a>
-				</div>
+
 				<div class="clear-float"></div>
 			</div>
 
@@ -81,7 +84,11 @@
 					<h3>When & Where</h3>
 				</div>
 				<div class="panel-body">
-					<div class="map"></div>
+					<div class="map">
+						<a href="<%= mapUrl %>">
+							<img src="<%= mapImageUrl %>" />
+						</a>
+					</div>
 					<h2 style="margin-top: 3px;">
 						<br>
 						<b><span class="fn org"><%= data.venue %></span></b><br />

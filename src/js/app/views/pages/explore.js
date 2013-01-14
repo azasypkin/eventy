@@ -4,14 +4,11 @@
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.apply(this, arguments);
 
-		this._onNextCommandInvoked = this._onNextCommandInvoked.bind(this);
 		this._onOpenInBrowserCommandInvoked = this._onOpenInBrowserCommandInvoked.bind(this);
 
 		this._onPageSelected = this._onPageSelected.bind(this);
 		this._onPageVisibilityChanged = this._onPageVisibilityChanged.bind(this);
 
-
-		this._state.dispatcher.addEventListener("command:next", this._onNextCommandInvoked, false);
 		this._state.dispatcher.addEventListener("command:openInBrowser", this._onOpenInBrowserCommandInvoked, false);
 	}, {
 
@@ -28,6 +25,7 @@
 		_sandboxFrameSrc: "ms-appx:///html/views/pages/explore/iframe.html",
 		_currentItemId: null,
 		_previousPage: null,
+		_source: null,
 
 		isShareSupported: function(){
 			return true;
@@ -56,23 +54,31 @@
 				enabled: true,
 				show: true,
 				sticky: true,
-				commands: ["search", "globalSeparator", "openInBrowser", "next"]
+				commands: ["search", "globalSeparator", "openInBrowser"]
 			}];
 		},
 
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
 				var parsedStartDate = new Date(this._helpers.date.getDateFromFormat(item.data.start_date, "yyyy-MM-dd HH:mm:ss")),
-					parsedEndDate = new Date(this._helpers.date.getDateFromFormat(item.data.end_date, "yyyy-MM-dd HH:mm:ss"));
+					parsedEndDate = new Date(this._helpers.date.getDateFromFormat(item.data.end_date, "yyyy-MM-dd HH:mm:ss")),
+					venueCoordinate = item.data.latitude + ", " + item.data.longitude,
+					mapImageUrl = "http://maps.googleapis.com/maps/api/staticmap?sensor=false"
+						+ "&CENTER=" + venueCoordinate
+						+ "&markers=" + "color:red|" + venueCoordinate
+						+ "&zoom=15"
+						+ "&size=270x270"
+						+ "&key=" + this._config.googleAPIKey,
+					mapUrl = "http://maps.google.com/?q=" + venueCoordinate;
 
 				return this._helpers.template.parseTemplateToDomNode(this.templates.item, {
 					data: item.data,
 					formattedStartDate: this._helpers.date.formatDate(parsedStartDate, "EE, NNN d, yyyy h:mm a"),
-					formattedEndDate: this._helpers.date.formatDate(parsedEndDate, "EE, NNN d, yyyy h:mm a")
+					formattedEndDate: this._helpers.date.formatDate(parsedEndDate, "EE, NNN d, yyyy h:mm a"),
+					mapImageUrl: mapImageUrl,
+					mapUrl: mapUrl
 				}).then(function (node) {
 					var styleNodes = node.querySelectorAll("style"),
-						mapContainer = node.querySelector(".map"),
-						frame = document.createElement("iframe"),
 						styleNode,
 						i;
 
@@ -81,30 +87,8 @@
 							styleNode = styleNodes[i];
 
 							styleNode.parentNode.removeChild(styleNode);
-
-							//if (styleNode.styleSheet && styleNode.styleSheet.cssRules) {
-							//	for (j = 0; j < styleNode.styleSheet.cssRules.length; j++) {
-							//		rule = styleNode.styleSheet.cssRules[j];
-
-							//		if (rule.selectorText.toLowerCase() === "body") {
-							//			rule.selectorText = ".event-content";
-							//		} else {
-							//			rule.selectorText = ".event-content " + rule.selectorText;
-							//		}
-							//	}
-							//}
 						}
 					}
-
-					frame.width = "100%";
-					frame.height = "100%";
-
-					// embed map
-					frame.src = "ms-appx-web:///html/views/map.html"
-						+ "?latitude=" + item.data.latitude
-						+ "&longitude=" + item.data.longitude
-						+ "&venue=" + item.data.venue;
-					mapContainer.appendChild(frame);
 
 					return node;
 				}.bind(this));
@@ -113,7 +97,21 @@
 
 		_createFlipView: function(events){
 			var itemsList = new WinJS.Binding.List(events),
-				flipViewContainer = document.getElementById("explore-flip-view");
+				flipViewContainer = document.getElementById("explore-flip-view"),
+				currentPage = 0,
+				event,
+				i;
+
+			this._source = events;
+
+			for(i=0; i < this._source.length; i++){
+				event = this._source[i];
+
+				if(event.id === this._currentItemId){
+					currentPage = i;
+					break;
+				}
+			}
 
 			this.wc = new WinJS.UI.FlipView(flipViewContainer, {
 				itemTemplate: this._itemTemplate.bind(this)
@@ -123,7 +121,8 @@
 			this.wc.addEventListener("pagevisibilitychanged", this._onPageVisibilityChanged, false);
 
 			WinJS.UI.setOptions(this.wc, {
-				itemDataSource: itemsList.dataSource
+				itemDataSource: itemsList.dataSource,
+				currentPage: currentPage
 			});
 		},
 
@@ -165,12 +164,7 @@
 				}
 			});
 
-			this._state.dispatcher.removeEventListener("command:next", this._onNextCommandInvoked, false);
 			this._state.dispatcher.removeEventListener("command:openInBrowser", this._onOpenInBrowserCommandInvoked, false);
-		},
-
-		_onNextCommandInvoked: function(){
-			this.wc.next();
 		},
 
 		_onOpenInBrowserCommandInvoked: function () {
@@ -183,17 +177,6 @@
 			this.wc.itemDataSource.itemFromIndex(this.wc.currentPage).then(function (item) {
 				var backStackLength = WinJS.Navigation.history.backStack.length,
 					newUrl;
-
-				this.wc.count().then(function (count) {
-					var properties = {
-						type: "bottom"
-					};
-
-					properties[this.wc.currentPage !== count - 1 ? "enableCommands" : "disableCommands"] = ["next"];
-
-					this._state.dispatcher.dispatchEvent("updateBarState", properties);
-
-				}.bind(this));
 
 				if(this._currentItemId !== item.data.id){
 					this._currentItemId = item.data.id;
@@ -208,7 +191,10 @@
 					} else {
 						// update URL in history
 						WinJS.Navigation.navigate(newUrl, {
-							trigger: false
+							trigger: false,
+							params: {
+								items: this._source
+							}
 						});
 					}
 				}
