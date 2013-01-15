@@ -2,7 +2,7 @@
 	"use strict";
 
 	return {
-		version: "1.0.1.0",
+		version: "1.0.1.1",
 
 		name: "production",
 

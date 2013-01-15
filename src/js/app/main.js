@@ -291,7 +291,7 @@
 							if(e.kind === activationKinds.launch){
 								return WinJS.Navigation.navigate("home");
 							} else if (e.kind === activationKinds.search) {
-								if (e.detail.queryText) {
+								if (e.queryText) {
 									return WinJS.Navigation.navigate("search/" + e.queryText);
 								} else {
 									return WinJS.Navigation.navigate("search");
