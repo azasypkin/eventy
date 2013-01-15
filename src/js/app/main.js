@@ -22,6 +22,7 @@
 	"app/core/location/manager",
 	"app/core/authentication/eventbrite",
 	"app/core/errors/handler",
+	"app/core/cache/cache",
 
 	"app/models/user",
 	"app/models/counters",
@@ -45,7 +46,7 @@
 			Proxy,
 			winUtils, templateUtils, stringUtils, formatUtils, dateUtils,
 			WinRouter, dispatcher, RatePrompt, Analytics,
-			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager, ErrorHandler,
+			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager, ErrorHandler, Cache,
 			User, Counters,
 			SearchContract, LiveTilesContract, ShareContract,
 			TopBarView, BottomBarView, WelcomePage, CategoriesPage, HomePage, ExplorePage, SearchPage,
@@ -99,7 +100,8 @@
 
 	proxy = new Proxy({
 		user: state.user,
-		helpers: helpers
+		helpers: helpers,
+		cache: new Cache()
 	});
 
 	analytics = new Analytics(config, state);

@@ -2,16 +2,16 @@
 	"use strict";
 
 	return {
-		version: "1.0.0.0",
+		version: "1.0.1.0",
 
-		name: "Eventy",
+		name: "production",
 
 		author: {
 			company: "ALZA",
 			copyRights: "Copyright &copy; ALZA 2013"
 		},
 
-		mode: "production",
+		mode: "development",
 
 		labels: labels,
 
@@ -25,6 +25,9 @@
 				appKey: "VJEDOCS2JTNP7MGHPS",
 				dataType: "json",
 				timeout: 10000,
+
+				// one hour
+				cacheTimeout: 1000*60*60,
 
 				pageSize: 20,
 

@@ -5,11 +5,12 @@
 	"app/utils/datetime",
 
 	"app/core/errors/base_error",
+	"app/core/cache/cache",
 
 	"app/models/event",
 	"app/models/category",
 	"app/models/user-details"
-], function (_, globalConfig, dateUtils, BaseError, Event, Category, UserDetails) {
+], function (_, globalConfig, dateUtils, BaseError, Cache, Event, Category, UserDetails) {
 	"use strict";
 
 	return WinJS.Class.define(function(options){
@@ -20,7 +21,26 @@
 		this._useFakeData = options.useFakeData !== undefined ? options.useFakeData : false;
 		this._reverseCategoriesIndex = this._buildCategoryReverseIndex();
 		this._helpers = options.helpers;
+		this._cache = options.cache;
+		this._cacheTimeout = this._config.cacheTimeout;
 	},{
+
+		_getUrlHash: function(url){
+			var hash = 0,
+				charCode,
+				i;
+			if (url.length === 0) {
+				return hash;
+			}
+			for (i = 0; i < url.length; i++) {
+				charCode = url.charCodeAt(i);
+				hash = ((hash<<5)-hash)+charCode;
+				// Convert to 32bit integer
+				hash = hash & hash;
+			}
+			return hash;
+		},
+
 		_buildCategoryReverseIndex: function(){
 			var categoryKeys = Object.keys(this._config.categories),
 				reverseCategoriesIndex = {},
@@ -133,17 +153,48 @@
 		},
 
 		genericRequest: function (type, params) {
-			return this._helpers.win.ensureIsOnline().then(function () {
-				return WinJS.xhr({
-					url: this._buildUrl(type, params),
-					responseType: this._config.dataType,
-					headers: this._getHeaders(),
-					timeout: this._config.timeout
-				}).then(null, function (e) {
-					return WinJS.Promise.wrapError(
-						new BaseError("XHR request failed.", BaseError.Codes.XHR_FAILED, e)
-					);
-				});
+			var url = this._buildUrl(type, params),
+				key = "request_" + this._getUrlHash(url),
+				cachedValue = this._cache.get(key);
+
+			return cachedValue
+				? WinJS.Promise.wrap(cachedValue)
+				: this._helpers.win.ensureIsOnline().then(function () {
+					return WinJS.xhr({
+						url: url,
+						responseType: this._config.dataType,
+						headers: this._getHeaders(),
+						timeout: this._config.timeout
+					}).then(function(data){
+						var jsonResponse = JSON.parse(data.responseText);
+
+						if(jsonResponse.error){
+							if (jsonResponse.error.error_type === "Not Found") {
+								return null;
+							} else {
+								return WinJS.Promise.wrapError(
+									new BaseError(type + " request failed.", BaseError.Codes.API_FAILED, jsonResponse.error)
+								);
+							}
+						} else {
+							this._cache.add(key, jsonResponse, Cache.LifeTimeStrategies.ExpireByTimeout(this._cacheTimeout));
+
+							return jsonResponse;
+						}
+					}.bind(this), function (e) {
+						return WinJS.Promise.wrapError(
+							new BaseError("XHR request failed.", BaseError.Codes.XHR_FAILED, e)
+						);
+					});
+				}.bind(this));
+		},
+
+		getEvent: function(params){
+			return this.genericRequest("event_get", params).then(function (data) {
+				if(data && data.event){
+					return this._convertToEvent(data.event, params);
+				}
+				return null;
 			}.bind(this));
 		},
 
@@ -152,18 +203,14 @@
 				return this._getFake("events");
 			} else {
 				return this.genericRequest("event_search", params).then(function (data) {
-					data = JSON.parse(data.responseText);
 					var result = [];
-					// first element is the summary
-					if (data && !data.error && data.events && data.events.length > 1) {
+
+					if(data && data.events && data.events.length > 1){
 						for (var i = 1; i < data.events.length; i++) {
 							result.push(this._convertToEvent(data.events[i].event, params));
 						}
-					} else if (data.error && data.error.error_type !== "Not Found") {
-						return WinJS.Promise.wrapError(
-							new BaseError("SearchEvents request failed.", BaseError.Codes.API_FAILED, data.error)
-						);
 					}
+
 					return {
 						total: result.length > 0 ? data.events[0].summary.total_items : 0,
 						items: result
@@ -173,37 +220,34 @@
 		},
 
 		getUserUpcomingEvents: function (params) {
-			params = {
-				type: params.type
-			};
 			if (this._useFakeData) {
 				return this._getFake("userUpcomingEvents");
 			} else {
 				return this.genericRequest("user_list_tickets", params).then(function (data) {
-					data = JSON.parse(data.responseText);
 					var result = [],
 						ids = [],
 						ticket,
 						order,
+						event,
 						i,
 						j;
 
-					// first element is the summary
-					if (data && !data.error && data.user_tickets && data.user_tickets.length > 1) {
+					if(data && data.user_tickets && data.user_tickets.length > 1){
 						for (i = 1; i < data.user_tickets.length; i++) {
 							ticket = data.user_tickets[i];
 							for (j = 0; j < ticket.orders.length; j++) {
 								order = ticket.orders[j].order;
 								if (ids.indexOf(order.event.id) < 0) {
-									result.push(this._convertToEvent(order.event, params));
+									event = this._convertToEvent(order.event, params);
+
+									event.isPartial = true;
+
+									result.push(event);
 								}
 							}
 						}
-					} else if (data.error && data.error.error_type !== "Not Found") {
-						return WinJS.Promise.wrapError(
-							new BaseError("SearchEvents request failed.", BaseError.Codes.API_FAILED, data.error)
-						);
 					}
+
 					return {
 						total: result.length,
 						items: result
@@ -217,19 +261,11 @@
 				return this._getFake("userDetails");
 			} else {
 				return this.genericRequest("user_get").then(function(data){
-					try {
-						data = JSON.parse(data.responseText);
-					} catch(e){}
-
-					if (data && !data.error && data.user) {
+					if (data && data.user) {
 						return new UserDetails({
 							id: data.user.user_id,
 							email: data.user.email
 						});
-					} else if(data.error) {
-						return WinJS.Promise.wrapError(
-							new BaseError("GetUserDetails request failed.", BaseError.Codes.API_FAILED, data.error)
-						);
 					}
 
 					return null;
@@ -308,16 +344,6 @@
 					}
 			});
 
-			// temporal fix - sanitizing event description
-/*
-			if (event.description && event.description.indexOf("<") >= 0) {
-				try{
-					event.description = this._helpers.win.parseStringToHtmlDocument(event.description).body.innerText;
-				} catch(e){
-
-				}
-			}*/
-
 			var popularity = jsonEvent.capacity - 0;
 			// to avoid 0-s
 			event.popularity = popularity + 1;
@@ -347,9 +373,9 @@
 				}];
 			}
 
-			if(jsonEvent.tickets){
-				event.tickets = [];
+			event.tickets = [];
 
+			if(jsonEvent.tickets){
 				jsonEvent.tickets.forEach(function (ticket) {
 					if (ticket.ticket.visible === "true") {
 						event.tickets.push({
@@ -385,7 +411,7 @@
 		},
 
 		// date is the complex value consisted of actual local date, timezone and repeats
-		_getDate: function (jsonEvent, requestedPeriod) {
+		_getDate: function (jsonEvent) {
 			// here we need timezone to determine current date in the specified time zone
 			var result = {
 				offset: this._config.timezones[jsonEvent.timezone],

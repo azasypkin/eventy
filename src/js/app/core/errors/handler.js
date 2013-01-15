@@ -64,6 +64,9 @@
 						this.getDetailedUnhandledErrorMessage(error)
 					);
 				}
+			} else if(error && error.name === "NotFoundError"){
+				// TEMP DIRTY HACK, to avoid List\Flipview layout exceptions on fast navigation between pages
+				isHandled = true;
 			}
 
 			if (!isHandled) {

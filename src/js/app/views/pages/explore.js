@@ -36,7 +36,7 @@
 				return {
 					url: item.data.url,
 					title: item.data.title,
-					description: item.data.description,
+					description: item.data.url,
 					thumbnail: item.data.thumbnail
 				};
 			});
@@ -58,26 +58,44 @@
 			}];
 		},
 
+		_renderTemplate: function(item){
+			var parsedStartDate = new Date(this._helpers.date.getDateFromFormat(item.start_date, "yyyy-MM-dd HH:mm:ss")),
+				parsedEndDate = new Date(this._helpers.date.getDateFromFormat(item.end_date, "yyyy-MM-dd HH:mm:ss")),
+				venueCoordinate = item.latitude + ", " + item.longitude,
+				mapImageUrl = "http://maps.googleapis.com/maps/api/staticmap?sensor=false"
+					+ "&CENTER=" + venueCoordinate
+					+ "&markers=" + "color:red|" + venueCoordinate
+					+ "&zoom=15"
+					+ "&size=270x270"
+					+ "&key=" + this._config.googleAPIKey,
+				mapUrl = "http://maps.google.com/?q=" + venueCoordinate;
+
+			return this._helpers.template.parseTemplateToDomNode(this.templates.item, {
+				data: item,
+				formattedStartDate: this._helpers.date.formatDate(parsedStartDate, "EE, NNN d, yyyy h:mm a"),
+				formattedEndDate: this._helpers.date.formatDate(parsedEndDate, "EE, NNN d, yyyy h:mm a"),
+				mapImageUrl: mapImageUrl,
+				mapUrl: mapUrl
+			});
+		},
+
 		_itemTemplate: function(itemPromise){
 			return itemPromise.then(function (item) {
-				var parsedStartDate = new Date(this._helpers.date.getDateFromFormat(item.data.start_date, "yyyy-MM-dd HH:mm:ss")),
-					parsedEndDate = new Date(this._helpers.date.getDateFromFormat(item.data.end_date, "yyyy-MM-dd HH:mm:ss")),
-					venueCoordinate = item.data.latitude + ", " + item.data.longitude,
-					mapImageUrl = "http://maps.googleapis.com/maps/api/staticmap?sensor=false"
-						+ "&CENTER=" + venueCoordinate
-						+ "&markers=" + "color:red|" + venueCoordinate
-						+ "&zoom=15"
-						+ "&size=270x270"
-						+ "&key=" + this._config.googleAPIKey,
-					mapUrl = "http://maps.google.com/?q=" + venueCoordinate;
+				var itemDataPromise;
 
-				return this._helpers.template.parseTemplateToDomNode(this.templates.item, {
-					data: item.data,
-					formattedStartDate: this._helpers.date.formatDate(parsedStartDate, "EE, NNN d, yyyy h:mm a"),
-					formattedEndDate: this._helpers.date.formatDate(parsedEndDate, "EE, NNN d, yyyy h:mm a"),
-					mapImageUrl: mapImageUrl,
-					mapUrl: mapUrl
-				}).then(function (node) {
+				if(item.data.isPartial){
+					itemDataPromise = this._proxy.getEvent({
+						id: item.data.id,
+						display: "custom_header,custom_footer"
+					}).then(function(event){
+						item.data = event;
+						return event;
+					});
+				} else {
+					itemDataPromise = WinJS.Promise.wrap(item.data);
+				}
+
+				return itemDataPromise.then(this._renderTemplate.bind(this)).then(function (node) {
 					var styleNodes = node.querySelectorAll("style"),
 						styleNode,
 						i;
