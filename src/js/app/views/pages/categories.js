@@ -1,17 +1,23 @@
-﻿define(["app/views/pages/base"],function(BaseView){
+﻿define([
+	"app/views/pages/base",
+	"rText!templates/views/pages/categories/layout.html",
+	"rText!templates/views/pages/categories/item.html"
+],function(BaseView, LayoutTemplate, ItemTemplate){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.apply(this, arguments);
 
+		this.templates = {
+			layout: this._helpers.template.htmlStringToTemplate(LayoutTemplate),
+			item: this._helpers.template.htmlStringToTemplate(ItemTemplate)
+		};
+
 		this._onSaveButtonClicked = this._onSaveButtonClicked.bind(this);
 	}, {
 
-		view: "/html/views/pages/categories/main.html",
+		view: "/html/views",
 		container: document.getElementById("content"),
-		templates: {
-			item: "/html/views/pages/categories/item.html"
-		},
 
 		eventPrefix: "categories",
 
@@ -73,7 +79,7 @@
 		getBarsSettings: function(){
 			return [{
 				type: "top",
-				title: this._config.labels["Header.CategoriesView"],
+				title: this._config.getString("Header.CategoriesView"),
 				enabled: true,
 				show: true
 			}, {

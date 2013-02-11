@@ -2,7 +2,7 @@
 		"use strict";
 
 		return WinJS.Class.define(function(){
-			this._innerStorage = WinJS.Application.roaming;
+			this._innerStorage = WinJS.Application.local;
 		}, {
 
 			_storageError: function(e){

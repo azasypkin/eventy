@@ -58,50 +58,48 @@
 define(["config"], function (config) {
 	"use strict";
 
-	var labels = config.labels;
-
 	var MONTH_NAMES = new Array(
-		labels["DateAndTime.Months.January"],
-		labels["DateAndTime.Months.February"],
-		labels["DateAndTime.Months.March"], 
-		labels["DateAndTime.Months.April"],
-		labels["DateAndTime.Months.May"],
-		labels["DateAndTime.Months.June"],
-		labels["DateAndTime.Months.July"],
-		labels["DateAndTime.Months.August"],
-		labels["DateAndTime.Months.September"],
-		labels["DateAndTime.Months.October"],
-		labels["DateAndTime.Months.November"],
-		labels["DateAndTime.Months.December"],
-		labels["DateAndTime.Months.Short.January"],
-		labels["DateAndTime.Months.Short.February"],
-		labels["DateAndTime.Months.Short.March"], 
-		labels["DateAndTime.Months.Short.April"],
-		labels["DateAndTime.Months.Short.May"],
-		labels["DateAndTime.Months.Short.June"],
-		labels["DateAndTime.Months.Short.July"],
-		labels["DateAndTime.Months.Short.August"],
-		labels["DateAndTime.Months.Short.September"],
-		labels["DateAndTime.Months.Short.October"],
-		labels["DateAndTime.Months.Short.November"],
-		labels["DateAndTime.Months.Short.December"]
+		config.getString("DateAndTime.Months.January"),
+		config.getString("DateAndTime.Months.February"),
+		config.getString("DateAndTime.Months.March"), 
+		config.getString("DateAndTime.Months.April"),
+		config.getString("DateAndTime.Months.May"),
+		config.getString("DateAndTime.Months.June"),
+		config.getString("DateAndTime.Months.July"),
+		config.getString("DateAndTime.Months.August"),
+		config.getString("DateAndTime.Months.September"),
+		config.getString("DateAndTime.Months.October"),
+		config.getString("DateAndTime.Months.November"),
+		config.getString("DateAndTime.Months.December"),
+		config.getString("DateAndTime.Months.Short.January"),
+		config.getString("DateAndTime.Months.Short.February"),
+		config.getString("DateAndTime.Months.Short.March"), 
+		config.getString("DateAndTime.Months.Short.April"),
+		config.getString("DateAndTime.Months.Short.May"),
+		config.getString("DateAndTime.Months.Short.June"),
+		config.getString("DateAndTime.Months.Short.July"),
+		config.getString("DateAndTime.Months.Short.August"),
+		config.getString("DateAndTime.Months.Short.September"),
+		config.getString("DateAndTime.Months.Short.October"),
+		config.getString("DateAndTime.Months.Short.November"),
+		config.getString("DateAndTime.Months.Short.December")
 	);
 
 	var DAY_NAMES = new Array(
-		labels["DateAndTime.Days.Sunday"],
-		labels["DateAndTime.Days.Monday"],
-		labels["DateAndTime.Days.Tuesday"],
-		labels["DateAndTime.Days.Wednesday"],
-		labels["DateAndTime.Days.Thursday"],
-		labels["DateAndTime.Days.Friday"],
-		labels["DateAndTime.Days.Saturday"],
-		labels["DateAndTime.Days.Short.Sunday"],
-		labels["DateAndTime.Days.Short.Monday"],
-		labels["DateAndTime.Days.Short.Tuesday"],
-		labels["DateAndTime.Days.Short.Wednesday"],
-		labels["DateAndTime.Days.Short.Thursday"],
-		labels["DateAndTime.Days.Short.Friday"],
-		labels["DateAndTime.Days.Short.Saturday"]
+		config.getString("DateAndTime.Days.Sunday"),
+		config.getString("DateAndTime.Days.Monday"),
+		config.getString("DateAndTime.Days.Tuesday"),
+		config.getString("DateAndTime.Days.Wednesday"),
+		config.getString("DateAndTime.Days.Thursday"),
+		config.getString("DateAndTime.Days.Friday"),
+		config.getString("DateAndTime.Days.Saturday"),
+		config.getString("DateAndTime.Days.Short.Sunday"),
+		config.getString("DateAndTime.Days.Short.Monday"),
+		config.getString("DateAndTime.Days.Short.Tuesday"),
+		config.getString("DateAndTime.Days.Short.Wednesday"),
+		config.getString("DateAndTime.Days.Short.Thursday"),
+		config.getString("DateAndTime.Days.Short.Friday"),
+		config.getString("DateAndTime.Days.Short.Saturday")
 	);
 
 	return {

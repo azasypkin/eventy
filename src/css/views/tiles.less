@@ -1,8 +1,7 @@
 ﻿.tiles.win-listview {
 	height: 100%;
-}
 
-	.tiles.win-listview .win-item {
+	.win-item {
 		width: 450px;
 		height: 180px;
 
@@ -10,13 +9,13 @@
 
 		-ms-grid-columns: 150px 1fr;
 		-ms-grid-rows: 10px 1fr;
-	}
-		.tiles.win-listview .win-item .event-category{
+
+		.event-category{
 			-ms-grid-row: 1;
 			-ms-grid-column-span:2;
 		}
 
-		.tiles.win-listview .win-item .event-thumbnail {
+		.event-thumbnail {
 			-ms-grid-column: 1;
 			-ms-grid-row: 2;
 			background-size: contain;
@@ -24,33 +23,34 @@
 			background-position: center;
 		}
 
-		.tiles.win-listview .win-item .event-details {
+		.event-details {
 			-ms-grid-column: 2;
 			-ms-grid-row: 2;
 			padding-left: 10px;
 			box-sizing: border-box;
-		}
 
-			.tiles.win-listview .win-item .event-details p{
+			p{
 				overflow: hidden;
 			}
 
-			.tiles.win-listview .win-item .event-details .event-details-title{
+			.event-details-title{
 				max-height: 40px;
 			}
 
-			.tiles.win-listview .win-item .event-details .event-details-category-name{
+			.event-details-category-name{
 				position: absolute;
 				bottom: 0;
 			}
 
-			.tiles.win-listview .win-item .event-details .event-details-distance{
+			.event-details-distance{
 				position: absolute;
 				bottom: 0;
 				right: 10px;
 				font-weight: bolder;
 			}
-
+		}
+	}
+}
 
 
 @media screen and (-ms-view-state: snapped) {
@@ -59,10 +59,10 @@
 
 		-ms-grid-columns: 1fr;
 		-ms-grid-rows: 10px 1fr;
-	}
 
-	.tiles.win-listview .win-item .event-details {
-		display: none;
+		.event-details {
+			display: none;
+		}
 	}
 }
 

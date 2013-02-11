@@ -1,8 +1,18 @@
-﻿define(["app/views/pages/base", "app/collections/events"],function(BaseView, EventsCollection){
+﻿define([
+	"app/views/pages/base",
+	"app/collections/events",
+	"rText!templates/views/pages/search/layout.html",
+	"rText!templates/views/pages/search/item.html"
+],function(BaseView, EventsCollection, LayoutTemplate, ItemTemplate){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.apply(this, arguments);
+
+		this.templates = {
+			layout: this._helpers.template.htmlStringToTemplate(LayoutTemplate),
+			item: this._helpers.template.htmlStringToTemplate(ItemTemplate)
+		};
 
 		this._onSelectionChanged = this._onSelectionChanged.bind(this);
 		this._onItemInvoked = this._onItemInvoked.bind(this);
@@ -20,11 +30,7 @@
 		this._state.user.addEventListener("changed", this._onLocationChanged, false);
 	}, {
 
-		view: "/html/views/pages/search/main.html",
 		container: document.getElementById("content"),
-		templates: {
-			item: "/html/views/pages/search/item.html"
-		},
 
 		searchOnKeyboardInput: true,
 
@@ -79,7 +85,7 @@
 		getBarsSettings: function(){
 			return [{
 				type: "top",
-				title: this._config.labels["Header.SearchView"],
+				title: this._config.getString("Header.SearchView"),
 				enabled: true,
 				show: true,
 				sticky: true

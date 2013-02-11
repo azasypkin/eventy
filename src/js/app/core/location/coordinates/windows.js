@@ -24,9 +24,9 @@
 
 		_getErrorStatusMessage: function (status) {
 			if (status === Windows.Devices.Geolocation.PositionStatus.disabled) {
-				return config.labels["ErrorMessages.YourLocationCannotBeFoundChangePermissions"];
+				return config.getString("ErrorMessages.YourLocationCannotBeFoundChangePermissions");
 			} else {
-				return config.labels["ErrorMessages.YourLocationCannotBeFound"];
+				return config.getString("ErrorMessages.YourLocationCannotBeFound");
 			}
 		}
 	});

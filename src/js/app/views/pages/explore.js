@@ -1,8 +1,17 @@
-﻿define(["app/views/pages/base"],function(BaseView){
+﻿define([
+	"app/views/pages/base",
+	"rText!templates/views/pages/explore/layout.html",
+	"rText!templates/views/pages/explore/item.html"
+],function(BaseView, LayoutTemplate, ItemTemplate){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.apply(this, arguments);
+
+		this.templates = {
+			layout: this._helpers.template.htmlStringToTemplate(LayoutTemplate),
+			item: this._helpers.template.htmlStringToTemplate(ItemTemplate)
+		};
 
 		this._onOpenInBrowserCommandInvoked = this._onOpenInBrowserCommandInvoked.bind(this);
 
@@ -12,17 +21,10 @@
 		this._state.dispatcher.addEventListener("command:openInBrowser", this._onOpenInBrowserCommandInvoked, false);
 	}, {
 
-		view: "/html/views/pages/explore/main.html",
 		container: document.getElementById("content"),
-		templates: {
-			item: "/html/views/pages/explore/item.html",
-			frame: "/html/views/pages/explore/iframe.html"
-		},
 
 		wc: null,
 
-		_emptyFrameSrc: "about:blank",
-		_sandboxFrameSrc: "ms-appx:///html/views/pages/explore/iframe.html",
 		_currentItemId: null,
 		_previousPage: null,
 		_source: null,
@@ -48,7 +50,7 @@
 				enabled: true,
 				show: true,
 				sticky: true,
-				title: this._config.labels["Header.ExploreView"]
+				title: this._config.getString("Header.ExploreView")
 			}, {
 				type: "bottom",
 				enabled: true,

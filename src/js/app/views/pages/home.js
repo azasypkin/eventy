@@ -1,8 +1,17 @@
-﻿define(["app/views/pages/base"],function(BaseView){
+﻿define([
+	"app/views/pages/base",
+	"rText!templates/views/pages/home/layout.html",
+	"rText!templates/views/pages/home/item.html"
+],function(BaseView, LayoutTemplate, ItemTemplate){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.apply(this, arguments);
+
+		this.templates = {
+			layout: this._helpers.template.htmlStringToTemplate(LayoutTemplate),
+			item: this._helpers.template.htmlStringToTemplate(ItemTemplate)
+		};
 
 		this._onSelectionChanged = this._onSelectionChanged.bind(this);
 		this._onItemInvoked = this._onItemInvoked.bind(this);
@@ -13,11 +22,7 @@
 		this._state.dispatcher.addEventListener("command:explore", this._onExploreCommandInvoked);
 	}, {
 
-		view: "/html/views/pages/home/main.html",
 		container: document.getElementById("content"),
-		templates: {
-			item: "/html/views/pages/home/item.html"
-		},
 
 		searchOnKeyboardInput: true,
 
@@ -62,7 +67,7 @@
 		getBarsSettings: function () {
 			return [{
 				type: "top",
-				title: this._config.labels["Header.HomeView"],
+				title: this._config.getString("Header.HomeView"),
 				enabled: true,
 				show: true,
 				sticky: true

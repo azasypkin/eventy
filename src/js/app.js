@@ -6,8 +6,10 @@
 		baseUrl: "../js",
 		paths: {
 			config: "app/config/config",
-			underscore: 'libs/lodash.min',
-			dataProxy: 'app/proxies/eventbrite'
+			underscore: "libs/lodash.min",
+			dataProxy: "app/proxies/eventbrite",
+			rText: "libs/requirejs/plugins/text",
+			ri18n: "libs/requirejs/plugins/i18n"
 		},
 		// uncomment to disable caching
 		urlArgs: "bust=" +  (new Date()).getTime()

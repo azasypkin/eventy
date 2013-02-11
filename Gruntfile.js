@@ -22,11 +22,10 @@ module.exports = function(grunt) {
       dist:{
         files:{
           '<%= pkg.dist %>/css/'      : '<%= pkg.src %>/css/**',
-          '<%= pkg.dist %>/html/'     : '<%= pkg.src %>/html/**',
           '<%= pkg.dist %>/img/'      : '<%= pkg.src %>/img/**',
           '<%= pkg.dist %>/js/'       : '<%= pkg.src %>/js/**',
           '<%= pkg.dist %>/packages/' : '<%= pkg.src %>/packages/**',
-          '<%= pkg.dist %>/'          : ['<%= pkg.src %>/*.pfx', '<%= pkg.src %>/*.xml', '<%= pkg.src %>/*.config', '<%= pkg.src %>/*.sln', '<%= pkg.src %>/*.appxmanifest', '<%= pkg.src %>/*.jsproj']
+          '<%= pkg.dist %>/'          : ['<%= pkg.src %>/*.pfx', '<%= pkg.src %>/*.html','<%= pkg.src %>/*.xml', '<%= pkg.src %>/*.config', '<%= pkg.src %>/*.sln', '<%= pkg.src %>/*.appxmanifest', '<%= pkg.src %>/*.jsproj']
         }
       }
     },
@@ -66,6 +65,18 @@ module.exports = function(grunt) {
       }
     },
 
+    less: {
+      production: {
+        options: {
+          paths: ["<%= pkg.dist %>/css"],
+          yuicompress: true
+        },
+        files: {
+          "<%= pkg.dist %>/css/index.css": "<%= pkg.dist %>/css/index.less"
+        }
+      }
+    },
+
     requirejs: {
       compile: {
         options: {
@@ -79,10 +90,14 @@ module.exports = function(grunt) {
 
           removeCombined: true,
 
+          inlineText: true,
+
           paths: {
             config: "app/config/config",
-            underscore: 'libs/lodash.min',
-            dataProxy: 'app/proxies/eventbrite'
+            underscore: "libs/lodash.min",
+            dataProxy: "app/proxies/eventbrite",
+            rText: "libs/requirejs/plugins/text",
+            ri18n: "libs/requirejs/plugins/i18n"
           },
 
           modules:[{
@@ -115,7 +130,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
+  grunt.loadNpmTasks('grunt-contrib-less');
 
   // Default task.
-  grunt.registerTask('default', ['jshint','clean:prebuild', 'copy', 'requirejs', 'clean:postbuild']);
+  grunt.registerTask('default', ['jshint','clean:prebuild', 'copy', 'requirejs', 'less:production', 'clean:postbuild']);
 };

@@ -15,7 +15,7 @@
 	"app/rate_prompt",
 	"app/analytics",
 
-	"app/core/storage/adapters/roaming",
+	"app/core/storage/adapters/local",
 	"app/core/storage/manager",
 	"app/core/location/coordinates/windows",
 	"app/core/location/resolvers/virtualearth",
@@ -112,25 +112,25 @@
 		return new ViewClass(_, config, proxy, state, helpers);
 	};
 
-	WinJS.UI.Pages.define("/html/views/settings/about.html", createView(AboutSettingsView));
-	WinJS.UI.Pages.define("/html/views/settings/account.html", createView(AccountSettingsView));
-	WinJS.UI.Pages.define("/html/views/settings/privacy.html", createView(PrivacySettingsView));
+	WinJS.UI.Pages.define("/js/templates/views/settings/about.html", createView(AboutSettingsView));
+	WinJS.UI.Pages.define("/js/templates/views/settings/account.html", createView(AccountSettingsView));
+	WinJS.UI.Pages.define("/js/templates/views/settings/privacy.html", createView(PrivacySettingsView));
 
 	WinJS.Application.addEventListener("settings", function (setting) {
 		setting.detail.applicationcommands = {};
 
 		setting.detail.applicationcommands["about-setting-container"] = {
-			href: "/html/views/settings/about.html",
+			href: "/js/templates/views/settings/about.html",
 			title: "About"
 		};
 
 		setting.detail.applicationcommands["account-setting-container"] = {
 			title: "Account",
-			href: "/html/views/settings/account.html"
+			href: "/js/templates/views/settings/account.html"
 		};
 
 		setting.detail.applicationcommands["privacy-setting-container"] = {
-			href: "/html/views/settings/privacy.html",
+			href: "/js/templates/views/settings/privacy.html",
 			title: "Privacy Policy"
 		};
 

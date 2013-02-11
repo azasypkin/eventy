@@ -1,0 +1,83 @@
+﻿.welcome-page {
+
+	display: -ms-flexbox;
+	-ms-flex-align: center;
+	-ms-flex-pack: center;
+
+	.welcome-prompt {
+
+		width: 550px;
+		height: 350px;
+
+		background-color: rgb(29, 29, 29);
+
+		box-shadow:  0 1px 5px 0 rgba(0, 0, 0, .1);
+
+		border-radius: 15px;
+
+
+		background-repeat: repeat;
+		background-size:4px 4px;
+
+		.welcome-prompt-title{
+			font-size: 340%;
+			font-style: italic;
+			margin-bottom: 20px;
+			text-align: center;
+
+			*{
+				vertical-align: middle;
+			}
+		}
+
+		.welcome-prompt-logo-container{
+			display: -ms-flexbox;
+			-ms-flex-align: center;
+			-ms-flex-pack: center;
+		}
+
+		.welcome-prompt-content{
+			font-size: 150%;
+			text-align: center;
+		}
+
+		.signin-controls{
+			display: -ms-flexbox;
+			-ms-flex-align: center;
+			-ms-flex-pack: center;
+
+			button{
+				width: 230px;
+
+				.eventbrite-capital{
+					font-style: italic;
+					font-size: 160%;
+					float:left;
+					line-height:90%;
+					padding-right: 7px;
+				}
+
+				.eventbrite-name{
+					vertical-align:middle;
+				}
+			}
+
+			#btn-connect{
+				background-color: #ec5000;
+			}
+		}
+	}
+}
+
+@media screen and (-ms-view-state: snapped) {
+	.welcome-page {
+		.welcome-prompt {
+			width: 280px;
+			height: 450px;
+
+			.signin-controls{
+				-ms-flex-direction: column;
+			}
+		}
+	}
+}

@@ -46,15 +46,15 @@
 			var commands = [
 				{
 					id: "home",
-					label: this._config.labels["Header.HomeView"],
+					label: this._config.getString("Header.HomeView"),
 					type: "button"
 				}/*,{
 					id: "search",
-					label: this._config.labels["Header.SearchView"],
+					label: this._config.getString("Header.SearchView"),
 					type: "button"
 				},{
 					id: "categories",
-					label: this._config.labels["Header.CategoriesView"],
+					label: this._config.getString("Header.CategoriesView"),
 					type: "button"
 				}*/],
 				categories = this._state.user.get("categories");

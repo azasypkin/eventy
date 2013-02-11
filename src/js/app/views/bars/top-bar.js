@@ -1,8 +1,16 @@
-﻿define(["app/views/bars/base", "app/views/navigation-menu"],function(BaseView, NavigationMenu){
+﻿define([
+	"app/views/bars/base",
+	"app/views/navigation-menu",
+	"rText!templates/views/bars/top-bar.html"
+],function(BaseView, NavigationMenu, LayoutTemplate){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.apply(this, arguments);
+
+		this.templates = {
+			layout: this._helpers.template.htmlStringToTemplate(LayoutTemplate)
+		};
 
 		this._onBackButtonClicked = this._onBackButtonClicked.bind(this);
 		this._onHeaderClicked = this._onHeaderClicked.bind(this);
@@ -15,7 +23,6 @@
 
 	}, {
 
-		view: "/html/views/bars/top-bar.html",
 		container: document.getElementById("top-bar"),
 
 		type: "top",

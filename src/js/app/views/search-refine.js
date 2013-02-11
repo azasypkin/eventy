@@ -1,9 +1,14 @@
-﻿define(["app/views/base"],function(BaseView){
+﻿define(["app/views/base", "rText!templates/views/search-refine.html"],function(BaseView, LayoutTemplate){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.apply(this, arguments);
 
+		this.templates = {
+			layout: this._helpers.template.htmlStringToTemplate(LayoutTemplate)
+		};
+
+		this._onSearchButtonClicked = this._onSearchButtonClicked.bind(this);
 		this._onFilterSubmitted = this._onFilterSubmitted.bind(this);
 		this._onFilterSelectChange = this._onFilterSelectChange.bind(this);
 		this._onFilterQueryChange = this._onFilterQueryChange.bind(this);
@@ -15,7 +20,6 @@
 		this._state.contracts.search.addEventListener("query:changed", this._onSearchPaneQueryChanged, false);
 	}, {
 
-		view: "/html/views/search-refine.html",
 		container: document.getElementById("search-refine-flyout"),
 
 		render: function(anchor){
@@ -28,6 +32,8 @@
 				});
 
 				this.wc.addEventListener("afterhide", this._onAfterHide, false);
+
+				this.container.querySelector("#search-button").addEventListener("click", this._onSearchButtonClicked, false);
 			}.bind(this));
 		},
 
@@ -41,6 +47,8 @@
 			BaseView.prototype.unload.apply(this, arguments);
 
 			this.wc.removeEventListener("afterhide", this._onAfterHide, false);
+
+			this.container.querySelector("#search-button").addEventListener("click", this._onSearchButtonClicked, false);
 
 			this._state.contracts.search.removeEventListener("query:changed", this._onSearchPaneQueryChanged, false);
 		},
@@ -58,13 +66,13 @@
 			if(state.useCurrentLocation){
 				cityInput.value = "";
 
-				cityInput.placeholder = this._config.labels["Location.Current"];
+				cityInput.placeholder = this._config.getString("Location.Current");
 			} else {
 				if(typeof state.city === "string" && cityInput.value !== state.city){
 					cityInput.value = state.city;
 				}
 
-				cityInput.placeholder = this._config.labels["Location.DefaultPlaceHolder"];
+				cityInput.placeholder = this._config.getString("Location.DefaultPlaceHolder");
 			}
 
 			if (typeof state.within === "string" && filter["search-within"].value !== state.within) {
@@ -116,6 +124,10 @@
 		},
 
 		_onFilterSelectChange: function (e) {
+			this.submitFilterForm(e.target.form);
+		},
+
+		_onSearchButtonClicked: function (e) {
 			this.submitFilterForm(e.target.form);
 		},
 

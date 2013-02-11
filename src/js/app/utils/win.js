@@ -34,12 +34,24 @@
 			});
 		},
 
+		hasClass: function(target, className){
+			return WinJS.Utilities.hasClass(target, className);
+		},
+
 		addClass: function(target, className){
 			return WinJS.Utilities.addClass(target, className);
 		},
 
 		removeClass: function(target, className){
 			return WinJS.Utilities.removeClass(target, className);
+		},
+
+		toggleClass: function(target, className, toggle){
+			if(typeof toggle === "boolean"){
+				return WinJS.Utilities[toggle ? "addClass" : "removeClass"](target, className);
+			} else {
+				return WinJS.Utilities.toggleClass(target, className);
+			}
 		},
 
 		/**
@@ -152,6 +164,10 @@
 			return domParser.parseFromString(htmlString, "text/html");
 		},
 
+		parseHtmlStringToDomNode: function (htmlString) {
+			return WinJS.Promise.wrap(domParser.parseFromString(htmlString, "text/html").body.firstChild);
+		},
+
 		isOnline: function () {
 			var connectionProfile;
 
@@ -170,6 +186,53 @@
 				: WinJS.Promise.wrapError(
 					new BaseError("No internet connection.", BaseError.Codes.NO_INTERNET_CONNECTION)
 				);
+		},
+
+		xhr: function(options){
+			var method = options.method ? options.method.toUpperCase() : "GET",
+				requestParameters = {
+					url: options.url,
+					type: method
+				},
+				keys,
+				key,
+				data,
+				i;
+
+			if(options.responseType){
+				requestParameters.responseType = options.responseType;
+			}
+
+			if(options.headers){
+				requestParameters.headers = options.headers;
+			}
+
+			if(options.timeout){
+				requestParameters.timeout = options.timeout;
+			}
+
+			if(options.parameters){
+				data = "";
+				keys = Object.keys(options.parameters);
+
+				for(i = 0; i < keys.length; i++){
+					key = keys[i];
+					data += key + "=" + options.parameters[key] + "&";
+				}
+				data = data.slice(0, data.length - 1);
+
+				if(method === "GET"){
+					requestParameters.url += "?" + data;
+				} else if(method === "POST") {
+					requestParameters.data = data;
+				}
+			}
+
+			return WinJS.xhr(requestParameters).then(null, function(e){
+				return WinJS.Promise.wrapError(
+					new BaseError("XHR request failed.", BaseError.Codes.XHR_FAILED, e)
+				);
+			});
 		}
 	};
 });

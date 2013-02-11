@@ -58,12 +58,14 @@
     </AppxManifest>
     <Content Include="css\*.css" />
     <Content Include="css\**\*.css" />
-    <Content Include="html\*.html" />
-    <Content Include="html\**\*.html" />
+    <Content Include="css\*.less" />
+    <Content Include="css\**\*.less" />
     <Content Include="js\*.js" />
     <Content Include="js\**\*.js" />
+    <Content Include="js\*.html" />
+    <Content Include="js\**\*.html" />
     <Content Include="img\*.png" />
-
+    <Content Include="*.html" />
     <Content Include="packages.config" />
     <None Include="Eventy_StoreKey.pfx" />
   

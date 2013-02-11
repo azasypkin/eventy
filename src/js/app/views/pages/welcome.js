@@ -1,14 +1,20 @@
-﻿define(["app/views/pages/base"],function(BaseView){
+﻿define([
+	"app/views/pages/base",
+	"rText!templates/views/pages/welcome/layout.html"
+],function(BaseView, LayoutTemplate){
 	"use strict";
 
 	return WinJS.Class.derive(BaseView, function(){
 		BaseView.apply(this, arguments);
 
+		this.templates = {
+			layout: this._helpers.template.htmlStringToTemplate(LayoutTemplate)
+		};
+
 		this._onTryButtonClicked = this._onTryButtonClicked.bind(this);
 		this._onConnectButtonClicked = this._onConnectButtonClicked.bind(this);
 	}, {
 
-		view: "/html/views/pages/welcome/main.html",
 		container: document.getElementById("content"),
 
 		_navigateToNextPage: function(){
@@ -59,7 +65,7 @@
 		},
 
 		_onConnectButtonClicked: function(){
-			WinJS.UI.SettingsFlyout.showSettings("account-setting-container", "/html/views/settings/account.html");
+			WinJS.UI.SettingsFlyout.showSettings("account-setting-container", "/js/templates/views/settings/account.html");
 		}
 	});
 });

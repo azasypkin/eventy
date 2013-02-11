@@ -16,51 +16,37 @@
 
 	}, {
 
-		view: null,
 		container: null,
 		templates: {},
 
 		isSnapped: false,
 
 		render: function () {
+			var renderPromise;
 
 			this.isSnapped = Windows.UI.ViewManagement.ApplicationView.value === Windows.UI.ViewManagement.ApplicationViewState.snapped;
 
-			return this._innerRender(this.view, this.container);
-		},
-
-		_preCompileTemplates: function(){
-			var templateKeys = Object.keys(this.templates),
-				templateKey,
-				i;
-
-			if(templateKeys.length > 0){
-				for(i = 0; i < templateKeys.length; i++){
-					templateKey = templateKeys[i];
-					this.templates[templateKey] = this._helpers.template.getTemplate(this.templates[templateKey]);
-				}
+			if (this.templates && this.templates.layout) {
+				this.container.innerHTML = "";
+				renderPromise = this._helpers.template.parseTemplateToDomNode(this.templates.layout, {
+					config: this._config
+				}).then(function(renderedView) {
+					this.container.appendChild(renderedView);
+					return this.container;
+				}.bind(this));
+			} else {
+				renderPromise = WinJS.Promise.wrap(this.container);
 			}
+
+			return renderPromise.then(function(container){
+				return WinJS.UI.processAll(container);
+			});
 		},
 
 		dispatchEvent: function(name, data){
 			this._state.dispatcher.dispatchEvent(
 				this.eventPrefix ? this.eventPrefix + ":" + name : name, data
 			);
-		},
-
-		_innerRender: function (path, container) {
-			container.innerHTML = "";
-
-			return WinJS.UI.Fragments.renderCopy(path)
-				.then(function(renderedView) {
-
-					container.appendChild(renderedView);
-
-					return container;
-				})
-				.then(function(element){
-					return WinJS.UI.processAll(element);
-				});
 		},
 
 		unload: function(){

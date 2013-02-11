@@ -1,4 +1,4 @@
-﻿define(["underscore", "app/utils/win"], function (_, win) {
+﻿define(["underscore", "app/utils/win", "app/utils/string"], function (_, win, str) {
 	"use strict";
 
 	return {
@@ -8,11 +8,20 @@
 		 * @param {String} path Path to the file to be processed as template
 		 * @returns {Function} Pre-compiled template function that accepts data object to fill template with
 		 */
-		getTemplate: _.memoize(function (path) {
-			return win.getAppFileContent(path).then(function (data) {
-				return _.template(data);
-			});
+		getTemplateByPath: _.memoize(function (path) {
+			return win.getAppFileContent(path).then(function (content) {
+				return this.htmlStringToTemplate(content);
+			}.bind(this));
 		}),
+
+		/**
+		 * Applies underscore template function to html string
+		 * @param {String} path Path to the file to be processed as template
+		 * @returns {Function} Pre-compiled template function that accepts data object to fill template with
+		 */
+		htmlStringToTemplate: _.memoize(function (content) {
+			return _.template(content);
+		}, str.hash),
 
 		/**
 		 * Read file from the "path" and applies underscore template function to its content and apply "data" to fill
@@ -24,10 +33,10 @@
 		parseTemplateToDomNode: function(pathOrTemplate, data){
 			// check whether we have ready template function instead of path
 			if(typeof pathOrTemplate === "function"){
-				return win.parseStringToHtmlDocument(pathOrTemplate(data)).body.firstChild;
+				return win.parseHtmlStringToDomNode(pathOrTemplate(data));
 			}
-			return this.getTemplate(pathOrTemplate).then(function(template){
-				return win.parseStringToHtmlDocument(template(data)).body.firstChild;
+			return this.getTemplateByPath(pathOrTemplate).then(function(template){
+				return win.parseHtmlStringToDomNode(template(data));
 			});
 		},
 
@@ -40,7 +49,7 @@
 		preCompileTemplates: function (templates) {
 			var templatesToProcess = templates || [];
 			return WinJS.Promise.join(_.map(templatesToProcess, function(template){
-				return this.getTemplate(template);
+				return this.getTemplateByPath(template);
 			}, this));
 		}
 	};

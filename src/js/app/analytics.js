@@ -16,7 +16,7 @@
 		this._isSetup = false;
 	}, {
 		setup: function(){
-			MK.initialize(this._config.analytics.keys[this._config.mode]);
+			MK.initialize(this._config.analyticsKey);
 
 			MK.registerNavigationFrame();
 

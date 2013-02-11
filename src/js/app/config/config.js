@@ -1,10 +1,10 @@
-﻿define(["libs/requirejs/plugins/i18n!app/config/localization/nls/labels"], function (labels) {
+﻿define(["ri18n!!app/config/localization/nls/labels"], function (labels) {
 	"use strict";
 
-	return {
-		version: "1.0.1.1",
+	var config = {
+		version: "1.0.2.0",
 
-		name: "production",
+		name: "Eventy",
 
 		author: {
 			company: "ALZA",
@@ -13,7 +13,7 @@
 
 		mode: "development",
 
-		labels: labels,
+		_labels: labels,
 
 		proxies: {
 			eventbrite: {
@@ -318,11 +318,21 @@
 
 		googleAPIKey: "AIzaSyAD1mwBMDuuEvvqYCa_6__3XEhz3XYYWek",
 
-		analytics: {
-			keys: {
-				production: "0fb94de1-de87-4522-a0c5-ee4ab48af4b1",
-				development: "6cf127dd-2695-4901-b76b-ef64d7079e89"
-			}
+		analyticsKey: "0fb94de1-de87-4522-a0c5-ee4ab48af4b1",
+
+		getString: function(key){
+			return this._labels[key];
 		}
 	};
+
+	if(config.mode === "development"){
+		config.proxies.eventbrite.appKey = "MNRQSGQVS6ITAVOBP6";
+		config.proxies.eventbrite.oAuthClientSecret = "XDEYBM3EOESK62LKBGL6GZGWPEDAOUY6L3WC76HUQVAD3TSJPT";
+
+		config.analyticsKey = "6cf127dd-2695-4901-b76b-ef64d7079e89";
+
+		config.googleAPIKey = "AIzaSyCgPLXrKGEZhJODvc4DqmN9y2hFg_IFQuE";
+	}
+
+	return config;
 });
