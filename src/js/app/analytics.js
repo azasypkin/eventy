@@ -18,13 +18,14 @@
 		setup: function(){
 			MK.initialize(this._config.analyticsKey);
 
-			MK.registerNavigationFrame();
-
 			this._state.dispatcher.addEventListener("share:requested", this._onShareRequested, false);
 			this._state.dispatcher.addEventListener("search:requested", this._onSearchRequested, false);
 
 			this._state.dispatcher.addEventListener("account:connected", this._onAccountConnected, false);
 			this._state.dispatcher.addEventListener("account:failedToConnect", this._onAccountFailedToConnect, false);
+
+			this._state.dispatcher.addEventListener("page:entered", this._onPageEntered, false);
+			this._state.dispatcher.addEventListener("page:exited", this._onPageExited, false);
 
 			this._state.dispatcher.addEventListener("command:explore", this._onExploreCommand, false);
 
@@ -55,6 +56,9 @@
 			this._state.dispatcher.removeEventListener("account:failedToConnect", this._onAccountFailedToConnect, false);
 
 			this._state.dispatcher.removeEventListener("command:explore", this._onExploreCommand, false);
+
+			this._state.dispatcher.removeEventListener("page:entered", this._onPageEntered, false);
+			this._state.dispatcher.removeEventListener("page:exited", this._onPageExited, false);
 		},
 
 		_onShareRequested: function (e) {
@@ -75,6 +79,14 @@
 
 		_onExploreCommand: function(){
 			MK.sessionEvent("Exploring event");
+		},
+
+		_onPageEntered: function(e){
+			MK.enterPage(e.detail);
+		},
+
+		_onPageExited: function(e){
+			MK.exitPage(e.detail);
 		}
 	});
 });

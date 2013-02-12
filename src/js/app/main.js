@@ -59,6 +59,12 @@
 		activationKinds = Windows.ApplicationModel.Activation.ActivationKind,
 		state = {},
 		helpers = {},
+		routeExtractor = function(route){
+			if(route.indexOf("explore") === 0){
+				return "explore";
+			}
+			return route;
+		},
 		analytics,
 		errorHandler,
 		proxy;
@@ -226,6 +232,14 @@
 
 	router.addEventListener("route", function(data){
 		state.dispatcher.dispatchEvent("route", data.detail);
+	}, false);
+
+	router.addEventListener("page:exited", function(e){
+		state.dispatcher.dispatchEvent("page:exited", routeExtractor(e.detail));
+	}, false);
+
+	router.addEventListener("page:entered", function(e){
+		state.dispatcher.dispatchEvent("page:entered", routeExtractor(e.detail));
 	}, false);
 
 	state.user.addEventListener("initialized", function(data){

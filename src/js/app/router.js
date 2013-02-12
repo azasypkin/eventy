@@ -89,6 +89,19 @@
 				trigger: true,
 				params: winNavigation.history.current.state && winNavigation.history.current.state.params
 			};
+
+			// if we have something in back stack than we exited that page
+			if(winNavigation.history.backStack.length > 0){
+				this.dispatchEvent(
+					"page:exited",
+					winNavigation.history.backStack[winNavigation.history.backStack.length - 1].location
+				);
+			}
+
+			this.dispatchEvent(
+				"page:entered",
+				winNavigation.history.current.location
+			);
 		},
 
 		prepareHandlers: function (routes) {
