@@ -65,6 +65,9 @@
 			}
 			return route;
 		},
+		isCounterTracked = function(counterName){
+			return counterName !== "viewedEvents" && counterName !== "ratePromptLastTime";
+		},
 		analytics,
 		errorHandler,
 		proxy;
@@ -250,8 +253,14 @@
 		storageManager.setProperty("user", state.user.toJSON());
 	});
 
-	state.counters.addEventListener("changed", function(){
+	state.counters.addEventListener("changed", function(e){
 		storageManager.setProperty("counters", state.counters.toJSON());
+
+		if (e.detail) {
+			if (isCounterTracked(e.detail.key)) {
+				state.dispatcher.dispatchEvent("track:event", e.detail.key);
+			}
+		}
 	});
 
 	state.contracts.search.addEventListener("query:submitted", function(e){

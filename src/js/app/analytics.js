@@ -29,6 +29,8 @@
 
 			this._state.dispatcher.addEventListener("command:explore", this._onExploreCommand, false);
 
+			this._state.dispatcher.addEventListener("track:event", this._onEventTrackRequested, false);
+
 			this._isSetup = true;
 		},
 
@@ -59,6 +61,8 @@
 
 			this._state.dispatcher.removeEventListener("page:entered", this._onPageEntered, false);
 			this._state.dispatcher.removeEventListener("page:exited", this._onPageExited, false);
+
+			this._state.dispatcher.removeEventListener("track:event", this._onEventTrackRequested, false);
 		},
 
 		_onShareRequested: function (e) {
@@ -66,7 +70,15 @@
 		},
 
 		_onSearchRequested: function (e) {
-			MK.searchRequested(WinJS.Navigation.location);
+			var page = WinJS.Navigation.location,
+				parts;
+			if(page){
+				parts = page.split("/");
+
+				if(parts.length === 2){
+					MK.searchRequested(parts[0], parts[1]);
+				}
+			}
 		},
 
 		_onAccountConnected: function(){
@@ -87,6 +99,10 @@
 
 		_onPageExited: function(e){
 			MK.exitPage(e.detail);
+		},
+
+		_onEventTrackRequested: function(e){
+			MK.sessionEvent(e.detail);
 		}
 	});
 });
