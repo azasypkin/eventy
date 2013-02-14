@@ -15,7 +15,7 @@
 	"app/rate_prompt",
 	"app/analytics",
 
-	"app/core/storage/adapters/local",
+	"app/core/storage/adapters/roaming",
 	"app/core/storage/manager",
 	"app/core/location/coordinates/windows",
 	"app/core/location/resolvers/virtualearth",

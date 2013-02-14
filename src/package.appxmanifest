@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="26342AlZa.Eventy" Version="1.0.1.1" Publisher="CN=F756B41E-C503-4E28-94D3-CAA155D84369" />
+  <Identity Name="26342AlZa.Eventy" Version="1.0.2.0" Publisher="CN=F756B41E-C503-4E28-94D3-CAA155D84369" />
   <Properties>
     <DisplayName>Eventy</DisplayName>
     <PublisherDisplayName>AlZa</PublisherDisplayName>

@@ -11,7 +11,7 @@
 			copyRights: "Copyright &copy; ALZA 2013"
 		},
 
-		mode: "development",
+		mode: "production",
 
 		formats: {
 			itemDate: "MMMM D, YYYY h:mm A"
@@ -404,8 +404,8 @@
 	};
 
 	if(config.mode === "development"){
-		//config.proxies.eventbrite.appKey = "MNRQSGQVS6ITAVOBP6";
-		//config.proxies.eventbrite.oAuthClientSecret = "XDEYBM3EOESK62LKBGL6GZGWPEDAOUY6L3WC76HUQVAD3TSJPT";
+		config.proxies.eventbrite.appKey = "MNRQSGQVS6ITAVOBP6";
+		config.proxies.eventbrite.oAuthClientSecret = "XDEYBM3EOESK62LKBGL6GZGWPEDAOUY6L3WC76HUQVAD3TSJPT";
 
 		config.analyticsKey = "6cf127dd-2695-4901-b76b-ef64d7079e89";
 

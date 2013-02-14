@@ -1,7 +1,7 @@
 ﻿define(function () {
 	"use strict";
 
-	return WinJS.Class.define(function(_, config, proxy, state, helpers){
+	return WinJS.Class.define(function(_, config, proxy, directoryProxy, state, helpers){
 		this._ = _;
 		this._config = config;
 		this._proxy = proxy;
