@@ -29,7 +29,7 @@
 		wc: null,
 
 		_groups: {
-			"yourEvents": {
+			yourEvents: {
 				parameters: {
 					type: "all"
 				},
@@ -38,16 +38,16 @@
 				order: 0,
 				authenticatedUserRequired: true
 			},
-			"nearby": {
+			nearby: {
 				parameters: {
 					within: 5,
 					date: "this_month"
 				},
 				items: null,
-				name: "Around me",
+				name: "Around you",
 				order: 1
 			},
-			"this_week": {
+			this_week: {
 				parameters: {
 					within: 100,
 					date: "this_week",
@@ -56,6 +56,16 @@
 				items: null,
 				name: "This week",
 				order: 2
+			},
+			freeEvents: {
+				parameters: {
+					within: 30.0,
+					date: "this_month",
+					price: 1
+				},
+				items: null,
+				name: "Freebies around you",
+				order: 3
 			}
 		},
 
@@ -84,7 +94,7 @@
 			return itemPromise.then(function (item) {
 				return this._helpers.template.parseTemplateToDomNode(this.templates.item, {
 					title: item.data.data.title,
-					date: this._helpers.format.date(item.data.data.date),
+					date: this._getStartDate(item.data.data),
 					color: item.data.data.color,
 					city: item.data.data.city,
 					thumbnail: item.data.data.thumbnail ? item.data.data.thumbnail : "/img/no-thumbnail.png",
@@ -99,7 +109,8 @@
 		},
 
 		_loadItems: function(groupKey, parameters){
-			return this._proxy[groupKey === "yourEvents" ? "getUserUpcomingEvents" : "searchEvents"](parameters).then(function(data){
+			var proxy = groupKey === "freeEvents" ? this._directoryProxy : this._proxy;
+			return proxy[groupKey === "yourEvents" ? "getUserUpcomingEvents" : "searchEvents"](parameters).then(function(data){
 				this._groups[groupKey].items = data.items;
 				if(--this._stillLoading === 0){
 					this._onItemsReady();
@@ -225,6 +236,26 @@
 			this.wc.addEventListener("loadingstatechanged", this._onLoadingStateChanged, false);
 
 			this._updateDataSource(events);
+		},
+
+		_getStartDate: function(item){
+			var date;
+
+			if(item.repeats){
+				if(item.next_occurrence){
+					date = item.next_occurrence;
+				} else {
+					return this._config.getString("Proxy.TimePeriods.RepeatingEvent");
+				}
+			} else {
+				date = item.start_date;
+			}
+
+			return date
+				? this._helpers
+					.moment(date, this._config.proxies.eventbrite.formats.dateWithTime)
+					.format(this._config.formats.itemDate)
+				: "";
 		},
 
 		render: function () {

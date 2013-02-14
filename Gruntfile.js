@@ -97,7 +97,8 @@ module.exports = function(grunt) {
             underscore: "libs/lodash.min",
             dataProxy: "app/proxies/eventbrite",
             rText: "libs/requirejs/plugins/text",
-            ri18n: "libs/requirejs/plugins/i18n"
+            ri18n: "libs/requirejs/plugins/i18n",
+            moment: "libs/moment"
           },
 
           modules:[{

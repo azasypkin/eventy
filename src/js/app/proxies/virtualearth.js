@@ -1,4 +1,4 @@
-﻿define(["config", "app/utils/datetime", "app/models/geo"], function(config, dateUtils, Geo) {
+﻿define(["config", "app/models/geo"], function(config, Geo) {
 	"use strict";
 
 	return WinJS.Class.define(function(options){

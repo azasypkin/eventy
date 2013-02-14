@@ -33,7 +33,7 @@
 			if(this._counters.get("userAgreedToRate") !== true && this._counters.get("userDeclinedToRate") !== true){
 				if(this._counters.get("userPostponedToRate") === true){
 					ratePromptLastTime = this._counters.get("ratePromptLastTime");
-					daysFromPreviousPrompt = (this._helpers.date.convertDateToUTC(new Date()).getTime() - ratePromptLastTime) / this._millisecondInDay;
+					daysFromPreviousPrompt = (this._helpers.moment.utc().valueOf() - ratePromptLastTime) / this._millisecondInDay;
 
 					result.succeed = daysFromPreviousPrompt >= this._daysCountToShowRatePrompt;
 				} else {
@@ -66,7 +66,7 @@
 					label: "Maybe Later",
 					handler: function () {
 						this._counters.set("userPostponedToRate", true);
-						this._counters.set("ratePromptLastTime", this._helpers.date.convertDateToUTC(new Date()).getTime());
+						this._counters.set("ratePromptLastTime", this._helpers.moment.utc().valueOf());
 					}.bind(this)
 				}, {
 					id: "declinedCmd",

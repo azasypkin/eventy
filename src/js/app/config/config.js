@@ -13,6 +13,10 @@
 
 		mode: "development",
 
+		formats: {
+			itemDate: "MMMM D, YYYY h:mm A"
+		},
+
 		_labels: labels,
 
 		proxies: {
@@ -25,6 +29,11 @@
 				appKey: "VJEDOCS2JTNP7MGHPS",
 				dataType: "json",
 				timeout: 10000,
+
+				formats: {
+					dateWithTime: "YYYY-MM-DD HH:mm:ss",
+					date: "YYYY-MM-DD"
+				},
 
 				// one hour
 				cacheTimeout: 1000*60*60,
@@ -93,6 +102,75 @@
 					"Asia/Singapore":480,
 					"Pacific/Auckland": 720,
 					"Africa/Harare": 120
+				}
+			},
+
+			directory: {
+				url: "http://www.eventbrite.com/directory/json",
+				dataType: "json",
+				timeout: 10000,
+
+				formats: {
+					dateWithTime: "YYYY-MM-DD HH:mm:ss",
+					date: "YYYY-MM-DD"
+				},
+
+				// one hour
+				cacheTimeout: 1000*60*60,
+
+				pageSize: 20,
+
+				categories: {
+					music: "music",
+					sports: "sports",
+					conventions: "conventions",
+					movies: "movies",
+					conferences: "conferences",
+					fairs: "fairs",
+					entertainment: "entertainment",
+					performances: "performances",
+					social: "social",
+					endurance: "endurance",
+					recreation: "recreation",
+					travel:"travel",
+					seminars: "seminars",
+					reunions: "reunions",
+					sales: "sales",
+					comedy: "comedy",
+					religion: "religion",
+					meetings: "meetings",
+					food: "food",
+					fundraisers: "fundraisers",
+					other: "other"
+				},
+
+				reverse_categories: {
+					music: "music",
+					sportingevents: "sports",
+					conventions: "conventions",
+					moviesfilm: "movies",
+					conferences: "conferences",
+					festivals: "fairs",
+					otherentertainment: "entertainment",
+					performingarts: "performances",
+					socialevents: "social",
+					endurance: "endurance",
+					outdoors: "recreation",
+					travel:"travel",
+					classes: "seminars",
+					reunions: "reunions",
+					business: "sales",
+					comedy: "comedy",
+					religion: "religion",
+					networking: "meetings",
+					foodwine: "food",
+					otherevents: "other"
+				},
+
+				timePeriods: {
+					this_week: "week",
+					next_week: "nextweek",
+					this_month: "month"
 				}
 			},
 
@@ -326,8 +404,8 @@
 	};
 
 	if(config.mode === "development"){
-		config.proxies.eventbrite.appKey = "MNRQSGQVS6ITAVOBP6";
-		config.proxies.eventbrite.oAuthClientSecret = "XDEYBM3EOESK62LKBGL6GZGWPEDAOUY6L3WC76HUQVAD3TSJPT";
+		//config.proxies.eventbrite.appKey = "MNRQSGQVS6ITAVOBP6";
+		//config.proxies.eventbrite.oAuthClientSecret = "XDEYBM3EOESK62LKBGL6GZGWPEDAOUY6L3WC76HUQVAD3TSJPT";
 
 		config.analyticsKey = "6cf127dd-2695-4901-b76b-ef64d7079e89";
 

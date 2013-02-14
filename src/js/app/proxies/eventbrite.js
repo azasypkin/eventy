@@ -2,44 +2,39 @@
 	"underscore",
 	"config",
 
-	"app/utils/datetime",
-
 	"app/core/errors/base_error",
 	"app/core/cache/cache",
 
 	"app/models/event",
-	"app/models/category",
 	"app/models/user-details"
-], function (_, globalConfig, dateUtils, BaseError, Cache, Event, Category, UserDetails) {
+], function (_, globalConfig, BaseError, Cache, Event, UserDetails) {
 	"use strict";
 
 	return WinJS.Class.define(function(options){
 		options = options || {};
 		this._config = globalConfig.proxies.eventbrite;
-		this._url = this._config.url;
 		this._user= options.user;
-		this._useFakeData = options.useFakeData !== undefined ? options.useFakeData : false;
 		this._reverseCategoriesIndex = this._buildCategoryReverseIndex();
 		this._helpers = options.helpers;
-		this._cache = options.cache;
-		this._cacheTimeout = this._config.cacheTimeout;
-	},{
 
-		_getUrlHash: function(url){
-			var hash = 0,
-				charCode,
-				i;
-			if (url.length === 0) {
-				return hash;
-			}
-			for (i = 0; i < url.length; i++) {
-				charCode = url.charCodeAt(i);
-				hash = ((hash<<5)-hash)+charCode;
-				// Convert to 32bit integer
-				hash = hash & hash;
-			}
-			return hash;
-		},
+		this._cacheManager = {
+			enabled: true,
+
+			generateKey: function(str){
+				return this._helpers.string.hash(str);
+			}.bind(this),
+
+			get: function(key){
+				return options.cache.get(key);
+			}.bind(this),
+
+			add: function(key, value){
+				if(value && !value.error){
+					options.cache.add(key, value, Cache.LifeTimeStrategies.ExpireByTimeout(this._config.cacheTimeout));
+				}
+			}.bind(this)
+		};
+	},{
 
 		_buildCategoryReverseIndex: function(){
 			var categoryKeys = Object.keys(this._config.categories),
@@ -54,52 +49,37 @@
 			return reverseCategoriesIndex;
 		},
 
-		_buildUrl: function (path, params) {
-			var url = path ? this._url + path : this._url,
-				parameters = params || {},
-				token = this._user.get("token"),
-				i,
-				key,
-				keys;
+		_prepareParameters: function (parameters) {
+			var requestParameters = parameters || {},
+				token = this._user.get("token");
 
 			if(token){
-				parameters.access_token = token;
+				requestParameters.access_token = token;
 			} else {
-				parameters.app_key = this._config.appKey;
+				requestParameters.app_key = this._config.appKey;
 			}
 
-			keys = Object.keys(this._prepareParameters(parameters));
-
-			for(i = 0; i < keys.length; i++){
-				key = keys[i];
-				url += (i === 0 ? "?" : "&") + key + "=" + parameters[key];
+			if (requestParameters.date) {
+				requestParameters.date = this._prepareDateRange(requestParameters.date);
 			}
 
-			return url;
-		},
-
-		_prepareParameters: function (parameters) {
-			if (parameters.date) {
-				parameters.date = this._prepareDateRange(parameters.date);
-			}
-
-			if(parameters.category && parameters.category instanceof Array && parameters.category.length > 0){
-				parameters.category = _.map(parameters.category, function(category){
+			if(requestParameters.category && requestParameters.category instanceof Array && requestParameters.category.length > 0){
+				requestParameters.category = _.map(requestParameters.category, function(category){
 					return this._config.categories[category];
 				}.bind(this));
 			}
 
-			if(!parameters.city && !parameters.longitude){
-				if(parameters.within){
-					delete parameters.within;
+			if(!requestParameters.city && !requestParameters.longitude){
+				if(requestParameters.within){
+					delete requestParameters.within;
 				}
 
-				if(parameters.within_unit){
-					delete parameters.within_unit;
+				if(requestParameters.within_unit){
+					delete requestParameters.within_unit;
 				}
 			}
 
-			return parameters;
+			return requestParameters;
 		},
 
 		//[WORKAROUND]: Workaround for Eventbrite bugs with next week and next month
@@ -126,71 +106,63 @@
 					lastRangeDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0);
 				}
 
-				return dateUtils.formatDate(firstRangeDay, "yyyy-MM-dd") + " " + dateUtils.formatDate(lastRangeDay, "yyyy-MM-dd");
+				return this._helpers.moment(firstRangeDay).format(this._config.formats.date)
+					+ " "
+					+ this._helpers.moment(lastRangeDay).format(this._config.formats.date);
 			}
 			return this._config.timePeriods[dateRange];
 		},
 
-		getBestInCategory: function (params) {
-			if (this._useFakeData) {
-				return this._getFake("events");
-			} else {
-				return WinJS.xhr({
-					url: this._buildUrl(""),
-					dataType: this._config.dataType,
-					contentType: 'application/json; charset=utf-8',
-					data: this._prepareParameters(_.extend({ max: 1	}, params)),
-					timeout: this._config.timeout}).then(function(data){
-						var result = null;
+		genericRequest: function (options) {
+			options.parameters = this._prepareParameters(options.parameters);
 
-						if (data && !data.error && data.events) {
-							result = this._convertToCategory(data.events, params);
-						}
+			return this._helpers.win.ensureIsOnline()
+				.then(function () {
+				return this._helpers.win.xhr({
+					cache: this._cacheManager,
+					url: options.path ? this._config.url + options.path : this._config.url,
+					method: options.method,
+					parameters: options.parameters,
+					responseType: this._config.dataType,
+					headers: this._getHeaders(),
+					timeout: this._config.timeout
+				}).then(function(data){
+					var jsonResponse = JSON.parse(data);
 
-						return result;
-				}.bind(this));
-			}
-		},
-
-		genericRequest: function (type, params) {
-			var url = this._buildUrl(type, params),
-				key = "request_" + this._getUrlHash(url),
-				cachedValue = this._cache.get(key);
-
-			return cachedValue
-				? WinJS.Promise.wrap(cachedValue)
-				: this._helpers.win.ensureIsOnline().then(function () {
-					return WinJS.xhr({
-						url: url,
-						responseType: this._config.dataType,
-						headers: this._getHeaders(),
-						timeout: this._config.timeout
-					}).then(function(data){
-						var jsonResponse = JSON.parse(data.responseText);
-
-						if(jsonResponse.error){
-							if (jsonResponse.error.error_type === "Not Found") {
-								return null;
-							} else {
-								return WinJS.Promise.wrapError(
-									new BaseError(type + " request failed.", BaseError.Codes.API_FAILED, jsonResponse.error)
-								);
-							}
+					if(jsonResponse.error){
+						if (jsonResponse.error.error_type === "Not Found") {
+							return null;
 						} else {
-							this._cache.add(key, jsonResponse, Cache.LifeTimeStrategies.ExpireByTimeout(this._cacheTimeout));
-
-							return jsonResponse;
+							return WinJS.Promise.wrapError(
+								new BaseError(options.path + " request failed.", BaseError.Codes.API_FAILED, jsonResponse.error)
+							);
 						}
-					}.bind(this), function (e) {
+					}
+
+					return jsonResponse;
+				});
+			}.bind(this))
+				.then(null, function (e) {
+				if(e.originalError && e.originalError.responseText){
+					try {
 						return WinJS.Promise.wrapError(
-							new BaseError("XHR request failed.", BaseError.Codes.XHR_FAILED, e)
+							new BaseError(
+								options.path + " request failed.",
+								BaseError.Codes.API_FAILED,
+								JSON.parse(e.originalError.responseText))
 						);
-					});
-				}.bind(this));
+					} catch(error){
+					}
+				}
+				return WinJS.Promise.wrapError(e);
+			}.bind(this));
 		},
 
 		getEvent: function(params){
-			return this.genericRequest("event_get", params).then(function (data) {
+			return this.genericRequest({
+				path: "event_get",
+				parameters: params
+			}).then(function (data) {
 				if(data && data.event){
 					return this._convertToEvent(data.event, params);
 				}
@@ -199,78 +171,94 @@
 		},
 
 		searchEvents: function (params) {
-			if (this._useFakeData) {
-				return this._getFake("events");
-			} else {
-				return this.genericRequest("event_search", params).then(function (data) {
-					var result = [];
+			return this.genericRequest({
+				path: "event_search",
+				parameters: params
+			}).then(function (data) {
+				var result = [];
 
-					if(data && data.events && data.events.length > 1){
-						for (var i = 1; i < data.events.length; i++) {
-							result.push(this._convertToEvent(data.events[i].event, params));
-						}
+				if(data && data.events && data.events.length > 1){
+					for (var i = 1; i < data.events.length; i++) {
+						result.push(this._convertToEvent(data.events[i].event, params));
 					}
+				}
 
-					return {
-						total: result.length > 0 ? data.events[0].summary.total_items : 0,
-						items: result
-					};
-				}.bind(this));
-			}
+				return {
+					total: result.length > 0 ? data.events[0].summary.total_items : 0,
+					items: result
+				};
+			}.bind(this));
+		},
+
+		searchFreeEvents: function (params) {
+			return this.genericRequest({
+				path: "event_search",
+				parameters: params
+			}).then(function (data) {
+				var result = [];
+
+				if(data && data.events && data.events.length > 1){
+					for (var i = 1; i < data.events.length; i++) {
+						result.push(this._convertToEvent(data.events[i].event, params));
+					}
+				}
+
+				return {
+					total: result.length > 0 ? data.events[0].summary.total_items : 0,
+					items: result
+				};
+			}.bind(this));
 		},
 
 		getUserUpcomingEvents: function (params) {
-			if (this._useFakeData) {
-				return this._getFake("userUpcomingEvents");
-			} else {
-				return this.genericRequest("user_list_tickets", params).then(function (data) {
-					var result = [],
-						ids = [],
-						ticket,
-						order,
-						event,
-						i,
-						j;
+			return this.genericRequest({
+				path: "user_list_tickets",
+				parameters: params
+			}).then(function (data) {
+				var result = [],
+					ids = [],
+					ticket,
+					order,
+					event,
+					i,
+					j;
 
-					if(data && data.user_tickets && data.user_tickets.length > 1){
-						for (i = 1; i < data.user_tickets.length; i++) {
-							ticket = data.user_tickets[i];
-							for (j = 0; j < ticket.orders.length; j++) {
-								order = ticket.orders[j].order;
-								if (ids.indexOf(order.event.id) < 0) {
-									event = this._convertToEvent(order.event, params);
+				if(data && data.user_tickets && data.user_tickets.length > 1){
+					for (i = 1; i < data.user_tickets.length; i++) {
+						ticket = data.user_tickets[i];
+						for (j = 0; j < ticket.orders.length; j++) {
+							order = ticket.orders[j].order;
+							if (ids.indexOf(order.event.id) < 0) {
+								event = this._convertToEvent(order.event, params);
 
-									event.isPartial = true;
+								event.isPartial = true;
 
-									result.push(event);
-								}
+								result.push(event);
 							}
 						}
 					}
+				}
 
-					return {
-						total: result.length,
-						items: result
-					};
-				}.bind(this));
-			}
+				return {
+					total: result.length,
+					items: result
+				};
+			}.bind(this));
 		},
 
 		getUserDetails: function () {
-			if (this._useFakeData) {
-				return this._getFake("userDetails");
-			} else {
-				return this.genericRequest("user_get").then(function(data){
-					if (data && data.user) {
-						return new UserDetails({
-							id: data.user.user_id,
-							email: data.user.email
-						});
-					}
+			return this.genericRequest({
+				path: "user_get"
+			}).then(function(data){
+				if (data && data.user) {
+					return new UserDetails({
+						id: data.user.user_id,
+						email: data.user.email
+					});
+				}
 
-					return null;
-				}.bind(this));
-			}
+				return null;
+			}.bind(this));
 		},
 
 		_getHeaders: function(){
@@ -286,32 +274,12 @@
 			return headers;
 		},
 
-		_getFake: function (name) {
-			var self = this;
-
-			return new WinJS.Promise(function(complete){
-				require([
-					"app/data"
-				], function (data) {
-					var result = [];
-
-					if(name.toLowerCase() === "events"){
-						_.each(data.events.events.event, function () {
-							result.push(self._convertToEvent(this));
-						});
-					}
-
-					complete(result);
-				});
-			});
-		},
-
 		_convertToEvent: function (jsonEvent, request) {
 			var event = new Event({
 					id: jsonEvent.id - 0,
 					title: jsonEvent.title,
 					url: jsonEvent.url,
-					date: this._getDate(jsonEvent),
+
 					thumbnail: jsonEvent.logo,
 					categories: [],
 					description: jsonEvent.description ? window.toStaticHTML(jsonEvent.description) : "",
@@ -332,6 +300,7 @@
 					start_date: jsonEvent.start_date,
 					end_date: jsonEvent.end_date,
 					timezone: jsonEvent.timezone,
+					repeats: jsonEvent.repeats && jsonEvent.repeats.toLowerCase() === "yes",
 
 					styles: {
 						background_color: jsonEvent.background_color ? "#" + jsonEvent.background_color : "",
@@ -344,9 +313,7 @@
 					}
 			});
 
-			var popularity = jsonEvent.capacity - 0;
-			// to avoid 0-s
-			event.popularity = popularity + 1;
+			event.next_occurrence = this._getNextOccurrence(event, jsonEvent);
 
 			if (jsonEvent.category) {
 				var categories = jsonEvent.category.trim().split(',');
@@ -381,7 +348,7 @@
 						event.tickets.push({
 							name: ticket.ticket.name,
 							description: ticket.ticket.description,
-							price: ticket.ticket.price + " " + ticket.ticket.currency,
+							price: isNaN(ticket.ticket.price) ? "-" : ticket.ticket.price + " " + ticket.ticket.currency,
 							end_date: ticket.ticket.end_date
 						});
 					}
@@ -393,51 +360,25 @@
 			return event;
 		},
 
-		_convertToCategory: function (jsonCategory, request) {
-
-			// jsonCategory is an array where first element is summary
-
-			var category = new Category({
-				id: request.category,
-				eventsInCategory: jsonCategory[0].summary.total_items - 0
-			});
-
-			if (jsonCategory.length > 1 && jsonCategory[1].event) {
-				//[AZ]: We consider only first the most popular event
-				category.popularEvent = this._convertToEvent(jsonCategory[1].event, request);
-			}
-
-			return category;
-		},
-
 		// date is the complex value consisted of actual local date, timezone and repeats
-		_getDate: function (jsonEvent) {
-			// here we need timezone to determine current date in the specified time zone
-			var result = {
-				offset: this._config.timezones[jsonEvent.timezone],
-				repeats: jsonEvent.repeats && jsonEvent.repeats.toLowerCase() === "yes" ? true : false,
-				date: dateUtils.getUtcDateFromFormat(jsonEvent.start_date, "yyyy-MM-dd HH:mm:ss", this._config.timezones[jsonEvent.timezone])
-			};
+		_getNextOccurrence: function (event, jsonEvent) {
+			var repeatSchedule,
+				scheduleType;
 
-			if (result.repeats) {
+			if(event.repeats){
+
 				// here we have 3 parts [type of repeat(ex. daily)]-[unknown number]-[last repeat date]
-				var repeatSchedule = jsonEvent.repeat_schedule.split('-');
+				repeatSchedule = jsonEvent.repeat_schedule.split('-');
 
-				var scheduleType = repeatSchedule[0];
+				scheduleType = repeatSchedule[0];
 
 				// currently we support just daily repeats
 				if (scheduleType === 'daily') {
-					var today = new Date();
-					result.date = dateUtils.utcDate(today, -today.getTimezoneOffset());
-				} else {
-					result.date = "repeats";
+					return this._helpers.moment().format(this._config.formats.date);
 				}
 			}
-			return result;
-		},
 
-		_getTimeZoneOffset: function (timeZoneName) {
-			return this._config.timezones[timeZoneName];
+			return "";
 		}
 	});
 });

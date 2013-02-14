@@ -1,14 +1,14 @@
 ﻿define([
 	"underscore",
 	"config",
+	"moment",
 
 	"app/proxies/eventbrite",
+	"app/proxies/directory",
 
 	"app/utils/win",
 	"app/utils/template",
 	"app/utils/string",
-	"app/utils/format",
-	"app/utils/datetime",
 
 	"app/router",
 	"app/dispatcher",
@@ -42,9 +42,9 @@
 	"app/views/settings/about",
 	"app/views/settings/account",
 	"app/views/settings/privacy"
-], function (_, config,
-			Proxy,
-			winUtils, templateUtils, stringUtils, formatUtils, dateUtils,
+], function (_, config, moment,
+			Proxy, DirectoryProxy,
+			winUtils, templateUtils, stringUtils,
 			WinRouter, dispatcher, RatePrompt, Analytics,
 			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager, ErrorHandler, Cache,
 			User, Counters,
@@ -70,14 +70,14 @@
 		},
 		analytics,
 		errorHandler,
-		proxy;
+		proxy,
+		directoryProxy;
 
 	helpers = {
 		win: winUtils,
 		template: templateUtils,
 		string: stringUtils,
-		format: formatUtils,
-		date: dateUtils,
+		moment: moment,
 		progress: {
 			_progress: document.getElementById("progress-indicator-holder"),
 			show: function(){
@@ -113,12 +113,17 @@
 		cache: new Cache()
 	});
 
+	directoryProxy = new DirectoryProxy({
+		helpers: helpers,
+		cache: new Cache()
+	});
+
 	analytics = new Analytics(config, state);
 
 	errorHandler = new ErrorHandler(config, helpers, state, analytics);
 
 	var createView = function(ViewClass){
-		return new ViewClass(_, config, proxy, state, helpers);
+		return new ViewClass(_, config, proxy, directoryProxy, state, helpers);
 	};
 
 	WinJS.UI.Pages.define("/js/templates/views/settings/about.html", createView(AboutSettingsView));

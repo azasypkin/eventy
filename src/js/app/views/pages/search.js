@@ -45,7 +45,7 @@
 			return itemPromise.then(function (item) {
 				return this._helpers.template.parseTemplateToDomNode(this.templates.item, {
 					title: item.data.title,
-					date: this._helpers.format.date(item.data.date),
+					date: this._getStartDate(item.data),
 					color: item.data.color,
 					city: item.data.city,
 					thumbnail: item.data.thumbnail ? item.data.thumbnail : "/img/no-thumbnail.png",
@@ -180,6 +180,26 @@
 					itemDataSource: this._dataSource
 				});
 			}.bind(this));
+		},
+
+		_getStartDate: function(item){
+			var date;
+
+			if(item.repeats){
+				if(item.next_occurrence){
+					date = item.next_occurrence;
+				} else {
+					return this._config.getString("Proxy.TimePeriods.RepeatingEvent");
+				}
+			} else {
+				date = item.start_date;
+			}
+
+			return date
+				? this._helpers
+				.moment(date, this._config.proxies.eventbrite.formats.dateWithTime)
+				.format(this._config.formats.itemDate)
+				: "";
 		},
 
 		unload: function(){

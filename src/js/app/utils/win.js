@@ -194,22 +194,13 @@
 					url: options.url,
 					type: method
 				},
+				cacheEnabled = options.cache && options.cache.enabled && method === "GET",
 				keys,
 				key,
 				data,
-				i;
-
-			if(options.responseType){
-				requestParameters.responseType = options.responseType;
-			}
-
-			if(options.headers){
-				requestParameters.headers = options.headers;
-			}
-
-			if(options.timeout){
-				requestParameters.timeout = options.timeout;
-			}
+				i,
+				cacheKey,
+				cacheValue;
 
 			if(options.parameters){
 				data = "";
@@ -228,7 +219,35 @@
 				}
 			}
 
-			return WinJS.xhr(requestParameters).then(null, function(e){
+			// cache only get methods
+			if(cacheEnabled){
+				cacheKey = "request_" + options.cache.generateKey(requestParameters.url);
+				cacheValue = options.cache.get(cacheKey);
+
+				if(cacheValue){
+					return WinJS.Promise.wrap(cacheValue);
+				}
+			}
+
+			if(options.responseType){
+				requestParameters.responseType = options.responseType;
+			}
+
+			if(options.headers){
+				requestParameters.headers = options.headers;
+			}
+
+			if(options.timeout){
+				requestParameters.timeout = options.timeout;
+			}
+
+			return WinJS.xhr(requestParameters).then(function(response){
+				if(cacheEnabled){
+					options.cache.add(cacheKey, response.responseText);
+				}
+
+				return response.responseText;
+			}, function(e){
 				return WinJS.Promise.wrapError(
 					new BaseError("XHR request failed.", BaseError.Codes.XHR_FAILED, e)
 				);

@@ -9,7 +9,8 @@
 			underscore: "libs/lodash.min",
 			dataProxy: "app/proxies/eventbrite",
 			rText: "libs/requirejs/plugins/text",
-			ri18n: "libs/requirejs/plugins/i18n"
+			ri18n: "libs/requirejs/plugins/i18n",
+			moment: "libs/moment"
 		},
 		// uncomment to disable caching
 		urlArgs: "bust=" +  (new Date()).getTime()

@@ -61,9 +61,7 @@
 		},
 
 		_renderTemplate: function(item){
-			var parsedStartDate = new Date(this._helpers.date.getDateFromFormat(item.start_date, "yyyy-MM-dd HH:mm:ss")),
-				parsedEndDate = new Date(this._helpers.date.getDateFromFormat(item.end_date, "yyyy-MM-dd HH:mm:ss")),
-				venueCoordinate = item.latitude + ", " + item.longitude,
+			var venueCoordinate = item.latitude + ", " + item.longitude,
 				mapImageUrl = "http://maps.googleapis.com/maps/api/staticmap?sensor=false"
 					+ "&CENTER=" + venueCoordinate
 					+ "&markers=" + "color:red|" + venueCoordinate
@@ -74,8 +72,12 @@
 
 			return this._helpers.template.parseTemplateToDomNode(this.templates.item, {
 				data: item,
-				formattedStartDate: this._helpers.date.formatDate(parsedStartDate, "EE, NNN d, yyyy h:mm a"),
-				formattedEndDate: this._helpers.date.formatDate(parsedEndDate, "EE, NNN d, yyyy h:mm a"),
+				formattedStartDate: this._helpers.moment.utc(
+					item.start_date, this._config.proxies.eventbrite.formats.dateWithTime
+				).format(this._config.formats.itemDate),
+				formattedEndDate: this._helpers.moment.utc(
+					item.end_date, this._config.proxies.eventbrite.formats.dateWithTime
+				).format(this._config.formats.itemDate),
 				mapImageUrl: mapImageUrl,
 				mapUrl: mapUrl
 			});
