@@ -14,19 +14,18 @@ module.exports = function(grunt) {
     },
 
     clean: {
-      prebuild: ['<%= pkg.dist %>'],
-      postbuild: ['<%= pkg.dist %>/js/app']
+      prebuild: ['<%= pkg.dest %>'],
+      postbuild: ['<%= pkg.dest %>/js/app']
     },
 
     copy: {
-      dist:{
-        files:{
-          '<%= pkg.dist %>/css/'      : '<%= pkg.src %>/css/**',
-          '<%= pkg.dist %>/img/'      : '<%= pkg.src %>/img/**',
-          '<%= pkg.dist %>/js/'       : '<%= pkg.src %>/js/**',
-          '<%= pkg.dist %>/packages/' : '<%= pkg.src %>/packages/**',
-          '<%= pkg.dist %>/'          : ['<%= pkg.src %>/*.pfx', '<%= pkg.src %>/*.html','<%= pkg.src %>/*.xml', '<%= pkg.src %>/*.config', '<%= pkg.src %>/*.sln', '<%= pkg.src %>/*.appxmanifest', '<%= pkg.src %>/*.jsproj']
-        }
+      main:{
+        files:[{
+            expand: true,
+            cwd: '<%= pkg.src %>',
+            src: ['css/**', 'img/**', 'js/**', 'packages/**', '*.pfx', '*.html', '*.xml', '*.config', '*.sln', '*.appxmanifest', '*.jsproj'], 
+            dest: '<%= pkg.dest %>'
+        }]
       }
     },
     
@@ -68,11 +67,11 @@ module.exports = function(grunt) {
     less: {
       production: {
         options: {
-          paths: ["<%= pkg.dist %>/css"],
+          paths: ["<%= pkg.dest %>/css"],
           yuicompress: true
         },
         files: {
-          "<%= pkg.dist %>/css/index.css": "<%= pkg.dist %>/css/index.less"
+          "<%= pkg.dest %>/css/index.css": "<%= pkg.dest %>/css/index.less"
         }
       }
     },
@@ -80,9 +79,9 @@ module.exports = function(grunt) {
     requirejs: {
       compile: {
         options: {
-          appDir:'<%= pkg.dist %>',
+          appDir:'<%= pkg.dest %>',
           baseUrl:'./js',
-          dir:'<%= pkg.dist %>',
+          dir:'<%= pkg.dest %>',
 
           optimize:"uglify2",
 
