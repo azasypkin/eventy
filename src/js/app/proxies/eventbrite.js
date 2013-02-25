@@ -324,20 +324,23 @@
 								id: mappedCategory,
 								requestedBy: request.category && request.category.indexOf(mappedCategory) >= 0
 							};
-						// category by which item was requested should be in the beginning
-						if (category.requestedBy) {
-							event.categories.unshift(category);
-						} else {
-							event.categories.push(category);
+						if (mappedCategory) {
+							// category by which item was requested should be in the beginning
+							if (category.requestedBy) {
+								event.categories.unshift(category);
+							} else {
+								event.categories.push(category);
+							}
 						}
-						event.categories.push();
 					}.bind(this));
 				}
-			} else {
-				event.categories = [{
+			}
+
+			if (event.categories.length === 0) {
+				event.categories.push({
 					id: "other",
 					requestedBy: false
-				}];
+				});
 			}
 
 			event.tickets = [];
