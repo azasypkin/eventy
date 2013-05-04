@@ -3,8 +3,8 @@
 	<div class="event-thumbnail" style="background-image: url(<%=thumbnail%>)"></div>
 	<div class="event-details">
 		<p class="event-details-title"><%= title %></p>
-		<p><%= date %></p>
-		<p><%= city %></p>
+		<p  class="event-details-date"><%= date %></p>
+		<p class="event-details-city"><%= city %></p>
 		<p class="event-details-category-name" style="color: <%=color%>"><%= category %></p>
 		<% if(distance) {%>
 			<p class="event-details-distance"><%= distance %></p>

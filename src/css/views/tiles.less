@@ -58,10 +58,22 @@
 		width: 249px;
 
 		-ms-grid-columns: 1fr;
-		-ms-grid-rows: 10px 1fr;
+		-ms-grid-rows: 10px auto 1fr;
+
+		.event-thumbnail {
+			-ms-grid-row: 3;
+		}
 
 		.event-details {
-			display: none;
+			-ms-grid-column: 1;
+			-ms-grid-row: 2;
+
+			.event-details-date,
+			.event-details-city,
+			.event-details-category-name,
+			.event-details-distance {
+				display: none;
+			}
 		}
 	}
 }
