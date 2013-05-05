@@ -1,83 +1,50 @@
 ﻿define([
-	"app/views/pages/base",
+	"app/views/pages/base_list",
 	"app/collections/events",
 	"rText!templates/views/pages/search/layout.html",
 	"rText!templates/views/pages/search/item.html"
 ],function(BaseView, EventsCollection, LayoutTemplate, ItemTemplate){
 	"use strict";
 
-	return WinJS.Class.derive(BaseView, function(){
-		BaseView.apply(this, arguments);
+	return WinJS.Class.derive(BaseView, function(_, config, proxy, directoryProxy, state, helpers){
+		BaseView.call(this, _, config, proxy, directoryProxy, state, helpers, LayoutTemplate, ItemTemplate);
 
-		this.templates = {
-			layout: this._helpers.template.htmlStringToTemplate(LayoutTemplate),
-			item: this._helpers.template.htmlStringToTemplate(ItemTemplate)
-		};
-
-		this._onSelectionChanged = this._onSelectionChanged.bind(this);
-		this._onItemInvoked = this._onItemInvoked.bind(this);
-		this._onLoadingStateChanged = this._onLoadingStateChanged.bind(this);
 		this._onFilterSubmitted = this._onFilterSubmitted.bind(this);
 		this._onDataSourceError = this._onDataSourceError.bind(this);
 
-		this._onExploreCommandInvoked = this._onExploreCommandInvoked.bind(this);
-
 		this._onLocationChanged = this._onLocationChanged.bind(this);
 
-		this._state.dispatcher.addEventListener("command:explore", this._onExploreCommandInvoked, false);
 		this._state.dispatcher.addEventListener("filter:submitted", this._onFilterSubmitted, false);
 
 		this._state.user.addEventListener("changed", this._onLocationChanged, false);
 	}, {
-
-		container: document.getElementById("content"),
-
-		searchOnKeyboardInput: true,
-
-		wc: null,
-
 		_dataSource: null,
 		_dataSourceErrors: [],
 		_itemsLoadCompleteCallback: null,
 		_itemsLoadErrorCallback: null,
 
-		_itemTemplate: function(itemPromise){
-			return itemPromise.then(function (item) {
-				return this._helpers.template.parseTemplateToDomNode(this.templates.item, {
-					title: item.data.title,
-					date: this._getStartDate(item.data),
-					color: item.data.color,
-					city: item.data.city,
-					thumbnail: item.data.thumbnail ? item.data.thumbnail : "/img/no-thumbnail.png",
-					category: this._config.dictionaries.categories[item.data.categories[0].id].name,
-					distance: item.data.distance
-				}).then(function(node){
-					node.title = item.data.title;
-
-					return node;
-				});
-			}.bind(this));
+		getItemTemplateData: function(item){
+			return {
+				title: item.title,
+				date: this._getStartDate(item),
+				color: item.color,
+				city: item.city,
+				thumbnail: item.thumbnail ? item.thumbnail : "/img/no-thumbnail.png",
+				category: this._config.dictionaries.categories[item.categories[0].id].name,
+				distance: item.distance
+			};
 		},
 
-		_exploreItems: function(items){
-			if(items.length > 0){
-				WinJS.Navigation.navigate("explore/"+items[0].id, {
-					params: {
-						items: items
-					}
-				});
-			}
+		processItemNode: function(node, item){
+			BaseView.prototype.processItemNode.call(this, node, item);
+
+			node.title = item.title;
+
+			return node;
 		},
 
-		_createListView: function(filter){
-			this.wc = new WinJS.UI.ListView(document.getElementById("event-list-view"), {
-				layout: { type: this.isSnapped ? WinJS.UI.ListLayout : WinJS.UI.GridLayout },
-				itemTemplate: this._itemTemplate.bind(this)
-			});
-
-			this.wc.addEventListener("selectionchanged", this._onSelectionChanged, false);
-			this.wc.addEventListener("iteminvoked", this._onItemInvoked, false);
-			this.wc.addEventListener("loadingstatechanged", this._onLoadingStateChanged, false);
+		createListView: function(filter){
+			BaseView.prototype.createListView.apply(this, arguments);
 
 			return this._updateDataSource(filter);
 		},
@@ -103,7 +70,7 @@
 				.then(function () {
 					return this._buildFilter(query, category);
 				}.bind(this))
-				.then(this._createListView.bind(this));
+				.then(this.createListView.bind(this));
 		},
 
 		refresh: function(query, category){
@@ -170,7 +137,7 @@
 			this._dataSourceErrors = [];
 
 			// we removed all items, so selection has changed for sure :)
-			this._onSelectionChanged();
+			this.onSelectionChanged();
 
 			return new WinJS.Promise(function(complete, error){
 				this._itemsLoadCompleteCallback = complete;
@@ -205,12 +172,6 @@
 		unload: function(){
 			BaseView.prototype.unload.apply(this, arguments);
 
-			if (this.wc) {
-				this.wc.removeEventListener("selectionchanged", this._onSelectionChanged, false);
-				this.wc.removeEventListener("iteminvoked", this._onItemInvoked, false);
-				this.wc.removeEventListener("loadingstatechanged", this._onLoadingStateChanged, false);
-			}
-
 			this._state.dispatcher.dispatchEvent("updateBarState", {
 				type: "top",
 				secondaryTitle: {
@@ -218,9 +179,6 @@
 				}
 			});
 
-			this._helpers.noData.hide();
-
-			this._state.dispatcher.removeEventListener("command:explore", this._onExploreCommandInvoked, false);
 			this._state.dispatcher.removeEventListener("filter:submitted", this._onFilterSubmitted, false);
 
 			this._state.user.removeEventListener("changed", this._onLocationChanged, false);
@@ -294,29 +252,6 @@
 			return parameters;
 		},
 
-		_onSelectionChanged: function () {
-			this.wc.selection.getItems().then(function(items){
-				var hasItemsSelected = items.length > 0,
-					properties = {
-						type: "bottom"
-					};
-
-				properties[hasItemsSelected ? "showCommands" : "hideCommands"] = ["globalSeparator", "explore"];
-
-				if(hasItemsSelected){
-					properties.show = hasItemsSelected;
-				}
-
-				this._state.dispatcher.dispatchEvent("updateBarState", properties);
-			}.bind(this));
-		},
-
-		_onItemInvoked: function (e) {
-			e.detail.itemPromise.then(function (item) {
-				this._exploreItems([item.data]);
-			}.bind(this));
-		},
-
 		_tryComplete: function(error){
 			if(this._itemsLoadCompleteCallback){
 				if(error){
@@ -332,33 +267,12 @@
 			}
 		},
 
-		_onLoadingStateChanged: function(e){
-			if (e.target.winControl.loadingState === "itemsLoaded") {
-				e.target.winControl.itemDataSource.getCount().then(function(count){
-					if(count === 0){
-						this._helpers.noData.show();
-					}
-				}.bind(this));
+		onLoadingStateChanged: function(e){
+			BaseView.prototype.onLoadingStateChanged.call(this, e);
 
+			if (e.target.winControl.loadingState === "itemsLoaded") {
 				this._tryComplete();
 			}
-		},
-
-		_onExploreCommandInvoked: function(){
-			this.wc.selection.getItems().then(function(items){
-				var ids = [],
-					result = [],
-					item,
-					i;
-				for(i = 0; i < items.length; i++){
-					item = items[i].data;
-					if(ids.indexOf(item.id) < 0){
-						result.push(item);
-						ids.push(item.id);
-					}
-				}
-				this._exploreItems(result);
-			}.bind(this));
 		},
 
 		_onFilterSubmitted: function (e) {
@@ -390,29 +304,6 @@
 				filter.useCurrentLocation = true;
 
 				this._state.user.set("filter", filter);
-			}
-		},
-
-		_onSnapped: function () {
-			BaseView.prototype._onSnapped.apply(this, arguments);
-
-			if(this.wc){
-				WinJS.UI.setOptions(this.wc, {
-					layout: {
-						type: WinJS.UI.ListLayout
-					}
-				});
-			}
-		},
-
-		_onUnSnapped: function () {
-			BaseView.prototype._onUnSnapped.apply(this, arguments);
-			if(this.wc){
-				WinJS.UI.setOptions(this.wc, {
-					layout: {
-						type: WinJS.UI.GridLayout
-					}
-				});
 			}
 		},
 

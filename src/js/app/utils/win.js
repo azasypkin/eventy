@@ -16,7 +16,7 @@
 				return WinJS.UI.Animation.fadeOut(target);
 			},
 			executeTransition: function(target, transition){
-				return WinJS.UI.Animation.executeTransition(target, transition);
+				return WinJS.UI.executeTransition(target, transition);
 			}
 		},
 

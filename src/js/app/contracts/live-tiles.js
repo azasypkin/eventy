@@ -23,7 +23,7 @@
 				this._tileUpdater.enableNotificationQueue(true);
 
 				for(i = 0; i < items.length && tileAdded < this._maxTileCycleSize; i++){
-					item = items[i].data;
+					item = items[i];
 
 					if(item.thumbnail){
 						tileXml = winNotifications.TileUpdateManager.getTemplateContent(this._template),
