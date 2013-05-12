@@ -109,6 +109,7 @@
 	};
 
 	proxy = new CompositeProxy({
+		_: _,
 		config: config,
 		user: state.user,
 		helpers: helpers,

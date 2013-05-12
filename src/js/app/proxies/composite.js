@@ -5,6 +5,7 @@
 		options.mapping.forEach(function(entry, index){
 			var proxyName = "_proxy_" +  index,
 				proxy = new entry.type({
+					_: options._,
 					config: options.config,
 					user: options.user,
 					helpers: options.helpers,

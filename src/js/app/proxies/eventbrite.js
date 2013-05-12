@@ -1,5 +1,4 @@
 ﻿define([
-	"underscore",
 	"config",
 
 	"app/core/errors/base_error",
@@ -7,11 +6,13 @@
 
 	"app/models/event",
 	"app/models/user-details"
-], function (_, globalConfig, BaseError, Cache, Event, UserDetails) {
+], function (globalConfig, BaseError, Cache, Event, UserDetails) {
 	"use strict";
 
 	return WinJS.Class.define(function(options){
 		options = options || {};
+
+		this._ = options._;
 		this._config = globalConfig.proxies.eventbrite;
 		this._user= options.user;
 		this._reverseCategoriesIndex = this._buildCategoryReverseIndex();
@@ -64,7 +65,7 @@
 			}
 
 			if(requestParameters.category && requestParameters.category instanceof Array && requestParameters.category.length > 0){
-				requestParameters.category = _.map(requestParameters.category, function(category){
+				requestParameters.category = this._.map(requestParameters.category, function(category){
 					return this._config.categories[category];
 				}.bind(this));
 			}
@@ -277,24 +278,24 @@
 		_convertToEvent: function (jsonEvent, request) {
 			var event = new Event({
 					id: jsonEvent.id - 0,
-					title: jsonEvent.title ? this._helpers._.escape(jsonEvent.title) : "",
+					title: jsonEvent.title ? this._.escape(jsonEvent.title) : "",
 					url: jsonEvent.url,
 
 					thumbnail: jsonEvent.logo,
 					categories: [],
 					description: jsonEvent.description ? window.toStaticHTML(jsonEvent.description) : "",
-					city: jsonEvent.venue ? this._helpers._.escape(jsonEvent.venue.city) : "",
-					region: jsonEvent.venue ? this._helpers._.escape(jsonEvent.venue.region) : "",
-					venue: jsonEvent.venue ? this._helpers._.escape(jsonEvent.venue.name) : "",
-					country: jsonEvent.venue ? this._helpers._.escape(jsonEvent.venue.country) : "",
+					city: jsonEvent.venue ? this._.escape(jsonEvent.venue.city) : "",
+					region: jsonEvent.venue ? this._.escape(jsonEvent.venue.region) : "",
+					venue: jsonEvent.venue ? this._.escape(jsonEvent.venue.name) : "",
+					country: jsonEvent.venue ? this._.escape(jsonEvent.venue.country) : "",
 					distance: jsonEvent.distance ? jsonEvent.distance : "",
-					address: jsonEvent.venue ? this._helpers._.escape(jsonEvent.venue.address) : "",
-					postal_code: jsonEvent.venue ? this._helpers._.escape(jsonEvent.venue.postal_code) : "",
+					address: jsonEvent.venue ? this._.escape(jsonEvent.venue.address) : "",
+					postal_code: jsonEvent.venue ? this._.escape(jsonEvent.venue.postal_code) : "",
 					latitude: jsonEvent.venue ? jsonEvent.venue.latitude : "",
 					longitude: jsonEvent.venue ? jsonEvent.venue.longitude : "",
 					custom_header: jsonEvent.custom_header ? window.toStaticHTML(jsonEvent.custom_header) : "",
 					custom_footer: jsonEvent.custom_footer ? window.toStaticHTML(jsonEvent.custom_footer) : "",
-					organizer_name: jsonEvent.organizer ? this._helpers._.escape(jsonEvent.organizer.name) : "",
+					organizer_name: jsonEvent.organizer ? this._.escape(jsonEvent.organizer.name) : "",
 					organizer_url: jsonEvent.organizer ? jsonEvent.organizer.url : "",
 
 					start_date: jsonEvent.start_date,
@@ -318,7 +319,7 @@
 			if (jsonEvent.category) {
 				var categories = jsonEvent.category.trim().split(',');
 				if (categories.length > 0) {
-					_.each(categories, function (categoryId) {
+					this._.each(categories, function (categoryId) {
 						var mappedCategory = this._reverseCategoriesIndex[categoryId],
 							category = {
 								id: mappedCategory,

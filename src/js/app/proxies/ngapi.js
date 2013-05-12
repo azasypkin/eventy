@@ -1,17 +1,17 @@
 ﻿define([
-	"underscore",
 	"config",
 
 	"app/core/errors/base_error",
 	"app/core/cache/cache",
 
 	"app/models/event"
-], function (_, globalConfig, BaseError, Cache, Event) {
+], function (globalConfig, BaseError, Cache, Event) {
 	"use strict";
 
 	return WinJS.Class.define(function(options){
 		options = options || {};
-
+		
+		this._ = options._;
 		this._config = globalConfig.proxies.ngapi;
 		this._helpers = options.helpers;
 		this._user= options.user;
@@ -108,7 +108,7 @@
 			var event = new Event({
 					isPartial: true,
 					id: jsonEvent.id,
-					title: jsonEvent.title ? this._helpers._.escape(jsonEvent.title) : "",
+					title: jsonEvent.title ? this._.escape(jsonEvent.title) : "",
 					url: "http://www.eventbrite.com/event/" + jsonEvent.id,
 
 					thumbnail: jsonEvent.event_image_url,
@@ -120,10 +120,10 @@
 					timezone: jsonEvent.time_zone,
 
 					description: jsonEvent.description ? window.toStaticHTML(jsonEvent.description) : "",
-					city: jsonEvent.venue_city ? this._helpers._.escape(jsonEvent.venue_city) : "",
-					venue: jsonEvent.venue_name ? this._helpers._.escape(jsonEvent.venue_name) : "",
+					city: jsonEvent.venue_city ? this._.escape(jsonEvent.venue_city) : "",
+					venue: jsonEvent.venue_name ? this._.escape(jsonEvent.venue_name) : "",
 
-					address: jsonEvent.venue_address ? this._helpers._.escape(jsonEvent.venue_address) : "",
+					address: jsonEvent.venue_address ? this._.escape(jsonEvent.venue_address) : "",
 
 					latitude: jsonEvent.latitude,
 					longitude: jsonEvent.longitude,
