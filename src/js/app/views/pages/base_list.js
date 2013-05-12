@@ -3,13 +3,16 @@
 ],function(BaseView){
 	"use strict";
 
-	return WinJS.Class.derive(BaseView, function(_, config, proxy, directoryProxy, state, helpers, layoutTemplate,
-													itemTemplate){
-		BaseView.call(this, _, config, proxy, directoryProxy, state, helpers);
+	return WinJS.Class.derive(BaseView, function(_, config, proxy, state, helpers, layoutTemplate,
+													itemTemplate, semanticItemTemplate){
+		BaseView.call(this, _, config, proxy, state, helpers);
 
 		this.templates = {
 			layout: this._helpers.template.htmlStringToTemplate(layoutTemplate),
-			item: this._helpers.template.htmlStringToTemplate(itemTemplate)
+			item: this._helpers.template.htmlStringToTemplate(itemTemplate),
+			semanticItem: this.supportZoom
+				? this._helpers.template.htmlStringToTemplate(semanticItemTemplate)
+				: null
 		};
 
 		this.onSelectionChanged = this.onSelectionChanged.bind(this);
@@ -41,7 +44,23 @@
 			}.bind(this));
 		},
 
+		_semanticItemTemplate: function(itemPromise){
+			return itemPromise.then(function (item) {
+				return this._helpers.template.parseTemplateToDomNode(
+					this.templates.semanticItem,
+					this.getSemanticItemTemplateData(item.data));
+			}.bind(this));
+		},
+
 		getItemTemplateData: function(item){
+			return null;
+		},
+
+		getSemanticItemTemplateData: function(item){
+			return null;
+		},
+
+		getGroupInfo: function(){
 			return null;
 		},
 
@@ -67,10 +86,25 @@
 		},
 
 		createListView: function(){
-			this.wc = new WinJS.UI.ListView(document.getElementById("event-list-view"), {
-				layout: { type: this.isSnapped ? WinJS.UI.ListLayout : WinJS.UI.GridLayout },
+			this.wc = new WinJS.UI.ListView(document.getElementById("zoomedInListView"), {
+				layout: {
+					type: this.isSnapped ? WinJS.UI.ListLayout : WinJS.UI.GridLayout,
+					groupInfo: this.getGroupInfo()
+				},
 				itemTemplate: this._itemTemplate.bind(this)
 			});
+
+			if(this.supportZoom){
+				this.zwc = new WinJS.UI.ListView(document.getElementById("zoomedOutListView"), {
+					layout: { type: this.isSnapped ? WinJS.UI.ListLayout : WinJS.UI.GridLayout, maxRows: 3 },
+					selectionMode: 'none',
+					tapBehavior: 'invoke',
+					swipeBehavior: 'none',
+					itemTemplate: this._semanticItemTemplate.bind(this)
+				});
+
+				this.szwc = new WinJS.UI.SemanticZoom(document.getElementById("events-semantic-zoom"));
+			}
 
 			this.wc.addEventListener("selectionchanged", this.onSelectionChanged, false);
 			this.wc.addEventListener("iteminvoked", this.onItemInvoked, false);
@@ -170,31 +204,51 @@
 		},
 
 		_onTileImageError: function (e) {
-			e.target.parentNode.style.backgroundImage = "url(/img/no-thumbnail.png)";
+			var parentContainer = e.target.parentNode;
+
+			parentContainer.style.backgroundImage = "url(/img/no-thumbnail.png)";
 
 			this._removeImageListeners(e.target);
+
+			this._helpers.win.effects.executeTransition(parentContainer, {
+				property: "opacity",
+				delay: Math.floor(Math.random() * 1000),
+				duration: 550,
+				timing: "linear",
+				from: 0,
+				to: 1
+			});
 		},
 
 		_onSnapped: function () {
 			BaseView.prototype._onSnapped.apply(this, arguments);
 
 			if(this.wc){
-				WinJS.UI.setOptions(this.wc, {
-					layout: {
-						type: WinJS.UI.ListLayout
-					}
-				});
+				this.wc.layout = {
+					type: WinJS.UI.ListLayout
+				};
+			}
+
+			if(this.zwc){
+				this.zwc.layout = {
+					type: WinJS.UI.ListLayout
+				};
 			}
 		},
 
 		_onUnSnapped: function () {
 			BaseView.prototype._onUnSnapped.apply(this, arguments);
 			if(this.wc){
-				WinJS.UI.setOptions(this.wc, {
-					layout: {
-						type: WinJS.UI.GridLayout
-					}
-				});
+				this.wc.layout = {
+					type: WinJS.UI.GridLayout,
+					groupInfo: this.getGroupInfo()
+				};
+			}
+
+			if(this.zwc){
+				this.zwc.layout = {
+					type: WinJS.UI.GridLayout
+				};
 			}
 		}
 	});

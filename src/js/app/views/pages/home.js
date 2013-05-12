@@ -1,23 +1,46 @@
 ﻿define([
 	"app/views/pages/base_list",
 	"rText!templates/views/pages/home/layout.html",
-	"rText!templates/views/pages/home/item.html"
-],function(BaseView, LayoutTemplate, ItemTemplate){
+	"rText!templates/views/pages/home/item.html",
+	"rText!templates/views/pages/home/semantic-item.html"
+],function(BaseView, LayoutTemplate, ItemTemplate, SemanticItemTemplate){
 	"use strict";
 
-	return WinJS.Class.derive(BaseView, function(_, config, proxy, directoryProxy, state, helpers){
-		BaseView.call(this, _, config, proxy, directoryProxy, state, helpers, LayoutTemplate, ItemTemplate);
+	return WinJS.Class.derive(BaseView, function(_, config, proxy, state, helpers){
+		BaseView.call(this,
+			_,
+			config,
+			proxy,
+			state,
+			helpers,
+			LayoutTemplate,
+			ItemTemplate,
+			SemanticItemTemplate
+		);
 	}, {
 
 		_groups: {
+			featuredEvents: {
+				name: " Featured",
+				items: null,
+				order: 0,
+				tile: "large-tile"
+			},
+			relevantEvents: {
+				items: null,
+				name: " Relevant",
+				order: 1,
+				method: "searchRelevantEvents"
+			},
 			yourEvents: {
 				parameters: {
 					type: "all"
 				},
 				items: null,
-				name: "Your upcoming events",
-				order: 0,
-				authenticatedUserRequired: true
+				name: " Attending",
+				order: 2,
+				authenticatedUserRequired: true,
+				method: "getUserUpcomingEvents"
 			},
 			nearby: {
 				parameters: {
@@ -25,8 +48,9 @@
 					date: "this_month"
 				},
 				items: null,
-				name: "Around you",
-				order: 1
+				name: " Around you",
+				order: 3,
+				method: "searchEvents"
 			},
 			this_week: {
 				parameters: {
@@ -35,8 +59,9 @@
 					sort_by: "date"
 				},
 				items: null,
-				name: "This week",
-				order: 2
+				name: " This week",
+				order: 4,
+				method: "searchEvents"
 			},
 			freeEvents: {
 				parameters: {
@@ -45,8 +70,9 @@
 					price: 1
 				},
 				items: null,
-				name: "Freebies around you",
-				order: 3
+				name: " Freebies",
+				order: 5,
+				method: "searchDirectoryEvents"
 			}
 		},
 
@@ -54,6 +80,11 @@
 		_stillLoading: 0,
 		_itemsLoadCompleteCallback: null,
 		_itemsLoadErrorCallback: null,
+
+		supportZoom: true,
+
+		szwc: null,
+		zwc: null,
 
 		getBarsSettings: function () {
 			return [{
@@ -73,13 +104,20 @@
 
 		getItemTemplateData: function(item){
 			return {
-				title: item.title,
+				title: item.title ? item.title.toLocaleLowerCase() : item.title,
 				date: this._getStartDate(item),
 				color: item.color,
-				city: item.city,
+				address: item.address || item.city,
 				thumbnail: item.thumbnail ? item.thumbnail : "/img/no-thumbnail.png",
 				category: this._config.dictionaries.categories[item.categories[0].id].name,
-				distance: item.distance
+				distance: item.distance,
+				tile: item.tile
+			};
+		},
+
+		getSemanticItemTemplateData: function(item){
+			return {
+				name: item
 			};
 		},
 
@@ -92,8 +130,7 @@
 		},
 
 		_loadItems: function(groupKey, parameters){
-			var proxy = groupKey === "freeEvents" ? this._directoryProxy : this._proxy;
-			return proxy[groupKey === "yourEvents" ? "getUserUpcomingEvents" : "searchEvents"](parameters).then(function(data){
+			return this._proxy[this._groups[groupKey].method](parameters).then(function(data){
 				this._groups[groupKey].items = data.items;
 				if(--this._stillLoading === 0){
 					this._onItemsReady();
@@ -110,7 +147,8 @@
 		_createGroupItem: function(groupKey, group, item){
 			return this._.extend({
 				groupKey: groupKey,
-				key: groupKey + "_" + item.id
+				key: groupKey + "_" + item.id,
+				tile: group.tile
 			}, item);
 		},
 
@@ -118,7 +156,7 @@
 			return new WinJS.Promise(function(complete, error){
 				// prepare parameters
 				var parameters = {
-						max: 10,
+						max: 15,
 						display: "custom_header,custom_footer"
 					},
 					userCategories = this._state.user.get("categories"),
@@ -150,7 +188,8 @@
 
 					group.items = null;
 
-					if(!group.authenticatedUserRequired || this._state.user.isAuthenticated()){
+					if(group.method && (!group.authenticatedUserRequired ||
+						this._state.user.isAuthenticated())){
 						requests.push({
 							key: groupKey,
 							parameters: this._.extend({}, parameters, this._groups[groupKey].parameters)
@@ -195,12 +234,23 @@
 				itemDataSource: bindingList.dataSource,
 				groupDataSource: bindingList.groups.dataSource
 			});
+
+			WinJS.UI.setOptions(this.zwc, {
+				itemDataSource: bindingList.groups.dataSource
+			});
 		},
 
 		createListView: function(events){
 			BaseView.prototype.createListView.apply(this, arguments);
-
 			this._updateDataSource(events);
+		},
+
+		getGroupInfo: function(){
+			return {
+				enableCellSpanning: true,
+				cellWidth: 230,
+				cellHeight: 230
+			};
 		},
 
 		_getStartDate: function(item){
@@ -251,6 +301,13 @@
 				group,
 				i,
 				j;
+
+			if(this._groups.relevantEvents.items && this._groups.relevantEvents.items.length > 0){
+				this._groups.featuredEvents.items = this._groups.relevantEvents.items.splice(
+					Math.floor(Math.random() * this._groups.relevantEvents.items.length),
+					1
+				);
+			}
 
 			for(i = 0; i < groupKeys.length; i++){
 				groupKey = groupKeys[i];

@@ -33,7 +33,7 @@
 				isHandled = true;
 			} else if (error.originalError.error_type === "Application Key Error") {
 				this._helpers.win.showPrompt(
-						"Sorry, but Eventbrite limited number of anonymous requests.",
+						"Sorry, but Eventbrite limited number of daily anonymous requests.",
 						"Please, try again later or connect your account to Eventbrite."
 					).then(function(){
 						this._state.user.signOut();

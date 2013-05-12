@@ -5,6 +5,8 @@
 
 	"app/proxies/eventbrite",
 	"app/proxies/directory",
+	"app/proxies/ngapi",
+	"app/proxies/composite",
 
 	"app/utils/win",
 	"app/utils/template",
@@ -43,7 +45,7 @@
 	"app/views/settings/account",
 	"app/views/settings/privacy"
 ], function (_, config, moment,
-			Proxy, DirectoryProxy,
+			Proxy, DirectoryProxy, NGApiProxy, CompositeProxy,
 			winUtils, templateUtils, stringUtils,
 			WinRouter, dispatcher, RatePrompt, Analytics,
 			StorageAdapter, StorageManager, CoordinatesDetector, LocationResolver, LocationManager, AuthenticationManager, ErrorHandler, Cache,
@@ -70,8 +72,7 @@
 		},
 		analytics,
 		errorHandler,
-		proxy,
-		directoryProxy;
+		proxy;
 
 	helpers = {
 		win: winUtils,
@@ -107,15 +108,20 @@
 		share: new ShareContract(config, state)
 	};
 
-	proxy = new Proxy({
+	proxy = new CompositeProxy({
+		config: config,
 		user: state.user,
 		helpers: helpers,
-		cache: new Cache()
-	});
-
-	directoryProxy = new DirectoryProxy({
-		helpers: helpers,
-		cache: new Cache()
+		mapping: [{
+			type: Proxy,
+			methods: ["getEvent", "searchEvents", "getUserUpcomingEvents", "getUserDetails"]
+		}, {
+			type: DirectoryProxy,
+			methods: ["searchDirectoryEvents"]
+		}, {
+			type: NGApiProxy,
+			methods: ["searchRelevantEvents"]
+		}]
 	});
 
 	analytics = new Analytics(config, state);
@@ -123,7 +129,7 @@
 	errorHandler = new ErrorHandler(config, helpers, state, analytics);
 
 	var createView = function(ViewClass){
-		return new ViewClass(_, config, proxy, directoryProxy, state, helpers);
+		return new ViewClass(_, config, proxy, state, helpers);
 	};
 
 	WinJS.UI.Pages.define("/js/templates/views/settings/about.html", createView(AboutSettingsView));

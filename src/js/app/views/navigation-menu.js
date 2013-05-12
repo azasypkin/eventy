@@ -82,7 +82,10 @@
 		},
 
 		_onMenuClicked: function(e){
-			if(e.target && e.target.winControl && e.target.winControl instanceof  WinJS.UI.MenuCommand){
+			if (e.target
+				&& e.target.winControl
+				&& e.target.winControl instanceof WinJS.UI.MenuCommand
+				&& e.target.winControl.type !== "separator") {
 
 				this.raiseEvent("navigated", {
 					name: e.target.winControl.label

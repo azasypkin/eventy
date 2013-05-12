@@ -6,8 +6,16 @@
 ],function(BaseView, EventsCollection, LayoutTemplate, ItemTemplate){
 	"use strict";
 
-	return WinJS.Class.derive(BaseView, function(_, config, proxy, directoryProxy, state, helpers){
-		BaseView.call(this, _, config, proxy, directoryProxy, state, helpers, LayoutTemplate, ItemTemplate);
+	return WinJS.Class.derive(BaseView, function(_, config, proxy, state, helpers){
+		BaseView.call(this,
+			_,
+			config,
+			proxy,
+			state,
+			helpers,
+			LayoutTemplate,
+			ItemTemplate
+		);
 
 		this._onFilterSubmitted = this._onFilterSubmitted.bind(this);
 		this._onDataSourceError = this._onDataSourceError.bind(this);
@@ -23,15 +31,18 @@
 		_itemsLoadCompleteCallback: null,
 		_itemsLoadErrorCallback: null,
 
+		supportZoom: false,
+
 		getItemTemplateData: function(item){
 			return {
-				title: item.title,
+				title: item.title ? item.title.toLocaleLowerCase() : item.title,
 				date: this._getStartDate(item),
 				color: item.color,
-				city: item.city,
+				address: item.address || item.city,
 				thumbnail: item.thumbnail ? item.thumbnail : "/img/no-thumbnail.png",
 				category: this._config.dictionaries.categories[item.categories[0].id].name,
-				distance: item.distance
+				distance: item.distance,
+				tile: "small-tile"
 			};
 		},
 

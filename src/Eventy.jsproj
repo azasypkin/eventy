@@ -56,8 +56,6 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Include="css\*.css" />
-    <Content Include="css\**\*.css" />
     <Content Include="css\*.less" />
     <Content Include="css\**\*.less" />
     <Content Include="js\*.js" />
@@ -68,7 +66,6 @@
     <Content Include="*.html" />
     <Content Include="packages.config" />
     <None Include="Eventy_StoreKey.pfx" />
-  
     <None Include="Package.StoreAssociation.xml" />
     <None Include="Eventy_TemporaryKey.pfx" />
   </ItemGroup>

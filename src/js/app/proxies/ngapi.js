@@ -12,8 +12,9 @@
 	return WinJS.Class.define(function(options){
 		options = options || {};
 
-		this._config = globalConfig.proxies.directory;
+		this._config = globalConfig.proxies.ngapi;
 		this._helpers = options.helpers;
+		this._user= options.user;
 
 		this._cacheManager = {
 			enabled: true,
@@ -33,12 +34,13 @@
 	},{
 
 		_prepareParameters: function (parameters) {
-			var requestParameters = {
-				is_miles: true
-			};
+			var requestParameters = {},
+				token = this._user.get("token");
 
-			if (parameters.date) {
-				requestParameters.date = this._config.timePeriods[parameters.date];
+			if(token){
+				requestParameters.access_token = token;
+			} else {
+				requestParameters.api_key = this._config.appKey;
 			}
 
 			if(parameters.longitude){
@@ -47,22 +49,6 @@
 
 			if(parameters.latitude){
 				requestParameters.lat = requestParameters.slat = parameters.latitude;
-			}
-
-			if(typeof parameters.price === "number"){
-				requestParameters.price = parameters.price;
-			}
-
-			if(parameters.category && parameters.category instanceof Array && parameters.category.length > 0){
-				requestParameters.cat = parameters.category.reduce(function(previous, current){
-					return current
-						? this._config.categories[previous] + ", " + this._config.categories[current]
-						: this._config.categories[previous];
-				}.bind(this));
-			}
-
-			if(parameters.within){
-				requestParameters.radius = parameters.within;
 			}
 
 			return requestParameters;
@@ -98,20 +84,21 @@
 				}.bind(this));
 		},
 
-		searchDirectoryEvents: function (params) {
+		searchRelevantEvents: function (params) {
 			return this.genericRequest({
 				parameters: params
 			}).then(function (data) {
 				var result = [];
 
-				if(data && data.meta_info && data.meta_info.nb_events_found > 0){
+				if(data && data.meta && data.meta.nb_events_found > 0){
 					data.events.forEach(function(eventJson){
 						result.push(this._convertToEvent(eventJson, params));
 					}.bind(this));
+					//result.push(this._convertToEvent(data.events[0], params));
 				}
 
 				return {
-					total: result.length > 0 ? data.meta_info.nb_events_found : 0,
+					total: result.length > 0 ? data.meta.nb_events_found : 0,
 					items: result
 				};
 			}.bind(this));
@@ -123,6 +110,8 @@
 					id: jsonEvent.id,
 					title: jsonEvent.title ? this._helpers._.escape(jsonEvent.title) : "",
 					url: "http://www.eventbrite.com/event/" + jsonEvent.id,
+
+					thumbnail: jsonEvent.event_image_url,
 
 					repeats: jsonEvent.is_repeating,
 					start_date: jsonEvent.start_date,
@@ -146,7 +135,7 @@
 				jsonEvent.category.forEach(function(categoryId){
 					var mappedCategory = this._config.reverse_categories[
 							categoryId.replace(/\s/g, "").replace(/\//g, "").toLowerCase()
-							],
+						],
 						category;
 
 					if(mappedCategory){

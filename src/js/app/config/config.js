@@ -2,7 +2,7 @@
 	"use strict";
 
 	var config = {
-		version: "1.0.2.0",
+		version: "1.0.3.0",
 
 		name: "Eventy",
 
@@ -11,7 +11,7 @@
 			copyRights: "Copyright &copy; ALZA 2013"
 		},
 
-		mode: "production",
+		mode: "development",
 
 		formats: {
 			itemDate: "MMMM D, YYYY h:mm A"
@@ -38,7 +38,7 @@
 				// one hour
 				cacheTimeout: 1000*60*60,
 
-				pageSize: 20,
+				pageSize: 40,
 
 				categories: {
 					music: "music",
@@ -102,6 +102,71 @@
 					"Asia/Singapore":480,
 					"Pacific/Auckland": 720,
 					"Africa/Harare": 120
+				}
+			},
+
+			ngapi: {
+				url: "https://www.eventbrite.com/ngapi/events/relevant.json",
+				appKey: "VJEDOCS2JTNP7MGHPS",
+				dataType: "json",
+				timeout: 10000,
+
+				formats: {
+					dateWithTime: "YYYY-MM-DD HH:mm:ss",
+					date: "YYYY-MM-DD"
+				},
+
+				// three hours
+				cacheTimeout: 1000*60*60*3,
+
+				categories: {
+					music: "music",
+					sports: "sportingevents",
+					conventions: "conventions",
+					movies: "moviesfilm",
+					conferences: "conferences",
+					fairs: "festivals",
+					entertainment: "otherentertainment",
+
+					social: "socialevents",
+					endurance: "endurance",
+					recreation: "outdoors",
+					performances: "performingarts",
+					travel:"travel",
+					comedy:  "comedy",
+					seminars: "classes",
+					reunions: "reunions",
+					sales: "business",
+					religion: "religion",
+					meetings: "networking",
+					food: "foodwine",
+					fundraisers: "fundraisers",
+					other: "otherevents"
+				},
+
+				reverse_categories: {
+					music: "music",
+					sportingevents: "sports",
+					conventions: "conventions",
+					moviesfilm: "movies",
+					conferences: "conferences",
+					festivals: "fairs",
+					otherentertainment: "entertainment",
+
+					socialevents: "social",
+					endurance: "endurance",
+					outdoors: "recreation",
+					performingarts: "performances",
+					travel:"travel",
+					comedy:  "comedy",
+					classes: "seminars",
+					reunions: "reunions",
+					business: "sales",
+					religion: "religion",
+					networking: "meetings",
+					foodwine: "food",
+					fundraisers: "fundraisers",
+					otherevents: "other"
 				}
 			},
 
@@ -238,7 +303,7 @@
 					name: labels["Proxy.Categories.Seminars"]
 				},
 				reunions:{
-					color: "#2f166f",
+					color: "#7c66cb",
 					name: labels["Proxy.Categories.Schools_Alumni"]
 				},
 				sales: {
