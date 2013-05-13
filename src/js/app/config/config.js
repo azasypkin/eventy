@@ -11,7 +11,7 @@
 			copyRights: "Copyright &copy; ALZA 2013"
 		},
 
-		mode: "development",
+		mode: "production",
 
 		formats: {
 			itemDate: "MMMM D, YYYY h:mm A"
