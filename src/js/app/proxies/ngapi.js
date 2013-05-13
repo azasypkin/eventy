@@ -10,7 +10,7 @@
 
 	return WinJS.Class.define(function(options){
 		options = options || {};
-		
+
 		this._ = options._;
 		this._config = globalConfig.proxies.ngapi;
 		this._helpers = options.helpers;
