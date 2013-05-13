@@ -12,7 +12,7 @@
 	},{
 		ready: function (element, options) {
 			element.querySelector("#app-version").innerText = this._helpers.string.format(
-				"{major}.{minor}.{revision}.{build}",
+				"{major}.{minor}.{build}.{revision}",
 				Windows.ApplicationModel.Package.current.id.version
 			);
 		}
